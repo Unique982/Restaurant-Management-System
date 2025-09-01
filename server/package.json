@@ -13,13 +13,19 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.1.0",
-    "init": "^0.1.2"
+    "init": "^0.1.2",
+    "mysql2": "^3.14.4",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.3.0",
     "dotenv": "^17.2.1",
+    "i": "^0.3.7",
     "nodemon": "^3.1.10",
+    "npm": "^11.5.2",
+    "reflect-metadata": "^0.2.2",
+    "sequelize-typescript": "^2.1.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }
