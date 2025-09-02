@@ -17,7 +17,7 @@ const sequelize = new Sequelize({
 
 sequelize.authenticate()
 .then(()=>{
-    console.log("Authenticated, connected")
+    console.log("Authenticated, connected vayo database pani")
 })
 .catch((error)=>{
     console.log(error)
@@ -26,7 +26,7 @@ sequelize.authenticate()
 // migrate garnu parxa/ push garnu parxa 
 sequelize.sync({alter:false})
 .then(()=>{
-    console.log("migrated successfully new changes")
+    console.log("migrated successfully")
 })
 
 
