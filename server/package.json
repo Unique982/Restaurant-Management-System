@@ -13,7 +13,9 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.1.0",
-    "init": "^0.1.2"
+    "init": "^0.1.2",
+    "mysql2": "^3.14.4",
+    "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
