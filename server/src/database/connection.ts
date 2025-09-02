@@ -10,7 +10,7 @@ const sequelize = new Sequelize({
     host : process.env.DB_HOST, // database ko location, kaha xa vanne kura, localhost(mycomputer)
     dialect : "mysql", // k database use garna aateko vanne kura, 
     port : Number(process.env.DB_PORT), 
-    models : [__dirname + "/../models"] // current location + '/models'
+    models : [__dirname + '/models'] // current location + '/models'
     
 })
 

@@ -3,7 +3,7 @@ import { Table, Column, Model, DataType, PrimaryKey, Default } from "sequelize-t
 export type UserRole = "user" | "admin" | "staff"; // role type defined here
 
 @Table({
-  tableName: "users_table",   // database table name ha
+  tableName: "users",   // database table name ha
   modelName: "User",          // model name inside project
   timestamps: true,
   createdAt: "created_at",
