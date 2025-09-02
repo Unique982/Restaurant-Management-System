@@ -6,13 +6,14 @@ config();
 // sequelize instance
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
-  username: process.env.DB_USER,
+  username: process.env.DB_USERNAME,
   host: process.env.DB_HOST,
   password: process.env.DB_PASSWORD,
   dialect: "mysql",
   port: Number(process.env.DB_PORT),
   models: [__dirname + "/models"],
 });
+
 // database connection
 sequelize
   .authenticate()

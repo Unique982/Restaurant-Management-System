@@ -5,9 +5,10 @@ import {
   DataType,
   PrimaryKey,
 } from "sequelize-typescript";
+import { userRole } from "../../middleware/types/type";
 
 // column fileds
-// id, userName,email,password,role->enum('customer','admin'),
+// id, userName,email,password,role->enum('customer','admin'), facebook and google login
 
 @Table({
   tableName: "users",
@@ -22,22 +23,62 @@ class User extends Model {
     defaultValue: DataType.UUIDV4,
   })
   declare id: string;
+
   // userName
   @Column({
     type: DataType.STRING,
+    allowNull: false,
   })
-  declare userName: string;
+  declare username: string;
+
+  // email
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    unique: true,
+  })
+  declare email: string;
 
   // password
   @Column({
     type: DataType.STRING,
+    allowNull: true,
   })
   declare password: string;
+
+  // user role
   @Column({
     type: DataType.ENUM("customer", "admin"),
     defaultValue: "customer",
   })
-  declare role: string;
+  declare role: userRole;
+
+  // google login
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare googleId: string;
+
+  // facebook
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare facebookId: string;
+
+  //otp
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  declare otp: number;
+  // otp exp
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  declare otp_exp: Date;
 }
 
 export default User;
