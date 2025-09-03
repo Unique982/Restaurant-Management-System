@@ -18,14 +18,14 @@ router
   .post(asyncErrorHandle(Authentication.changePassword));
 //login with google
 // Google callback
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" })
-);
-// Google login redirect
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+router
+  .route("/google")
+  .get(passport.authenticate("google", { scope: ["profile", "email"] }));
+
+router
+  .route("/google/callback")
+  .get(passport.authenticate("google", { failureRedirect: "/" }), (req, res) =>
+    res.redirect("/dashboard")
+  );
 
 export default router;

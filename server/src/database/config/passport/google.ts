@@ -1,6 +1,6 @@
 import passport from "passport";
-
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as FacebokStrategy } from "passport-facebook";
 import User from "../../models/users.Model";
 import { config } from "dotenv";
 config();
@@ -14,12 +14,12 @@ passport.use(
     },
     async (_accessToken, _refreshToken, profile, cb) => {
       try {
-        let user = await User.findOne({ where: { googleId: profile.id } });
+        let user = await User.findOne({ where: { google_id: profile.id } });
 
         // check user xa ki nai
         if (!user) {
           user = await User.create({
-            googleId: profile.id,
+            google_id: profile.id,
             email: profile.emails?.[0].value,
             username: profile.displayName,
           });
@@ -44,4 +44,7 @@ passport.deserializeUser(async (id: string, done) => {
     done(err, null);
   }
 });
+
+// facebook
+// passport.use(() => {});
 export default passport;

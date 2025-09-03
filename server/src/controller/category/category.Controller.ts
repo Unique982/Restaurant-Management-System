@@ -1,0 +1,120 @@
+import { Request, Response } from "express";
+import sequelize from "../../database/connection";
+import { QueryTypes } from "sequelize";
+
+class Category {
+  static async createCategory(req: Request, res: Response) {
+    if (req.body === undefined)
+      return res.status(400).json({ messag: "Enter value!" });
+
+    const { categoryName, categoryDescription } = req.body;
+    if (!categoryName || !categoryDescription)
+      return res.status(400).json({ message: "All field required!" });
+
+    // check category already xa ki nai
+    const exitscategory = await sequelize.query(
+      `SELECT * FROM category WHERE categoryName =? AND categoryDescription=?`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: [categoryName, categoryDescription],
+      }
+    );
+    // duplicate xa ki nai check now if duplicate xa vanni  already exists vanrw msg throw grxa if duplicate xaina vani chai next process ma janxa
+
+    if (exitscategory.length > 0)
+      return res.status(400).json({ message: "Already exists!" });
+
+    // isnert query
+    await sequelize.query(
+      `INSERT INTO category(categoryName,categoryDescription,createdAt,updatedAt)VALUES(?,?,NOW(),NOW())`,
+      {
+        type: QueryTypes.INSERT,
+        replacements: [categoryName, categoryDescription],
+      }
+    );
+
+    res.status(200).json({ message: "category added successfully!" });
+  }
+
+  // get category
+
+  static async getCategory(req: Request, res: Response) {
+    const categoryData = await sequelize.query(`SELECT * FROM category`, {
+      type: QueryTypes.SELECT,
+    });
+    res
+      .status(200)
+      .json({ message: "Get Category fetch succesfully!", data: categoryData });
+  }
+
+  // delete
+  static async deleteCategory(req: Request, res: Response) {
+    const { id } = req.params;
+
+    // check id category exists or not
+    const exists = await sequelize.query(`SELECT id FROM category WHERE id=?`, {
+      type: QueryTypes.SELECT,
+      replacements: [id],
+    });
+    if (exists.length === 0)
+      return res.status(400).json({ message: "Category id not found!" });
+
+    //delete
+    await sequelize.query(`DELETE FROM category WHERE id=?`, {
+      type: QueryTypes.DELETE,
+      replacements: [id],
+    });
+    res.status(200).json({ message: "delete successfully!" });
+  }
+
+  // single category
+  static async singleCategory(req: Request, res: Response) {
+    const { id } = req.params;
+    const existi = await sequelize.query(
+      `SELECT id FROM category WHERE id =?`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: [id],
+      }
+    );
+    if (existi.length === 0)
+      return res.status(400).json({ message: "Catageory id not found" });
+
+    const dataCategory = await sequelize.query(
+      `SELECT * FROM category WHERE id=?`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: [id],
+      }
+    );
+    res
+      .status(200)
+      .json({ message: "Single category fetch!", data: dataCategory });
+  }
+
+  // edit
+  static async editCategory(req: Request, res: Response) {
+    const { id } = req.params;
+    const { categoryName, categoryDescription } = req.body;
+    if (!categoryName || !categoryDescription)
+      return res.status(400).json({ message: "All fields require!" });
+
+    const exists = await sequelize.query(`SELECT id FROM category WHERE id=?`, {
+      type: QueryTypes.SELECT,
+      replacements: [id],
+    });
+
+    if (exists.length === 0)
+      return res.status(400).json({ message: "category id not found!" });
+
+    await sequelize.query(
+      `UPDATE category SET categoryName=?,categoryDescription=?,updatedAt=NOW() WHERE id=?`,
+      {
+        type: QueryTypes.UPDATE,
+        replacements: [categoryName, categoryDescription, id],
+      }
+    );
+    res.status(200).json({ message: "Update successfully!" });
+  }
+}
+export default Category;

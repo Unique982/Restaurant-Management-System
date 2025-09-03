@@ -34,12 +34,6 @@ class Authentication {
       res.status(400).json({ message: "Something wrong!" });
     }
   };
-
-  // register with google
-  static async googleCallBack(req: Request, res: Response) {
-    const user = req.user as User;
-  }
-
   //login user input
   static async userLogin(req: Request, res: Response) {
     try {

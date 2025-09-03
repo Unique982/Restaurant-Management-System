@@ -58,14 +58,14 @@ class User extends Model {
     type: DataType.STRING,
     allowNull: true,
   })
-  declare googleId: string;
+  declare google_id: string;
 
   // facebook
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-  declare facebookId: string;
+  declare facebook_id: string;
 
   //otp
   @Column({

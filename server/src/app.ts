@@ -21,7 +21,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 import authRouter from "./routes/globals/auth/auth.Route";
+import categoryRouter from "./routes/category/category.Route";
 
 app.use("/api/auth/", authRouter);
+app.use("/api/category", categoryRouter);
 
 export default app;
