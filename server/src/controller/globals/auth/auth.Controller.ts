@@ -6,6 +6,11 @@ import bcrypt from "bcrypt";
 import generatedJwtWebToken from "../../../services/generatedJWTWEBTOKEN";
 import generatedOTP from "../../../services/generatedOtp";
 import mailSend from "../../../services/mailSend";
+
+interface OTP {
+  otp: number | null;
+  otp_exp: Date | null;
+}
 class Authentication {
   // registe user input
   static userRegsiter = async (req: Request, res: Response) => {
@@ -151,6 +156,61 @@ class Authentication {
     };
     await mailSend(mailInformation);
     res.status(200).json({ message: "Otp send successfully!.Check email" });
+  }
+
+  // verfiy otp password
+  static async verifyOtp(req: Request, res: Response) {
+    const { email, otp } = req.body;
+    if (!email || !otp)
+      return res
+        .status(400)
+        .json({ message: "Please provide email and otp code!" });
+
+    const userExists = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!userExists)
+      return res.status(400).json({ message: "Email not regsiter!" });
+
+    // verfiy password check
+    if (userExists.otp !== Number(otp))
+      return res.status(400).json({ message: "Invalid password!" });
+
+    // exp data
+    if (userExists.otp_exp <= new Date()) {
+      res.status(400).json({ message: "Expried has otp! Resend password" });
+    } else {
+      // set
+      userExists.otp;
+      userExists.otp_exp;
+
+      await userExists.save();
+      res.status(200).json({ message: "Otp successfully!" });
+    }
+  }
+
+  // chenge new password
+  static async changePassword(req: Request, res: Response) {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    if (!email || !newPassword || !confirmPassword)
+      return res.json({ message: "All filed are required!" });
+
+    // check new password and confirm password
+    if (newPassword !== confirmPassword)
+      return res.json({
+        message: "New Password and confirm password not match!",
+      });
+    // check email
+    const userExists = await User.findOne({ where: { email } });
+    if (!userExists) return res.json({ message: "Email not register" });
+
+    //
+    userExists.password = bcrypt.hashSync(newPassword, 12);
+    await userExists.save();
+    res.status(200).json({ message: "Password chnage successfully!" });
   }
 }
 export default Authentication;

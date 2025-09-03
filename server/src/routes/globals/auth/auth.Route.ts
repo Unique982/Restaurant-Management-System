@@ -10,7 +10,12 @@ router.route("/register").post(asyncErrorHandle(Authentication.userRegsiter));
 router.route("/login").post(asyncErrorHandle(Authentication.userLogin));
 // forget password
 router.route("/forget").post(asyncErrorHandle(Authentication.forgetPassword));
-
+// otp
+router.route("/otp").post(asyncErrorHandle(Authentication.verifyOtp));
+// change password
+router
+  .route("/reset/password")
+  .post(asyncErrorHandle(Authentication.changePassword));
 //login with google
 // Google callback
 router.get(
