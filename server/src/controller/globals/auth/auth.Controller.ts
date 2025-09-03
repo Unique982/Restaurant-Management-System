@@ -219,3 +219,5 @@ export default Authentication;
 // forget password
 // otp vrification
 // new password chnage
+// google with login / regsiter
+//facebook with login/ regsiter
