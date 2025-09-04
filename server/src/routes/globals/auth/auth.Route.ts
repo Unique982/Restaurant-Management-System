@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import Authentication from "../../../controller/globals/auth/auth.Controller";
-const router: Router = express();
+const router: Router = express.Router();
 import passport from "../../../database/config/passport/google";
 import asyncErrorHandle from "../../../services/asyncErrorhandle";
 

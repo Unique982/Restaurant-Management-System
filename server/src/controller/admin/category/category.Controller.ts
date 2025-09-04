@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import sequelize from "../../database/connection";
+import sequelize from "../../../database/connection";
 import { QueryTypes } from "sequelize";
 
 class Category {

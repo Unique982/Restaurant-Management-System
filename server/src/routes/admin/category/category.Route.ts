@@ -1,7 +1,8 @@
 import express, { Router } from "express";
-import asyncErrorHandle from "../../services/asyncErrorhandle";
-import Category from "../../controller/category/category.Controller";
-const router: Router = express();
+import asyncErrorHandle from "../../../services/asyncErrorhandle";
+import Category from "../../../controller/admin/category/category.Controller";
+
+const router: Router = express.Router();
 
 router
   .route("/")

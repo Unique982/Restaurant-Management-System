@@ -3,10 +3,9 @@ export enum userRole {
   Admin = "admin",
   customer = "customer",
 }
-export interface IExtended extends Request {
+export interface IExtendedRequest extends Request {
   user?: {
-    id: string;
+    id: string | any | number;
     role: userRole;
-    email: string;
   };
 }
