@@ -5,7 +5,9 @@ export enum userRole {
 }
 export interface IExtendedRequest extends Request {
   user?: {
-    id: string | any | number;
+    id: number;
     role: userRole;
+    username: string;
+    password: string;
   };
 }

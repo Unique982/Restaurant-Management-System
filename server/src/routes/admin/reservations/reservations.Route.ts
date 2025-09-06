@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import asyncErrorHandle from "../../../services/asyncErrorhandle";
 import ReservationBooking from "../../../controller/admin/reservations/reservation.Controller";
+import Middleware from "../../../middleware/middleware";
 const router: Router = express.Router();
 
 router
@@ -14,3 +15,5 @@ router
   .delete(asyncErrorHandle(ReservationBooking.deleteReservation))
   .get(asyncErrorHandle(ReservationBooking.singleReservation))
   .patch(asyncErrorHandle(ReservationBooking.updateReservation));
+
+export default router;

@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   PrimaryKey,
+  AutoIncrement,
 } from "sequelize-typescript";
 import { userRole } from "../../middleware/types/type";
 
@@ -17,12 +18,10 @@ import { userRole } from "../../middleware/types/type";
 })
 class User extends Model {
   // id col
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-  })
-  declare id: string;
+  @PrimaryKey
+  @AutoIncrement
+  @Column({ type: DataType.INTEGER })
+  declare id: number;
 
   // userName
   @Column({

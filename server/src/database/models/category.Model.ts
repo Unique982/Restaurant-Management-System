@@ -13,12 +13,9 @@ import {
   modelName: "Category",
 })
 class Category extends Model {
-  // id
   @PrimaryKey
   @AutoIncrement
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @Column({ type: DataType.INTEGER })
   declare id: number;
   // categoryName
   @Column({

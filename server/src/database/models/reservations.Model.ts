@@ -3,64 +3,62 @@ import {
   Column,
   Model,
   DataType,
-  PrimaryKey,
-  AutoIncrement,
   ForeignKey,
   BelongsTo,
-  Default,
+  PrimaryKey,
+  AutoIncrement,
 } from "sequelize-typescript";
 import User from "./users.Model";
+import Tables from "./table.Model";
 
-export type ReservationStatus = "pending" | "confirmed" | "cancelled";
+export type ReservationStatus = "pending" | "booking" | "cancelled";
 
 @Table({
   tableName: "reservations",
-  modelName: "Reservation",
   timestamps: true,
-  createdAt: "created_at",
-  updatedAt: "updated_at",
+  modelName: "Reservation",
 })
 class Reservation extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @Column({ type: DataType.INTEGER })
   declare id: number;
 
+  // Foreign key to User
   @ForeignKey(() => User)
-  @Column({
-    type: DataType.BIGINT,
-    allowNull: false,
-  })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   declare user_id: number;
 
-  @BelongsTo(() => User, "user_id")
+  @BelongsTo(() => User)
   declare customer: User;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
-  })
-  declare table_no: number;
+  // Foreign key to Tables
+  @ForeignKey(() => Tables)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  declare table_id: number;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
+  @BelongsTo(() => Tables)
+  declare table: Tables;
+
+  @Column({ type: DataType.INTEGER, allowNull: false })
   declare guests: number;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  declare reservation_time: Date;
+  @Column({ type: DataType.DATEONLY, allowNull: false })
+  declare reservation_date: string;
 
-  @Default("pending")
+  @Column({ type: DataType.TIME, allowNull: false })
+  declare reservation_time: string;
+
   @Column({
-    type: DataType.ENUM("pending", "confirmed", "cancelled"),
+    type: DataType.ENUM("pending", "booking", "cancelled"),
+    defaultValue: "pending",
   })
   declare status: ReservationStatus;
+
+  // specailRequest
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  declare specailRequest: string;
 }
 
 export default Reservation;

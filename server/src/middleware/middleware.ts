@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { IExtendedRequest, userRole } from "./types/type";
 import jwt from "jsonwebtoken";
 import User from "../database/models/users.Model";
@@ -16,14 +16,13 @@ class Middleware {
       // token verfiy
       jwt.verify(
         token,
-        "process.env.JWT_WEB_TOKEN",
-        async (error, result: any) => {
+        process.env.JJWT_WEB_TOKEN as string,
+        async (error, resultaayo: any) => {
           if (error) {
             return res.status(400).json({ messag: "Token invalid Vayo" });
           } else {
-            const userData = await User.findByPk(result.id, {
-              attributes: ["id", "role"],
-            });
+            const userData = await User.findByPk(resultaayo.id);
+
             if (!userData) {
               res.status(403).json({ message: "Invalid Token" });
             } else {
@@ -39,5 +38,18 @@ class Middleware {
     }
   };
   // role base access
+
+  static restrictTo = (...roles: userRole[]) => {
+    return (req: IExtendedRequest, res: Response, next: NextFunction) => {
+      let userRole = req.user?.role as userRole;
+      if (roles.includes(userRole)) {
+        next();
+      } else {
+        res
+          .status(400)
+          .json({ message: "Invalid, you don't have access to this" });
+      }
+    };
+  };
 }
 export default Middleware;

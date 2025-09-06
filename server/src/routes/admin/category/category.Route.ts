@@ -1,12 +1,18 @@
 import express, { Router } from "express";
 import asyncErrorHandle from "../../../services/asyncErrorhandle";
 import Category from "../../../controller/admin/category/category.Controller";
+import Middleware from "../../../middleware/middleware";
+import { userRole } from "../../../middleware/types/type";
 
 const router: Router = express.Router();
 
 router
   .route("/")
-  .post(asyncErrorHandle(Category.createCategory))
+  .post(
+    // Middleware.isLoggedIn,
+    // Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(Category.createCategory)
+  )
   .get(asyncErrorHandle(Category.getCategory));
 
 // edit / delete / single

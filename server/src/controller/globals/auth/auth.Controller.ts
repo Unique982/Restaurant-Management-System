@@ -28,6 +28,61 @@ class Authentication {
         email,
         password: bcrypt.hashSync(password, 12),
       });
+
+      // sned email
+      const mailInformation = {
+        to: email,
+        subject: "Welcome to The 90's Restaurant & Bar! ",
+        text: `<table
+  cellpadding="0"
+  cellspacing="0"
+  width="100%"
+  style="
+    max-width: 600px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+  "
+>
+  <tr>
+    <td style="padding: 30px">
+      <h2 style="color: #333333; margin-top: 0">Welcome ${username}!</h2>
+      <p style="font-size: 16px; color: #555555">
+           Your account has been created successfully at The 90's Restaurant & Bar.
+        </p>
+          <p style="font-size: 16px; color: #555555">
+           You can now login and enjoy our services.
+        </p>
+
+      <table cellpadding="0" cellspacing="0" style="margin-top: 15px">
+         <tr>
+              <td align="center" style="padding:20px 0;">
+                <span style="font-size:25px; font-weight:bold; color:#000000; background-color:#f1f1f1; padding:15px 30px; border-radius:5px; display:inline-block;">
+                 ${email}
+                </span>
+              </td>
+            </tr>
+             <tr>
+            <td align="center" bgcolor="#2a00e6ff" style="border-radius:5px;">
+              <a href="https://your-website-login.com" target="_blank" style="display:inline-block;padding:15px 30px;font-size:16px;color:#ffffff;text-decoration:none;border-radius:5px;">
+                Login Now
+              </a>
+            </td>
+            
+              
+            
+            </tr>
+          </table>
+          <td style="background-color:#f1f1f1; padding:15px; text-align:center; color:#555555; font-size:14px; border-radius:5px;">
+                &copy; 2025 The 90's Restaurant & Bar. All rights reserved.<br>
+                <a href="https://www.instagram.com/the_90s_restaurant_and_bar/" style="color:#d32f2f; text-decoration:none;">Follow us on Instagram</a>
+
+      
+`,
+      };
+      await mailSend(mailInformation);
+
       res.status(200).json({ message: "User account created successfuly!" });
     } catch (err) {
       console.log(err);

@@ -24,10 +24,13 @@ app.use(passport.session());
 import authRouter from "./routes/globals/auth/auth.Route";
 import categoryRouter from "./routes/admin/category/category.Route";
 import tablesRoutes from "./routes/admin/tables/tables.Route";
-// import reservationRouter from "./routes/reservations/reservations.Route";
+import reservationRouter from "./routes/admin/reservations/reservations.Route";
+import menuRouter from "./routes/admin/menu/menu.Route";
+
 app.use("/api/auth/", authRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/tables", tablesRoutes);
-// app.use("/api//reservations", reservationRouter);
+app.use("/api/reservations", reservationRouter);
+app.use("/api/menu", menuRouter);
 
 export default app;

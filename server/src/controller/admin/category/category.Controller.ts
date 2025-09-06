@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { IExtendedRequest } from "../../../middleware/types/type";
 import sequelize from "../../../database/connection";
 import { QueryTypes } from "sequelize";
 
 class Category {
-  static async createCategory(req: Request, res: Response) {
+  static async createCategory(req: IExtendedRequest, res: Response) {
     if (req.body === undefined)
       return res.status(400).json({ messag: "Enter value!" });
 
@@ -38,7 +39,7 @@ class Category {
 
   // get category
 
-  static async getCategory(req: Request, res: Response) {
+  static async getCategory(req: IExtendedRequest, res: Response) {
     const categoryData = await sequelize.query(`SELECT * FROM category`, {
       type: QueryTypes.SELECT,
     });
@@ -48,7 +49,7 @@ class Category {
   }
 
   // delete
-  static async deleteCategory(req: Request, res: Response) {
+  static async deleteCategory(req: IExtendedRequest, res: Response) {
     const { id } = req.params;
 
     // check id category exists or not
@@ -68,7 +69,7 @@ class Category {
   }
 
   // single category
-  static async singleCategory(req: Request, res: Response) {
+  static async singleCategory(req: IExtendedRequest, res: Response) {
     const { id } = req.params;
     const existi = await sequelize.query(
       `SELECT id FROM category WHERE id =?`,
@@ -93,7 +94,7 @@ class Category {
   }
 
   // edit
-  static async editCategory(req: Request, res: Response) {
+  static async editCategory(req: IExtendedRequest, res: Response) {
     const { id } = req.params;
     const { categoryName, categoryDescription } = req.body;
     if (!categoryName || !categoryDescription)

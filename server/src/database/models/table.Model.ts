@@ -15,9 +15,7 @@ import {
 class Tables extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @Column({ type: DataType.INTEGER })
   declare id: number;
 
   // table number
@@ -40,6 +38,6 @@ class Tables extends Model {
     defaultValue: "available",
     allowNull: false,
   })
-  declare status: boolean;
+  declare tableStatus: string;
 }
 export default Tables;

@@ -88,9 +88,19 @@ class Tables {
   // update table
   static async updateTables(req: IExtendedRequest, res: Response) {
     const { id } = req.params;
-    const { tableNumber, seats, status } = req.body;
+    const { tableNumber, seats, tableStatus } = req.body;
     if (!tableNumber || !seats)
       return res.status(400).json({ message: "All filed are required!" });
+
+    const existsTables = await sequelize.query(
+      `SELECT * FROM tables WHERE tableNumber =? AND id!=?`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: [tableNumber, id],
+      }
+    );
+    if (existsTables.length > 0)
+      return res.status(400).json({ message: "Table number already exists!" });
 
     const existsTable = await sequelize.query(
       `SELECT id FROM tables WHERE id =?`,
@@ -105,10 +115,10 @@ class Tables {
     // update query
 
     await sequelize.query(
-      `UPDATE tables SET tableNumber=?,seats=?,status=? WHERE id=?`,
+      `UPDATE tables SET tableNumber=?,seats=?,tableStatus=? WHERE id=?`,
       {
         type: QueryTypes.UPDATE,
-        replacements: [tableNumber, seats, status, id],
+        replacements: [tableNumber, seats, tableStatus, id],
       }
     );
     res.status(200).json({ message: "Update Successfully!" });
