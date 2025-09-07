@@ -6,6 +6,8 @@ import Tables from "./models/table.Model";
 import Reservation from "./models/reservations.Model";
 import Category from "./models/category.Model";
 import MenuItem from "./models/menuItem.Model";
+import Order from "./models/order.Model";
+import OrderItem from "./models/orderItems.Model";
 // load env
 config();
 
@@ -47,5 +49,24 @@ Reservation.belongsTo(Tables, { foreignKey: "table_id" });
 // menu relation category tabel
 Category.hasMany(MenuItem, { foreignKey: "category_id" });
 MenuItem.belongsTo(Category, { foreignKey: "category_id" });
+
+// order and customer realtion
+// order and table relation\
+
+// user to order
+User.hasMany(Order, { foreignKey: "user_id" });
+Order.belongsTo(User, { foreignKey: "user_id" });
+
+// table to order
+// Table ↔ Order
+Tables.hasMany(Order, { foreignKey: "table_id" });
+Order.belongsTo(Tables, { foreignKey: "table_id" });
+
+// order
+Order.hasMany(OrderItem, { foreignKey: "order_id" });
+OrderItem.belongsTo(Order, { foreignKey: "order_id" });
+
+MenuItem.hasMany(OrderItem, { foreignKey: "menu_item_id" });
+OrderItem.belongsTo(MenuItem, { foreignKey: "menu_item_id" });
 
 export default sequelize;

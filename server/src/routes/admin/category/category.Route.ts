@@ -16,7 +16,6 @@ router
   .get(asyncErrorHandle(Category.getCategory));
 
 // edit / delete / single
-
 router
   .route("/:id")
   .delete(asyncErrorHandle(Category.deleteCategory))

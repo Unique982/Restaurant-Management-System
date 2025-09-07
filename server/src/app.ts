@@ -26,11 +26,17 @@ import categoryRouter from "./routes/admin/category/category.Route";
 import tablesRoutes from "./routes/admin/tables/tables.Route";
 import reservationRouter from "./routes/admin/reservations/reservations.Route";
 import menuRouter from "./routes/admin/menu/menu.Route";
+import orderRouter from "./routes/admin/order/order.Route";
+import cartRouter from "./routes/admin/cart/cart.Routes";
+import listCustomer from "./routes/admin/customer/customer.Route";
 
 app.use("/api/auth/", authRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/tables", tablesRoutes);
 app.use("/api/reservations", reservationRouter);
 app.use("/api/menu", menuRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/customer", listCustomer);
 
 export default app;
