@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Link, PlusCircle, ShoppingBag } from "lucide-react";
+import { ArrowRight, Link, PlusCircle, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 
 interface menuItemsProps {
@@ -123,25 +123,27 @@ export default function MenuSection() {
 
   return (
     <>
-      <section className="py-12 px-4 md:px-12 lg-px-20 bg-white">
-        <h2 className="text-3xl md:text-4xl font-bold  bg-gradient-to-r from-indigo-700 to-orange-400 bg-clip-text text-transparent text-center mb-12">
-          Our Specail Menu
-        </h2>
-
+      <section id="services" className="px-4 py-20 bg-white">
+        <div className="container mx-auto px-4 text-center mb-12">
+          <h2 className="text-2xl font-bold text-gray-800">Our Special Menu</h2>
+          <p className="text-gray-600 mt-2">
+            Testimonials from our happy customers
+          </p>
+        </div>
         {/* Button */}
-        <div className="flex flex-wrap justify-center gap-3 mb-3">
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
           {categories.map((cat) => (
-            <button
+            <Button
               key={cat}
               onClick={() => setCategoryActivity(cat)}
-              className={`px-6 py-2 border text-sm font-semibold transition ${
+              className={`px-6 py-2 bg-gray-50  text-white text-1xl hover:bg-gray-100 border text-sm font-semibold transition ${
                 activeCategory === cat
                   ? "border-black text-black"
                   : "border-gray-300 text-gray-800"
               }`}
             >
               {cat}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -169,6 +171,15 @@ export default function MenuSection() {
               </div>
             </div>
           ))}
+        </div>
+        <div className="flex justify-center mt-6">
+          <a
+            href="/menu"
+            className="flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition"
+          >
+            View More
+            <ArrowRight className="w-5 h-5 inline-block" />
+          </a>
         </div>
       </section>
     </>
