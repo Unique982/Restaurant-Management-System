@@ -2,28 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ShoppingCart, User, Trash2 } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import LoginModal from "@/components/custom/modal/LoginModal";
-import Cart from "@/components/custom/cart/Cart";
+import { Menu, X, ShoppingCart, User } from "lucide-react";
+
+import LoginModal from "@/components/client/modal/LoginModal";
+import Cart from "@/components/client/cart/Cart";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false); // state for login modal
+  const [loginOpen, setLoginOpen] = useState(false);
 
   const [cartItems, setCartItems] = useState([
     { id: 1, name: "Burger", qty: 1, price: 10 },
