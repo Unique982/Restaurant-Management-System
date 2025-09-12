@@ -15,6 +15,14 @@ import {
   Popsicle,
   Tags,
   Contact,
+  TagIcon,
+  MenuIcon,
+  NotebookIcon,
+  NotebookPenIcon,
+  TabletsIcon,
+  GalleryThumbnailsIcon,
+  Image,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -27,7 +35,7 @@ export default function SideBar() {
     <>
       <aside
         className={`${
-          sidebarOpen ? "w-64" : "w-16"
+          sidebarOpen ? "w-50" : "w-16"
         } bg-white shadow-lg transition-all duration-300 flex flex-col`}
       >
         {/* logo and toogles section */}
@@ -61,8 +69,52 @@ export default function SideBar() {
               )}
             </Button>
           </Link>
+          <Link href="/admin/dashboard/category" className="group relative">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <TagIcon className="w-5 h-5" />
+              {sidebarOpen && "Category"}
+              {!sidebarOpen && (
+                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  Category
+                </span>
+              )}
+            </Button>
+          </Link>
+          <Link href="/admin/dashboard/menu" className="group relative">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <MenuIcon className="w-5 h-5" />
+              {sidebarOpen && "Menu"}
+              {!sidebarOpen && (
+                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  Menu
+                </span>
+              )}
+            </Button>
+          </Link>
+          <Link href="/admin/dashboard/reservation" className="group relative">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <NotebookPenIcon className="w-5 h-5" />
+              {sidebarOpen && "Reservations"}
+              {!sidebarOpen && (
+                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  Reservations
+                </span>
+              )}
+            </Button>
+          </Link>
+          <Link href="/admin/dashboard/tables" className="group relative">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <TabletsIcon className="w-5 h-5" />
+              {sidebarOpen && "tables"}
+              {!sidebarOpen && (
+                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  Tables
+                </span>
+              )}
+            </Button>
+          </Link>
 
-          <Link href="/admin/dashboard/users" className="group relative">
+          <Link href="/admin/dashboard/user" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <User className="w-5 h-5" />
               {sidebarOpen && "User"}
@@ -73,24 +125,13 @@ export default function SideBar() {
               )}
             </Button>
           </Link>
-          <Link href="/admin/users" className="group relative">
+          <Link href="/admin/dashboard/orders" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <ListOrdered className="w-5 h-5" />
               {sidebarOpen && "Orders"}
               {!sidebarOpen && (
                 <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
                   Orders
-                </span>
-              )}
-            </Button>
-          </Link>
-          <Link href="/admin/users" className="group relative">
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <Settings className="w-5 h-5" />
-              {sidebarOpen && "Setting"}
-              {!sidebarOpen && (
-                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
-                  Setting
                 </span>
               )}
             </Button>
@@ -144,6 +185,30 @@ export default function SideBar() {
               {!sidebarOpen && (
                 <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
                   Contact
+                </span>
+              )}
+            </Button>
+          </Link>
+          <Link href="/admin/users" className="group relative">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <Image className="w-5 h-5" />
+
+              {sidebarOpen && "Gallery"}
+              {!sidebarOpen && (
+                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  Gallery
+                </span>
+              )}
+            </Button>
+          </Link>
+          <Link href="/admin/dashboard/testimonials" className="group relative">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <MessageCircle className="w-5 h-5" />
+
+              {sidebarOpen && "Testimonials "}
+              {!sidebarOpen && (
+                <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  Testimonials
                 </span>
               )}
             </Button>
