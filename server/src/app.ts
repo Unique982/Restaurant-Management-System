@@ -3,6 +3,14 @@ import session from "express-session";
 import passport from "./database/config/passport/google";
 
 const app = express();
+import cors from "cors";
+
+// cors import
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 // middleware request pass garna use garaxam
 app.use(express.urlencoded({ extended: true }));
