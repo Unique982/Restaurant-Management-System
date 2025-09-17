@@ -8,9 +8,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  addCategory,
+  getCategory,
+} from "@/lib/store/admin/category/categorySlice";
+import { ICategoryData } from "@/lib/store/admin/category/categorySlice.type";
+import toast from "react-hot-toast";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { Status } from "@/lib/types/type";
 import { Label } from "@radix-ui/react-dropdown-menu";
 
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 
 interface categoryProps {
   open: boolean;
@@ -18,6 +26,33 @@ interface categoryProps {
 }
 
 export default function AddCategory({ open, onOpenChange }: categoryProps) {
+  const dispatch = useAppDispatch();
+  const { status } = useAppSelector((store) => store.category);
+  const [data, setCategoryData] = useState<ICategoryData>({
+    categoryName: "",
+    categoryDescription: "",
+  });
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setCategoryData({
+      ...data,
+      [name]: value,
+    });
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await dispatch(addCategory(data));
+    if (status === Status.SUCCESS) {
+      toast.success("Category added successfully!");
+      setCategoryData({ categoryName: "", categoryDescription: "" });
+      onOpenChange(false); // Close modal
+      dispatch(getCategory());
+    } else {
+      toast.error("Failed to add category!");
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md w-[90%] rounded-lg p-6 bg-white">
@@ -28,12 +63,14 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
         </DialogHeader>
 
         {/* Form */}
-        <form className="space-y-4 mt-4">
+        <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label>Cateegory Name</Label>
             <Input
-              id="name"
+              id="categoryName"
               type="text"
+              name="categoryName"
+              onChange={handleChange}
               placeholder="Enter your name.."
               className="w-full"
             />
@@ -43,6 +80,7 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
             <Label>Description</Label>
             <Textarea
               name="categoryDescription"
+              onChange={handleChange}
               placeholder="Enter category description"
             ></Textarea>
           </div>

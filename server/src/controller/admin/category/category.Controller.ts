@@ -60,6 +60,12 @@ class Category {
     if (exists.length === 0)
       return res.status(400).json({ message: "Category id not found!" });
 
+    // menu ko table bata delete garnu paro
+    await sequelize.query(`DELETE FROM menu_items WHERE category_id = ?`, {
+      type: QueryTypes.DELETE,
+      replacements: [id],
+    });
+
     //delete
     await sequelize.query(`DELETE FROM category WHERE id=?`, {
       type: QueryTypes.DELETE,

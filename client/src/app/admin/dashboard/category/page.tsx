@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
@@ -14,9 +14,37 @@ import {
 } from "@/components/ui/table";
 import Pagination from "@/components/admin/Pagination/pagination";
 import AddCategory from "./category.Model";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import {
+  deleteCategoryById,
+  fetchCategory,
+  getCategory,
+} from "@/lib/store/admin/category/categorySlice";
+import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
+import { Status } from "@/lib/types/type";
+import toast from "react-hot-toast";
 
 export default function CategoryInfo() {
+  const { data: categories, status } = useAppSelector(
+    (store) => store.category
+  );
+  const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
+
+  useEffect(() => {
+    dispatch(getCategory());
+  }, []);
+  // delete
+  const handleCategoryDelete = (id: string) => {
+    id && dispatch(deleteCategoryById(id));
+    if (status === Status.SUCCESS) {
+      toast.success("Category Delete successfully!");
+      dispatch(getCategory());
+    } else {
+      toast.error("Failed to delete !");
+    }
+  };
+
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -49,27 +77,37 @@ export default function CategoryInfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">1</TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  Menu1
-                </TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                </TableCell>
-                <TableCell>2082/12/12</TableCell>
-                <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                  <Button variant="secondary" size="sm" title="View">
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" title="Edit">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="destructive" size="sm" title="Delete">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
+              {categories.map((category: ICategory, index) => {
+                return (
+                  <TableRow key={index + 1}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      {category.categoryName}
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      {category.categoryDescription}
+                    </TableCell>
+                    <TableCell>{category.createdAt}</TableCell>
+                    <TableCell className="text-right flex flex-wrap justify-end gap-2">
+                      <Button variant="secondary" size="sm" title="View">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="sm" title="Edit">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      {/* delete button */}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        title="Delete"
+                        onClick={() => handleCategoryDelete(category?.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {/* if table ma data xaina vani chai not found  */}
               {/* <TableRow>
                 <TableCell colSpan={5} className="text-center py-4">

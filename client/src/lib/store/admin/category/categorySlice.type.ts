@@ -5,7 +5,11 @@ export interface ICategoryData {
   categoryDescription: string;
 }
 
+export interface ICategory extends ICategoryData {
+  id: string;
+  createdAt: string;
+}
 export interface IInitialState {
-  data: ICategoryData[];
+  data: ICategory[];
   status: Status;
 }
