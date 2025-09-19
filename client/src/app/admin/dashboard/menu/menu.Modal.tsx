@@ -18,94 +18,168 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { useForm } from "react-hook-form";
+import {
+  menuItemsSchema,
+  menuItemsSchemaTypes,
+} from "@/lib/validations/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
+import {
+  createMenuItems,
+  getMenuItem,
+} from "@/lib/store/admin/menuItems/menuItemSlice";
 
-interface categoryProps {
+interface menuProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export default function AddMenu({ open, onOpenChange }: categoryProps) {
+export default function AddMenu({ open, onOpenChange }: menuProps) {
   const [isModal, setModal] = useState(true);
+  const { status } = useAppSelector((store) => store.menuItems);
+  const { data: categories } = useAppSelector((store) => store.category);
+  const dispatch = useAppDispatch();
+  const {
+    register: menuRegister,
+    handleSubmit: handleMenuItemsSubmit,
+    formState: { errors: menuErrors },
+  } = useForm<menuItemsSchemaTypes>({
+    resolver: zodResolver(menuItemsSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      categoryId: "",
+      image_url: "",
+      availability: "available",
+      ingredients: "",
+      type: "",
+    },
+  });
+  const onSubmit = async (menuItems: menuItemsSchemaTypes) => {
+    const success = await dispatch(createMenuItems(menuItems));
+    if (success) {
+      toast.success("Menu Items added successful!");
+      onOpenChange(false);
+      dispatch(getMenuItem);
+    } else {
+      toast.error("Failed to added menuItems ");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-full h-full sm:h-auto 
-    max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl 
-    rounded-none sm:rounded-lg 
-    p-6 
-    bg-white 
-    mx-auto 
-    overflow-y-auto
-    border border-gray-200
-    shadow-lg"
+        className="w-full h-screen 
+  max-w-full 
+  rounded-md 
+  p-8 sm:p-6 md:p-8 
+  bg-white 
+  mx-auto 
+  overflow-y-auto
+  border border-gray-200
+  shadow-sm"
       >
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-center">
+          <DialogTitle className="text-sm font-semibold text-center">
             Add Menu
           </DialogTitle>
         </DialogHeader>
 
         {/* Form */}
-        <form className="space-y-4 mt-2">
+        <form className="space-y-3 " onSubmit={handleMenuItemsSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Menu Name</Label>
               <Input
                 id="name"
                 type="text"
-                name="name"
+                {...menuRegister("name")}
                 placeholder="Enter your name.."
                 className="w-full"
               />
+              {menuErrors.name && (
+                <span className="text-red-500 text-sm mt-1 block">
+                  {menuErrors.name.message}
+                </span>
+              )}
             </div>
             <div className="space-y-1">
               <Label>Price</Label>
               <Input
                 id="price"
-                name="price"
+                {...menuRegister("price")}
                 type="number"
                 placeholder="Enter your name.."
                 className="w-full"
               />
+              {menuErrors.price && (
+                <span className="text-red-500 text-sm mt-1 block">
+                  {menuErrors.price.message}
+                </span>
+              )}
             </div>
           </div>
           <div className="space-y-2">
             <Label>Category</Label>
             <Select>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Category" />
+                <SelectValue
+                  placeholder="Select Category"
+                  {...menuRegister("categoryId")}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="technology">Technology</SelectItem>
-                <SelectItem value="health">Health</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
+                {categories.length > 0 ? (
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.categoryName}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem
+                    key="no-category"
+                    value="not found"
+                    disabled
+                    className="text-red-500 font-semibold text-sm"
+                  >
+                    No data found
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea
-              name="categoryDescription"
-              placeholder="Enter category description"
+              placeholder="Enter description"
+              {...menuRegister("description")}
             ></Textarea>
+            {menuErrors.description && (
+              <span className="text-red-500 text-sm mt-1 block">
+                {menuErrors.description.message}
+              </span>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Image</Label>
               <Input
                 id="file"
-                name="image_url"
+                {...menuRegister("image_url")}
                 type="file"
                 placeholder="Enter your name.."
                 className="w-full"
               />
             </div>
+
             <div className="space-y-1">
               <Label>Ingredients</Label>
               <Input
                 id="ingredients"
-                name="ingredients"
+                {...menuRegister("ingredients")}
                 type="text"
                 placeholder="Enter your name.."
                 className="w-full"
@@ -130,7 +204,7 @@ export default function AddMenu({ open, onOpenChange }: categoryProps) {
             <Label>Menu Types</Label>
             <Input
               id="types"
-              name="types"
+              {...menuRegister("type")}
               type="text"
               placeholder="veg or non-veg"
               className="w-full"

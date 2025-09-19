@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
@@ -13,19 +13,41 @@ import {
 } from "@/components/ui/table";
 import Pagination from "@/components/admin/Pagination/pagination";
 import AddTable from "./table.Modal";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import {
+  deleteTableById,
+  deleteTablesById,
+  getTables,
+} from "@/lib/store/admin/tables/tableSlice";
+import { Status } from "@/lib/types/type";
+import toast from "react-hot-toast";
 
 export default function ReservationInfo() {
   const [isModal, setIsModal] = useState(false);
-  const [status, setStatus] = useState("Available");
+  const [tableStatus, setStatus] = useState("Available");
+  const dispatch = useAppDispatch();
+  const { data: tables, status } = useAppSelector((store) => store.tables);
+  useEffect(() => {
+    dispatch(getTables());
+  }, []);
 
   const handleStatus = () => {
-    if (status === "Available") setStatus("Unavailable");
+    if (tableStatus === "Available") setStatus("Unavailable");
     else setStatus("Available");
   };
   //color set
   const setColor = () => {
-    if (status === "Available") return "bg-green-500 text-white";
-    if (status === "Unavailable") return "bg-red-500 text-white";
+    if (tableStatus === "Available") return "bg-green-500 text-white";
+    if (tableStatus === "Unavailable") return "bg-red-500 text-white";
+  };
+  const deleteHandleTable = async (id: string | number) => {
+    (await id) && dispatch(deleteTablesById(id));
+    if (status === Status.SUCCESS) {
+      dispatch(getTables());
+      toast.success("Delete successful!");
+    } else {
+      toast.error("Deleted Failed");
+    }
   };
   return (
     <>
@@ -52,7 +74,7 @@ export default function ReservationInfo() {
               <TableRow>
                 <TableHead className="w-[40px]">ID</TableHead>
                 <TableHead>Table Number</TableHead>
-                <TableHead>seats</TableHead>
+                <TableHead>Seats</TableHead>
                 <TableHead> Status</TableHead>
                 <TableHead>CreatedAt</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -60,42 +82,56 @@ export default function ReservationInfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">1</TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  A1
-                </TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  6
-                </TableCell>
-                <TableCell>
-                  <span
-                    onClick={handleStatus}
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${setColor()}`}
-                  >
-                    {status}
-                  </span>
-                </TableCell>
+              {tables.length > 0 ? (
+                tables.map((table, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell className="whitespace-normal break-words">
+                        {table.tableNumber}
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words">
+                        {table.seats}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          onClick={handleStatus}
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${setColor()}`}
+                        >
+                          {status}
+                        </span>
+                      </TableCell>
 
-                <TableCell>2082/12/12</TableCell>
-                <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                  <Button variant="secondary" size="sm" title="View">
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" title="Edit">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="destructive" size="sm" title="Delete">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              {/* if table ma data xaina vani chai not found  */}
-              {/* <TableRow>
-                <TableCell colSpan={5} className="text-center py-4">
-                  No users found
-                </TableCell>
-              </TableRow> */}
+                      <TableCell>
+                        {new Date(table.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="text-right flex flex-wrap justify-end gap-2">
+                        <Button variant="secondary" size="sm" title="View">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" title="Edit">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          type="submit"
+                          onClick={() => deleteHandleTable(table.id)}
+                          variant="destructive"
+                          size="sm"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-4">
+                    No users found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

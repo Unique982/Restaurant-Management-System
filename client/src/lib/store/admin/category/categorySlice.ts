@@ -27,7 +27,7 @@ const categorySlice = createSlice({
         (category) => category.id === catgeoryId
       );
       if (index !== -1) {
-        state.data.slice(index, 1);
+        state.data.splice(index, 1);
       }
     },
   },
@@ -58,7 +58,7 @@ export function getCategory() {
   return async function getCategoryThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get("category");
+      const response = await API.get("/category");
       if (response.status === 200) {
         response.data.data.length > 0 &&
           dispatch(fetchCategory(response.data.data));

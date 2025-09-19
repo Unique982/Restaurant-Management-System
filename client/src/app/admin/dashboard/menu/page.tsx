@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
@@ -13,9 +13,35 @@ import {
 } from "@/components/ui/table";
 import Pagination from "@/components/admin/Pagination/pagination";
 import AddMenu from "./menu.Modal";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import {
+  deletemenuItem,
+  getMenuItem,
+} from "@/lib/store/admin/menuItems/menuItemSlice";
+import { de } from "zod/v4/locales";
+import { Status } from "@/lib/types/type";
+import toast from "react-hot-toast";
 
 export default function MenuIfo() {
   const [isModal, setIsModal] = useState(false);
+  const { data: menuItems, status } = useAppSelector(
+    (store) => store.menuItems
+  );
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(getMenuItem());
+  }, []);
+
+  // delete
+  const deleteHandle = async (id: string) => {
+    await dispatch(deletemenuItem(id));
+    if (status === Status.SUCCESS) {
+      dispatch(getMenuItem());
+      toast.success("Delete menu items successful!");
+    } else {
+      toast.error("Delete failed");
+    }
+  };
 
   return (
     <>
@@ -49,33 +75,45 @@ export default function MenuIfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">1</TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  Menu1
-                </TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                </TableCell>
-                <TableCell>2082/12/12</TableCell>
-                <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                  <Button variant="secondary" size="sm" title="View">
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" title="Edit">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="destructive" size="sm" title="Delete">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              {/* if table ma data xaina vani chai not found  */}
-              {/* <TableRow>
-                <TableCell colSpan={5} className="text-center py-4">
-                  No users found
-                </TableCell>
-              </TableRow> */}
+              {menuItems.length > 0 ? (
+                menuItems.map((menu, index) => (
+                  <TableRow key={menu.id || index}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>{menu.name}</TableCell>
+                    <TableCell>
+                      {menu.description?.substring(0, 30) + "..."}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(menu.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right flex flex-wrap justify-end gap-2">
+                      <Button variant="secondary" size="sm" title="View">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="sm" title="Edit">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => deleteHandle(menu.id)}
+                        variant="destructive"
+                        size="sm"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-red-600 py-4"
+                  >
+                    No menus found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

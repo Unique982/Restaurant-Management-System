@@ -19,6 +19,12 @@ import { Status } from "@/lib/types/type";
 import { Label } from "@radix-ui/react-dropdown-menu";
 
 import { ChangeEvent, FormEvent, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  categorySchema,
+  categorySchemaType,
+} from "@/lib/validations/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface categoryProps {
   open: boolean;
@@ -28,31 +34,33 @@ interface categoryProps {
 export default function AddCategory({ open, onOpenChange }: categoryProps) {
   const dispatch = useAppDispatch();
   const { status } = useAppSelector((store) => store.category);
-  const [data, setCategoryData] = useState<ICategoryData>({
-    categoryName: "",
-    categoryDescription: "",
+  // const [data, setCategoryData] = useState<ICategoryData>({
+  //   categoryName: "",
+  //   categoryDescription: "",
+  // });
+
+  const {
+    register: category,
+    handleSubmit: handleCategorySubmit,
+    formState: { errors: categoryErrors },
+  } = useForm<categorySchemaType>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      categoryName: "",
+      categoryDescription: "",
+    },
   });
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setCategoryData({
-      ...data,
-      [name]: value,
-    });
-  };
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await dispatch(addCategory(data));
-    if (status === Status.SUCCESS) {
+  const onSubmit = async (data: categorySchemaType) => {
+    const success = await dispatch(addCategory(data));
+    if (success) {
       toast.success("Category added successfully!");
-      setCategoryData({ categoryName: "", categoryDescription: "" });
       onOpenChange(false); // Close modal
       dispatch(getCategory());
     } else {
       toast.error("Failed to add category!");
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md w-[90%] rounded-lg p-6 bg-white">
@@ -63,26 +71,40 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
         </DialogHeader>
 
         {/* Form */}
-        <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
+        <form
+          className="space-y-4 mt-4"
+          onSubmit={handleCategorySubmit(onSubmit)}
+        >
           <div className="space-y-2">
             <Label>Cateegory Name</Label>
             <Input
               id="categoryName"
               type="text"
-              name="categoryName"
-              onChange={handleChange}
+              {...category("categoryName")}
               placeholder="Enter your name.."
               className="w-full"
             />
+            {categoryErrors.categoryName && (
+              <span className="text-red-500 text-sm mt-1 block">
+                {categoryErrors.categoryName.message}
+              </span>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea
-              name="categoryDescription"
-              onChange={handleChange}
+              {...category("categoryDescription")}
               placeholder="Enter category description"
+              className="w-full resize-none"
+              rows={2}
+              cols={4}
             ></Textarea>
+            {categoryErrors.categoryDescription && (
+              <span className="text-red-500 text-sm mt-1 block">
+                {categoryErrors.categoryDescription.message}
+              </span>
+            )}
           </div>
 
           <Button

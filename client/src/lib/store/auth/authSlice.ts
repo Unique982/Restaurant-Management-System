@@ -5,7 +5,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../store";
 import API from "@/lib/http";
 import { ILoginData, IRegisterInput } from "@/lib/types/auth/authTypes";
-import App from "next/app";
 
 const initialState: IInitialState = {
   user: {

@@ -35,11 +35,11 @@ export default function CategoryInfo() {
     dispatch(getCategory());
   }, []);
   // delete
-  const handleCategoryDelete = (id: string) => {
-    id && dispatch(deleteCategoryById(id));
+  const handleCategoryDelete = async (id: string) => {
+    await dispatch(deleteCategoryById(id));
     if (status === Status.SUCCESS) {
-      toast.success("Category Delete successfully!");
       dispatch(getCategory());
+      toast.success("Category Delete successfully!");
     } else {
       toast.error("Failed to delete !");
     }
@@ -85,9 +85,11 @@ export default function CategoryInfo() {
                       {category.categoryName}
                     </TableCell>
                     <TableCell className="whitespace-normal break-words">
-                      {category.categoryDescription}
+                      {category.categoryDescription.substring(0, 30) + "..."}
                     </TableCell>
-                    <TableCell>{category.createdAt}</TableCell>
+                    <TableCell>
+                      {new Date(category.createdAt).toLocaleDateString("np")}
+                    </TableCell>
                     <TableCell className="text-right flex flex-wrap justify-end gap-2">
                       <Button variant="secondary" size="sm" title="View">
                         <Eye className="w-4 h-4" />
