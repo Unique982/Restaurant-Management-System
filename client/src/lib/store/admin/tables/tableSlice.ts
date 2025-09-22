@@ -43,10 +43,11 @@ export function createTables(data: ITablesData) {
   return async function createTablesThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("/tables");
+      const response = await API.post("/tables", data);
       if (response.status === 200) {
         response.data.data && dispatch(addTable(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
+        return true;
       }
     } catch (err) {
       dispatch(setStatus(Status.ERROR));

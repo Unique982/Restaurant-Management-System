@@ -17,19 +17,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { useForm } from "react-hook-form";
-import {
-  menuItemsSchema,
-  menuItemsSchemaTypes,
-} from "@/lib/validations/validations";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import toast from "react-hot-toast";
 import {
   createMenuItems,
   getMenuItem,
 } from "@/lib/store/admin/menuItems/menuItemSlice";
+import { IMenuItemsData } from "@/lib/store/admin/menuItems/menuItemSlice.type";
+import { getCategory } from "@/lib/store/admin/category/categorySlice";
 
 interface menuProps {
   open: boolean;
@@ -41,31 +38,35 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
   const { status } = useAppSelector((store) => store.menuItems);
   const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
-  const {
-    register: menuRegister,
-    handleSubmit: handleMenuItemsSubmit,
-    formState: { errors: menuErrors },
-  } = useForm<menuItemsSchemaTypes>({
-    resolver: zodResolver(menuItemsSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: "",
-      categoryId: "",
-      image_url: "",
-      availability: "available",
-      ingredients: "",
-      type: "",
-    },
+  const [menuData, setMenuData] = useState<IMenuItemsData>({
+    name: "",
+    description: "",
+    price: "",
+    categoryId: "",
+    image_url: "",
+    type: "",
+    availability: "",
+    ingredients: "",
   });
-  const onSubmit = async (menuItems: menuItemsSchemaTypes) => {
-    const success = await dispatch(createMenuItems(menuItems));
-    if (success) {
-      toast.success("Menu Items added successful!");
+  useEffect(() => {
+    dispatch(getCategory());
+  }, []);
+  const chnageHandle = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setMenuData({
+      ...menuData,
+      [name]: value,
+    });
+  };
+  const submitHandle = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result: any = await dispatch(createMenuItems(menuData));
+    if (result) {
+      toast.success("menu added successfully!");
       onOpenChange(false);
-      dispatch(getMenuItem);
-    } else {
-      toast.error("Failed to added menuItems ");
+      dispatch(getMenuItem());
     }
   };
 
@@ -89,52 +90,44 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
         </DialogHeader>
 
         {/* Form */}
-        <form className="space-y-3 " onSubmit={handleMenuItemsSubmit(onSubmit)}>
+        <form className="space-y-3 " onSubmit={submitHandle}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Menu Name</Label>
               <Input
                 id="name"
                 type="text"
-                {...menuRegister("name")}
+                name="name"
+                onChange={chnageHandle}
                 placeholder="Enter your name.."
                 className="w-full"
               />
-              {menuErrors.name && (
-                <span className="text-red-500 text-sm mt-1 block">
-                  {menuErrors.name.message}
-                </span>
-              )}
             </div>
             <div className="space-y-1">
               <Label>Price</Label>
               <Input
                 id="price"
-                {...menuRegister("price")}
+                name="price"
+                onChange={chnageHandle}
                 type="number"
                 placeholder="Enter your name.."
                 className="w-full"
               />
-              {menuErrors.price && (
-                <span className="text-red-500 text-sm mt-1 block">
-                  {menuErrors.price.message}
-                </span>
-              )}
             </div>
           </div>
           <div className="space-y-2">
             <Label>Category</Label>
             <Select>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full" name="categoryId">
                 <SelectValue
                   placeholder="Select Category"
-                  {...menuRegister("categoryId")}
+                  onChange={chnageHandle}
                 />
               </SelectTrigger>
               <SelectContent>
                 {categories.length > 0 ? (
                   categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                    <SelectItem key={category.id} value={category.categoryName}>
                       {category.categoryName}
                     </SelectItem>
                   ))
@@ -155,20 +148,17 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
             <Label>Description</Label>
             <Textarea
               placeholder="Enter description"
-              {...menuRegister("description")}
+              name="description"
+              onChange={chnageHandle}
             ></Textarea>
-            {menuErrors.description && (
-              <span className="text-red-500 text-sm mt-1 block">
-                {menuErrors.description.message}
-              </span>
-            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Image</Label>
               <Input
                 id="file"
-                {...menuRegister("image_url")}
+                name="image_url"
+                onChange={chnageHandle}
                 type="file"
                 placeholder="Enter your name.."
                 className="w-full"
@@ -179,7 +169,8 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
               <Label>Ingredients</Label>
               <Input
                 id="ingredients"
-                {...menuRegister("ingredients")}
+                name="ingredients"
+                onChange={chnageHandle}
                 type="text"
                 placeholder="Enter your name.."
                 className="w-full"
@@ -204,7 +195,8 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
             <Label>Menu Types</Label>
             <Input
               id="types"
-              {...menuRegister("type")}
+              name="type"
+              onChange={chnageHandle}
               type="text"
               placeholder="veg or non-veg"
               className="w-full"

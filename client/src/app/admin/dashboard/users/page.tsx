@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Eye, Trash2, User } from "lucide-react";
@@ -14,9 +14,47 @@ import {
 } from "@/components/ui/table";
 import Pagination from "@/components/admin/Pagination/pagination";
 import AddUser from "./user.Model";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { useDispatch } from "react-redux";
+import {
+  deleteUser,
+  deleteUserById,
+  fetchUser,
+  getUserList,
+} from "@/lib/store/admin/users/userSlice";
+import { Status } from "@/lib/types/type";
+import toast from "react-hot-toast";
 
 export default function UserInfo() {
   const [isModal, setIsModal] = useState(false);
+  const dispatch = useAppDispatch();
+  const { usersData: users, status } = useAppSelector((store) => store.users);
+  const [searchText, setSearchText] = useState<string>("");
+  useEffect(() => {
+    dispatch(getUserList());
+  }, []);
+
+  // delete handle
+  const deleteHandle = async (id: string | number) => {
+    await dispatch(deleteUser(id));
+    if (status === Status.SUCCESS) {
+      dispatch(getUserList());
+
+      toast.success("Delete users successfully!");
+    } else {
+      toast.error("Delete Failed");
+    }
+  };
+
+  // search
+  const filterData = users.filter(
+    (user) =>
+      user.username
+        .toLocaleLowerCase()
+        .includes(searchText.toLocaleLowerCase()) ||
+      user.email.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()) ||
+      user.role.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
+  );
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -26,10 +64,9 @@ export default function UserInfo() {
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Input
               placeholder="Search users..."
+              onChange={(e) => setSearchText(e.target.value)}
               className="w-full sm:w-[250px]"
             />
-            {/* add button  */}
-            <Button onClick={() => setIsModal(true)}>Add User</Button>
           </div>
         </div>
         <AddUser open={isModal} onOpenChange={setIsModal} />
@@ -50,33 +87,45 @@ export default function UserInfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">Id</TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  Unique
-                </TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  unique@gmail.com
-                </TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                  <Button variant="secondary" size="sm" title="View">
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" title="Edit">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="destructive" size="sm" title="Delete">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              {/* if table ma data xaina vani chai not found  */}
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-4">
-                  No users found
-                </TableCell>
-              </TableRow>
+              {filterData.length > 0 ? (
+                filterData.map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      {user.username}
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      {user.email}
+                    </TableCell>
+                    <TableCell>{user.role}</TableCell>
+                    <TableCell className="text-right flex flex-wrap justify-end gap-2">
+                      <Button variant="secondary" size="sm" title="View">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="sm" title="Edit">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={(e) => deleteHandle(user.id)}
+                        variant="destructive"
+                        size="sm"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-4 text-red-600"
+                  >
+                    No users found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

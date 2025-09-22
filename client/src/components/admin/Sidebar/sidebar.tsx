@@ -114,7 +114,7 @@ export default function SideBar() {
             </Button>
           </Link>
 
-          <Link href="/admin/dashboard/user" className="group relative">
+          <Link href="/admin/dashboard/users" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <User className="w-5 h-5" />
               {sidebarOpen && "User"}

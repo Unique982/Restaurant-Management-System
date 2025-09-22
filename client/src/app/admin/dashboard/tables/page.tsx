@@ -21,9 +21,11 @@ import {
 } from "@/lib/store/admin/tables/tableSlice";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import { table } from "console";
 
 export default function ReservationInfo() {
   const [isModal, setIsModal] = useState(false);
+  const [searchText, setSearchText] = useState<string>("");
   const [tableStatus, setStatus] = useState("Available");
   const dispatch = useAppDispatch();
   const { data: tables, status } = useAppSelector((store) => store.tables);
@@ -49,6 +51,14 @@ export default function ReservationInfo() {
       toast.error("Deleted Failed");
     }
   };
+
+  // search
+  const filterHandle = tables.filter((table) =>
+    table.tableNumber
+      .toLocaleLowerCase()
+      .includes(searchText.toLocaleLowerCase())
+  );
+
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -58,6 +68,7 @@ export default function ReservationInfo() {
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Input
               placeholder="Search Reservation..."
+              onChange={(e) => setSearchText(e.target.value)}
               className="w-full sm:w-[250px]"
             />
             {/* add button  */}
@@ -82,8 +93,8 @@ export default function ReservationInfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              {tables.length > 0 ? (
-                tables.map((table, index) => {
+              {filterHandle.length > 0 ? (
+                filterHandle.map((table, index) => {
                   return (
                     <TableRow key={index}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
@@ -127,7 +138,10 @@ export default function ReservationInfo() {
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-4">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-4 text-red-600"
+                  >
                     No users found
                   </TableCell>
                 </TableRow>

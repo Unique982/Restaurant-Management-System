@@ -30,6 +30,7 @@ export default function CategoryInfo() {
   );
   const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
+  const [searchText, setSearchText] = useState<string>("");
 
   useEffect(() => {
     dispatch(getCategory());
@@ -44,6 +45,12 @@ export default function CategoryInfo() {
       toast.error("Failed to delete !");
     }
   };
+  // search
+  const filterData = categories.filter((category) =>
+    category.categoryName
+      .toLocaleLowerCase()
+      .includes(searchText.toLocaleLowerCase())
+  );
 
   return (
     <>
@@ -54,6 +61,7 @@ export default function CategoryInfo() {
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Input
               placeholder="Search Category..."
+              onChange={(e) => setSearchText(e.target.value)}
               className="w-full sm:w-[250px]"
             />
             {/* add button  */}
@@ -77,45 +85,50 @@ export default function CategoryInfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              {categories.map((category: ICategory, index) => {
-                return (
-                  <TableRow key={index + 1}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell className="whitespace-normal break-words">
-                      {category.categoryName}
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words">
-                      {category.categoryDescription.substring(0, 30) + "..."}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(category.createdAt).toLocaleDateString("np")}
-                    </TableCell>
-                    <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                      <Button variant="secondary" size="sm" title="View">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" title="Edit">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      {/* delete button */}
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        title="Delete"
-                        onClick={() => handleCategoryDelete(category?.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {/* if table ma data xaina vani chai not found  */}
-              {/* <TableRow>
-                <TableCell colSpan={5} className="text-center py-4">
-                  No users found
-                </TableCell>
-              </TableRow> */}
+              {filterData.length > 0 ? (
+                filterData.map((category: ICategory, index) => {
+                  return (
+                    <TableRow key={index + 1}>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell className="whitespace-normal break-words">
+                        {category.categoryName}
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words">
+                        {category.categoryDescription.substring(0, 30) + "..."}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(category.createdAt).toLocaleDateString("np")}
+                      </TableCell>
+                      <TableCell className="text-right flex flex-wrap justify-end gap-2">
+                        <Button variant="secondary" size="sm" title="View">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" title="Edit">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        {/* delete button */}
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          title="Delete"
+                          onClick={() => handleCategoryDelete(category?.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-4 text-red-600"
+                  >
+                    No users found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

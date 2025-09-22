@@ -4,8 +4,8 @@ import { Response } from "express";
 import { QueryTypes } from "sequelize";
 class Tables {
   static async createTable(req: IExtendedRequest, res: Response) {
-    const { tableNumber, seat, status } = req.body;
-    if (!tableNumber || !seat)
+    const { tableNumber, seats, tableStatus } = req.body;
+    if (!tableNumber || !seats)
       return res.status(400).json({ message: "All filed are required" });
 
     // check duplicate
@@ -21,10 +21,10 @@ class Tables {
 
     // insert
     await sequelize.query(
-      `INSERT INTO tables (tableNumber,seats,status,createdAt,updatedAt) VALUES(?,?,?,NOW(),NOW())`,
+      `INSERT INTO tables (tableNumber,seats,tableStatus,createdAt,updatedAt) VALUES(?,?,?,NOW(),NOW())`,
       {
         type: QueryTypes.INSERT,
-        replacements: [tableNumber, seat, status],
+        replacements: [tableNumber, seats, tableStatus],
       }
     );
     res.status(200).json({ message: "Table saved successfully!" });

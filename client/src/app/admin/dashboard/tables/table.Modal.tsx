@@ -16,7 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
+import {
+  ITables,
+  ITablesData,
+  tableStatus,
+} from "@/lib/store/admin/tables/tableSlice.type";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { useDispatch } from "react-redux";
+import {
+  addTable,
+  createTables,
+  getTables,
+} from "@/lib/store/admin/tables/tableSlice";
+import { Status } from "@/lib/types/type";
+import toast from "react-hot-toast";
 
 interface categoryProps {
   open: boolean;
@@ -25,6 +39,34 @@ interface categoryProps {
 
 export default function AddTable({ open, onOpenChange }: categoryProps) {
   const [isModal, setIsModal] = useState(true);
+  const { status } = useAppSelector((store) => store.tables);
+  const dispatch = useAppDispatch();
+
+  const [tablesData, setTablesData] = useState<ITablesData>({
+    tableNumber: "",
+    seats: "",
+    tableStatus: tableStatus.Available,
+  });
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setTablesData({
+      ...tablesData,
+      [name]: value,
+    });
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result: any = await dispatch(createTables(tablesData));
+    if (result) {
+      toast.success("Table added successfully!");
+      onOpenChange(false);
+      dispatch(getTables());
+    } else {
+      toast.error("Failed to added tables!");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -32,13 +74,14 @@ export default function AddTable({ open, onOpenChange }: categoryProps) {
         <DialogHeader>
           <DialogTitle className="text-center">Add Table</DialogTitle>
         </DialogHeader>
-        <form className="space-y-4 mt-4">
+        <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
           <div className="space-y-1">
             <Label>Table Number</Label>
             <Input
               id="tableNumber"
               type="text"
               name="tableNumber"
+              onChange={handleChange}
               placeholder="Enter Table number"
               className="w-full"
             />
@@ -46,9 +89,12 @@ export default function AddTable({ open, onOpenChange }: categoryProps) {
           <div className="space-y-2">
             <Label>Status</Label>
 
-            <Select>
+            <Select name="	tableStatus">
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Status" />
+                <SelectValue
+                  placeholder="Select Status"
+                  onChange={handleChange}
+                />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="available">Available</SelectItem>
@@ -62,6 +108,7 @@ export default function AddTable({ open, onOpenChange }: categoryProps) {
               id="seats"
               type="text"
               name="seats"
+              onChange={handleChange}
               placeholder="Total Seats"
               className="w-full"
             />

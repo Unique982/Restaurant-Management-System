@@ -1,7 +1,7 @@
 import { Status } from "@/lib/types/type";
 
 export interface ITablesData {
-  tableNumber: number;
+  tableNumber: string;
   seats: string | number;
   tableStatus: tableStatus;
 }
