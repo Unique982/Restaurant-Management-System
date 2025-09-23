@@ -7,12 +7,13 @@ class ReservationBooking {
   static async createReservation(req: IExtendedRequest, res: Response) {
     // const userId = req.user?.id;
     const {
-      userId,
+      user_id,
       table_id,
       guests,
       reservation_date,
       reservation_time,
       specailRequest,
+      status,
     } = req.body;
 
     //
@@ -24,8 +25,6 @@ class ReservationBooking {
       !specailRequest
     )
       return res.status(400).json({ message: "All field required" });
-    console.log(req.body);
-
     const tableStatus = await sequelize.query(
       `SELECT id, tableStatus,seats FROM tables WHERE id = ?`,
       {
@@ -56,6 +55,7 @@ class ReservationBooking {
       {
         type: QueryTypes.SELECT,
         replacements: [
+          user_id,
           table_id,
           reservation_date,
           reservation_time,
@@ -80,23 +80,27 @@ class ReservationBooking {
       {
         type: QueryTypes.INSERT,
         replacements: [
-          userId,
+          user_id,
           table_id,
           guests,
           reservation_date,
           reservation_time,
-          "booking",
+          status,
           specailRequest,
         ],
       }
     );
+    console.log();
 
     res.status(200).json({ message: "Reservation Booking successfully!" });
   }
 
   static async getReservation(req: IExtendedRequest, res: Response) {
     const reservationData = await sequelize.query(
-      `SELECT * FROM reservations`,
+      `SELECT r.*,  u.username, t.tableNumber
+FROM reservations r
+JOIN users u ON r.user_id = u.id
+JOIN tables t ON r.table_id = t.id`,
       {
         type: QueryTypes.SELECT,
       }

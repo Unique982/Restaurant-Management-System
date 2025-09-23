@@ -16,7 +16,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import {
+  IReservationPostData,
+  ReservationStatus,
+} from "@/lib/store/admin/reservation/reservationSlice.type";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import {
+  createReservation,
+  fetchReservation,
+  getReservation,
+} from "@/lib/store/admin/reservation/reservationSlice";
+import toast from "react-hot-toast";
+import { getTables } from "@/lib/store/admin/tables/tableSlice";
+import { getUserList } from "@/lib/store/admin/users/userSlice";
 
 interface categoryProps {
   open: boolean;
@@ -24,6 +37,44 @@ interface categoryProps {
 }
 
 export default function AddReservation({ open, onOpenChange }: categoryProps) {
+  const dispatch = useAppDispatch();
+  const { usersData } = useAppSelector((store) => store.users);
+  const { data } = useAppSelector((store) => store.tables);
+  useEffect(() => {
+    dispatch(getTables());
+    dispatch(getUserList());
+  }, []);
+  const [reservationDatas, setReservationDatas] =
+    useState<IReservationPostData>({
+      user_id: "",
+      table_id: "",
+      guests: 0,
+      reservation_date: "",
+      reservation_time: "",
+      status: ReservationStatus.Pending,
+      specailRequest: "",
+    });
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setReservationDatas({
+      ...reservationDatas,
+      [name]: value,
+    });
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result: any = await dispatch(createReservation(reservationDatas));
+    if (result) {
+      toast.success("Reservation Booked success!");
+      onOpenChange(false);
+      dispatch(getReservation());
+    } else {
+      toast.error("Some thing Wrong!");
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -44,50 +95,69 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
         </DialogHeader>
 
         {/* Form */}
-        <form className="space-y-4 ">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>User Name</Label>
-              <Input
-                id="name"
-                type="text"
-                name="name"
-                placeholder="Enter your name.."
-                className="w-full"
-              />
+              <Select
+                value={String(reservationDatas.user_id)}
+                onValueChange={(value) =>
+                  setReservationDatas({ ...reservationDatas, user_id: value })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select User" />
+                </SelectTrigger>
+                <SelectContent>
+                  {usersData.length > 0 ? (
+                    usersData.map((user) => (
+                      <SelectItem key={user.id} value={String(user.id)}>
+                        {user.username}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem
+                      key="no-user"
+                      value="not found"
+                      disabled
+                      className="text-red-500 font-semibold text-sm"
+                    >
+                      No user found
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-1">
-              <Label>Phone Number</Label>
-              <Input
-                id="phoneNumber"
-                type="number"
-                name="phoneNumber"
-                placeholder="Enter phone number..."
-                className="w-full"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>Address</Label>
-              <Input
-                id="address"
-                type="text"
-                name="address"
-                placeholder="Enter your address ..."
-                className="w-full"
-              />
-            </div>
+
+            {/* Table */}
             <div className="space-y-1">
               <Label>Table Number</Label>
-              <Select>
+              <Select
+                value={String(reservationDatas.table_id)}
+                onValueChange={(value) =>
+                  setReservationDatas({ ...reservationDatas, table_id: value })
+                }
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Table" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="technology">A1</SelectItem>
-                  <SelectItem value="health">A2</SelectItem>
-                  <SelectItem value="finance">A3</SelectItem>
+                  {data.length > 0 ? (
+                    data.map((table) => (
+                      <SelectItem key={table.id} value={String(table.id)}>
+                        {table.tableNumber}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem
+                      key="no-table"
+                      value="not found"
+                      disabled
+                      className="text-red-500 font-semibold text-sm"
+                    >
+                      No table found
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -97,7 +167,8 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
             <Input
               id="name"
               type="number"
-              name="name"
+              name="guests"
+              onChange={handleChange}
               placeholder="Number of guest"
               className="w-full"
             />
@@ -108,7 +179,8 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
               <Input
                 id="name"
                 type="date"
-                name="name"
+                name="reservation_date"
+                onChange={handleChange}
                 placeholder="Number of guest"
                 className="w-full"
               />
@@ -118,7 +190,8 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
               <Input
                 id="name"
                 type="time"
-                name="name"
+                name="reservation_time"
+                onChange={handleChange}
                 placeholder="Number of guest"
                 className="w-full"
               />
@@ -126,23 +199,39 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
           </div>
           <div className="space-y-2">
             <Label>Status</Label>
-
-            <Select>
+            <Select
+              name="status"
+              value={reservationDatas.status}
+              onValueChange={(value) =>
+                setReservationDatas({
+                  ...reservationDatas,
+                  status: value as ReservationStatus,
+                })
+              }
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="booked">Booked</SelectItem>
-                <SelectItem value="complete">Complete</SelectItem>
+                <SelectItem value={ReservationStatus.Pending}>
+                  Pending
+                </SelectItem>
+                <SelectItem value={ReservationStatus.Booking}>
+                  Booking
+                </SelectItem>
+                <SelectItem value={ReservationStatus.Cancelled}>
+                  Cancelled
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
+
           <div className="space-y-2">
             <Label> Specail Request</Label>
             <Textarea
               name="specailRequest"
               placeholder="Enter 	Specail Request"
+              onChange={handleChange}
             ></Textarea>
           </div>
 

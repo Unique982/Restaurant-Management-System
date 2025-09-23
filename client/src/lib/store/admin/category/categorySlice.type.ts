@@ -6,7 +6,7 @@ export interface ICategoryData {
 }
 
 export interface ICategory extends ICategoryData {
-  id: string;
+  id: string | number;
   createdAt: string;
 }
 export interface IInitialState {

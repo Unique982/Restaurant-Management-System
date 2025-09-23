@@ -17,6 +17,7 @@ class Menu {
       availability,
       type,
     } = req.body;
+    console.log(req.body);
 
     if (
       !name ||

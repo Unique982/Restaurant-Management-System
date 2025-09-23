@@ -4,7 +4,7 @@ export interface IMenuItemsData {
   name: string;
   description: string;
   price: string;
-  categoryId: string;
+  category_id: string;
   image_url: string;
   type?: string;
   availability?: string;

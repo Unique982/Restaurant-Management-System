@@ -46,3 +46,10 @@ export const menuItemsSchema = z.object({
 });
 
 export type menuItemsSchemaTypes = z.infer<typeof menuItemsSchema>;
+export const reservationSchema = z.object({
+  user_id: z
+    .string()
+    .trim()
+    .min(3, "User id is required")
+    .regex(/^\d+$/, "User ID must be a number string"),
+});

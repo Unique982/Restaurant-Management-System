@@ -34,18 +34,17 @@ interface menuProps {
 }
 
 export default function AddMenu({ open, onOpenChange }: menuProps) {
-  const [isModal, setModal] = useState(true);
-  const { status } = useAppSelector((store) => store.menuItems);
-  const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
+  const {} = useAppSelector((store) => store.menuItems);
+  const { data: categories } = useAppSelector((store) => store.category);
   const [menuData, setMenuData] = useState<IMenuItemsData>({
     name: "",
     description: "",
     price: "",
-    categoryId: "",
+    category_id: "",
     image_url: "",
     type: "",
-    availability: "",
+    availability: "available",
     ingredients: "",
   });
   useEffect(() => {
@@ -64,9 +63,11 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
     e.preventDefault();
     const result: any = await dispatch(createMenuItems(menuData));
     if (result) {
-      toast.success("menu added successfully!");
+      toast.success("Added Successfully");
       onOpenChange(false);
       dispatch(getMenuItem());
+    } else {
+      toast.error("Some thing Wrong!");
     }
   };
 
@@ -117,28 +118,30 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
           </div>
           <div className="space-y-2">
             <Label>Category</Label>
-            <Select>
-              <SelectTrigger className="w-full" name="categoryId">
-                <SelectValue
-                  placeholder="Select Category"
-                  onChange={chnageHandle}
-                />
+            <Select
+              value={menuData.category_id}
+              onValueChange={(value) =>
+                setMenuData({ ...menuData, category_id: value })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.length > 0 ? (
-                  categories.map((category) => (
-                    <SelectItem key={category.id} value={category.categoryName}>
+                {categories && categories.length > 0 ? (
+                  categories.map((category: any) => (
+                    <SelectItem key={category.id} value={String(category.id)}>
                       {category.categoryName}
                     </SelectItem>
                   ))
                 ) : (
                   <SelectItem
                     key="no-category"
-                    value="not found"
+                    value="not-found"
                     disabled
                     className="text-red-500 font-semibold text-sm"
                   >
-                    No data found
+                    No category found
                   </SelectItem>
                 )}
               </SelectContent>
@@ -159,7 +162,7 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
                 id="file"
                 name="image_url"
                 onChange={chnageHandle}
-                type="file"
+                type="text"
                 placeholder="Enter your name.."
                 className="w-full"
               />
@@ -179,7 +182,13 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
           </div>
           <div className="space-y-2">
             <Label>Availability</Label>
-            <RadioGroup defaultValue="available" className="flex space-x-4">
+            <RadioGroup
+              value={menuData.availability}
+              onValueChange={(value) =>
+                setMenuData({ ...menuData, availability: value })
+              }
+              className="flex space-x-4"
+            >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="available" id="available" />
                 <Label>Available</Label>
@@ -190,7 +199,6 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
               </div>
             </RadioGroup>
           </div>
-
           <div className="space-y-2">
             <Label>Menu Types</Label>
             <Input

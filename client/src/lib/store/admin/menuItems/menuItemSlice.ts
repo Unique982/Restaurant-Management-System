@@ -8,7 +8,6 @@ import {
   IMenuItems,
   IMenuItemsData,
 } from "./menuItemSlice.type";
-import { stat } from "fs";
 
 const initialState: IInitialState = {
   data: [],
@@ -45,11 +44,7 @@ export function createMenuItems(data: IMenuItemsData) {
   return async function addMenuItemsThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("/menu", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await API.post("menu", data);
       if (response.status === 200) {
         response.data.data && dispatch(addMenuItems(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
