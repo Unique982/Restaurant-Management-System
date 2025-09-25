@@ -68,9 +68,12 @@ class Menu {
 
   // Get all menuItems
   static async getMenuItems(req: IExtendedRequest, res: Response) {
-    const menuData = await sequelize.query(`SELECT * FROM menu_items`, {
-      type: QueryTypes.SELECT,
-    });
+    const menuData = await sequelize.query(
+      `SELECT m.*, c.categoryName FROM menu_items m JOIN category c ON m.category_id = c.id`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
     res.status(200).json({ message: "Fectch successfully", data: menuData });
   }
 

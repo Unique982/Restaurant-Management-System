@@ -62,12 +62,12 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
   const submitHandle = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result: any = await dispatch(createMenuItems(menuData));
-    if (result) {
+    if (result.success) {
       toast.success("Added Successfully");
       onOpenChange(false);
       dispatch(getMenuItem());
     } else {
-      toast.error("Some thing Wrong!");
+      toast.error(result?.message || "Something went wrong!");
     }
   };
 

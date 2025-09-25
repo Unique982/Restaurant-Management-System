@@ -8,9 +8,10 @@ import {
   IMenuItems,
   IMenuItemsData,
 } from "./menuItemSlice.type";
+import { success } from "zod";
 
 const initialState: IInitialState = {
-  data: [],
+  menuDatas: [],
   status: Status.LOADING,
 };
 const menuItemSlice = createSlice({
@@ -21,16 +22,19 @@ const menuItemSlice = createSlice({
       state.status = action.payload;
     },
     addMenuItems(state: IInitialState, action: PayloadAction<IMenuItems>) {
-      state.data.push(action.payload);
+      state.menuDatas.push(action.payload);
     },
     fetchMenuItems(state: IInitialState, action: PayloadAction<IMenuItems[]>) {
-      state.data = action.payload;
+      state.menuDatas = action.payload;
     },
-    deleteMenuItemById(state: IInitialState, action: PayloadAction<string>) {
+    deleteMenuItemById(
+      state: IInitialState,
+      action: PayloadAction<String | number>
+    ) {
       const menuId = action.payload;
-      const index = state.data.findIndex((menu) => menu.id === menuId);
+      const index = state.menuDatas.findIndex((menu) => menu.id === menuId);
       if (index !== -1) {
-        state.data.splice(index, 1);
+        state.menuDatas.splice(index, 1);
       }
     },
   },
@@ -46,12 +50,21 @@ export function createMenuItems(data: IMenuItemsData) {
     try {
       const response = await API.post("menu", data);
       if (response.status === 200) {
-        response.data.data && dispatch(addMenuItems(response.data.data));
+        response.data.menuDatas && dispatch(addMenuItems(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
-        return true;
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -70,14 +83,14 @@ export function getMenuItem() {
   };
 }
 // delete menu items
-export function deletemenuItem(id: string) {
+export function deletemenuItem(id: string | number) {
   return async function deleteMenuItemByIdThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.delete("/menu/" + id);
+      const response = await API.delete("menu/" + id);
       if (response.status === 200) {
-        dispatch(setStatus(Status.SUCCESS));
         dispatch(deleteMenuItemById(id));
+        dispatch(setStatus(Status.SUCCESS));
       }
     } catch (err) {
       dispatch(setStatus(Status.ERROR));

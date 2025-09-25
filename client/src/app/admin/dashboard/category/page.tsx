@@ -36,7 +36,7 @@ export default function CategoryInfo() {
     dispatch(getCategory());
   }, []);
   // delete
-  const handleCategoryDelete = async (id: string) => {
+  const handleCategoryDelete = async (id: string | number) => {
     await dispatch(deleteCategoryById(id));
     if (status === Status.SUCCESS) {
       dispatch(getCategory());

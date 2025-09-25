@@ -16,6 +16,7 @@ import AddMenu from "./menu.Modal";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   deletemenuItem,
+  deleteMenuItemById,
   getMenuItem,
 } from "@/lib/store/admin/menuItems/menuItemSlice";
 import { de } from "zod/v4/locales";
@@ -24,16 +25,17 @@ import toast from "react-hot-toast";
 
 export default function MenuIfo() {
   const [isModal, setIsModal] = useState(false);
-  const { data: menuItems, status } = useAppSelector(
+  const { menuDatas: menuItems, status } = useAppSelector(
     (store) => store.menuItems
   );
+  const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getMenuItem());
   }, []);
 
   // delete
-  const deleteHandle = async (id: string) => {
+  const deleteHandle = async (id: string | number) => {
     await dispatch(deletemenuItem(id));
     if (status === Status.SUCCESS) {
       dispatch(getMenuItem());
@@ -69,6 +71,8 @@ export default function MenuIfo() {
                 <TableHead className="w-[40px]">ID</TableHead>
                 <TableHead>men</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Catgeory Name</TableHead>
                 <TableHead>CreatedAt</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -83,9 +87,16 @@ export default function MenuIfo() {
                     <TableCell>
                       {menu.description?.substring(0, 30) + "..."}
                     </TableCell>
+                    <TableCell>{menu.price}</TableCell>
                     <TableCell>
-                      {new Date(menu.createdAt).toLocaleDateString()}
+                      {menu.categoryName
+                        ? menu.categoryName
+                        : "No Category $(`<spen className='text-red-600'></span>`)"}
                     </TableCell>
+                    <TableCell>
+                      {new Date(menu.created_at).toLocaleDateString()}
+                    </TableCell>
+
                     <TableCell className="text-right flex flex-wrap justify-end gap-2">
                       <Button variant="secondary" size="sm" title="View">
                         <Eye className="w-4 h-4" />

@@ -28,13 +28,13 @@ class OrderController {
         `SELECT id, price FROM menu_items WHERE id=?`,
         {
           type: QueryTypes.SELECT,
-          replacements: [item.menu_item_id],
+          replacements: [item.id],
         }
       );
       if (!menuItem || menuItem.length === 0)
         return res
           .status(400)
-          .json({ message: `menu item id ${item.menu_item_id} not found` });
+          .json({ message: `menu item id ${item.id} not found` });
 
       const menuPrice = parseFloat(menuItem[0].price);
       total_amount += menuPrice * item.quantity;
@@ -70,12 +70,7 @@ class OrderController {
         `INSERT INTO order_items(order_id,menu_item_id,quantity,price,created_at,updated_at)VALUES(?,?,?,?,NOW(),NOW())`,
         {
           type: QueryTypes.INSERT,
-          replacements: [
-            order_id,
-            item.menu_item_id,
-            item.quantity,
-            item.price,
-          ],
+          replacements: [order_id, item.id, item.quantity, item.price],
         }
       );
     }
@@ -85,26 +80,14 @@ class OrderController {
   static async getOrder(req: IExtendedRequest, res: Response) {
     const getAllOrder: any[] = await sequelize.query(
       `SELECT 
-      o.id AS order_id,
-      o.user_id,
-      o.deleted_at,
-      o.table_id,
-      o.order_type,
-      o.total_amount,
-      o.discount,
-      o.final_amount,
-      o.status,
-      o.payment_method,
-      o.payment_status,
-      o.special_request,
-      o.delivery_address,
-      o.created_at,
-      o.updated_at,
+     o.*,
+     o.id AS order_id,
       t.tableNumber,
       oi.id AS order_item_id,
       oi.menu_item_id,
       oi.quantity,
       oi.price,
+      u.username,
       mi.name,
       mi.description,
       mi.category_id,
@@ -116,7 +99,8 @@ class OrderController {
    LEFT JOIN order_items AS oi ON o.id = oi.order_id
    LEFT JOIN menu_items AS mi ON oi.menu_item_id = mi.id
    LEFT JOIN tables AS t ON o.table_id = t.id
-   WHERE o.deleted_at=NULL
+   LEFT JOIN users AS u ON o.user_id = u.id
+    WHERE o.deleted_at IS NULL
    ORDER BY o.created_at DESC`,
       {
         type: QueryTypes.SELECT,
@@ -128,7 +112,10 @@ class OrderController {
       if (!orderMap[row.order_id]) {
         orderMap[row.order_id] = {
           order_id: row.order_id,
-          user_id: row.user_id,
+          user: {
+            id: row.user_id,
+            username: row.username,
+          },
           table: {
             id: row.table_id,
             tableNumber: row.tableNumber,

@@ -21,7 +21,10 @@ const categorySlice = createSlice({
     fetchCategory(state: IInitialState, action: PayloadAction<ICategory[]>) {
       state.data = action.payload;
     },
-    setCategoryDeleteById(state: IInitialState, action: PayloadAction<string>) {
+    setCategoryDeleteById(
+      state: IInitialState,
+      action: PayloadAction<string | number>
+    ) {
       const catgeoryId = action.payload;
       const index = state.data.findIndex(
         (category) => category.id === catgeoryId
@@ -70,7 +73,7 @@ export function getCategory() {
   };
 }
 // delete
-export function deleteCategoryById(id: string) {
+export function deleteCategoryById(id: string | number) {
   return async function deleteCategoryByIdThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {

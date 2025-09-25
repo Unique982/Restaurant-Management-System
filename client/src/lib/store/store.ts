@@ -5,6 +5,8 @@ import menuItemsSlice from "./admin/menuItems/menuItemSlice";
 import tablesSlice from "./admin/tables/tableSlice";
 import usersSlice from "./admin/users/userSlice";
 import reservationSlice from "./admin/reservation/reservationSlice";
+import orderSlice from "./admin/orders/orderSlice";
+
 const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -13,6 +15,7 @@ const store = configureStore({
     tables: tablesSlice,
     users: usersSlice,
     reservation: reservationSlice,
+    order: orderSlice,
   },
 });
 
