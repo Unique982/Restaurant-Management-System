@@ -280,6 +280,7 @@ class OrderController {
   // soft delete
   static async softDeleteOrder(req: IExtendedRequest, res: Response) {
     const { id } = req.params;
+    console.log(req.params.id);
     const idExists = await sequelize.query(`SELECT id FROM orders WHERE id=?`, {
       type: QueryTypes.SELECT,
       replacements: [id],
@@ -294,7 +295,7 @@ class OrderController {
     });
     // order-items
     await sequelize.query(
-      `UPDATE order_items SET deleted_at =Now() WHERE order_id=?`,
+      `UPDATE order_items SET deleted_at=Now() WHERE order_id=?`,
       {
         type: QueryTypes.UPDATE,
         replacements: [id],

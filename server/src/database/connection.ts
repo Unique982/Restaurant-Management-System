@@ -8,6 +8,10 @@ import Category from "./models/category.Model";
 import MenuItem from "./models/menuItem.Model";
 import Order from "./models/order.Model";
 import OrderItem from "./models/orderItems.Model";
+import About from "./models/about.Model";
+import Service from "./models/service";
+import Blog from "./models/blog.Model";
+import ContactUs from "./models/contact.Model";
 // load env
 config();
 
@@ -32,7 +36,7 @@ sequelize
     console.log(err);
   });
 // sequelize migrate sync
-sequelize.sync({ alter: false }).then(() => {
+sequelize.sync({ alter: true }).then(() => {
   console.log("migrated successfully!");
 });
 

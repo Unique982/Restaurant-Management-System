@@ -142,7 +142,7 @@ export default function SideBar() {
           {sidebarOpen && (
             <p className="text-gray-400 uppercase text-xs px-2  mt-2">Pages</p>
           )}
-          <Link href="/admin/users" className="group relative">
+          <Link href="/admin/dashboard/about" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <Info className="w-5 h-5" />
 
@@ -154,7 +154,7 @@ export default function SideBar() {
               )}
             </Button>
           </Link>
-          <Link href="/admin/users" className="group relative">
+          <Link href="/admin/dashboard/services" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <Server className="w-5 h-5" />
               {sidebarOpen && "Services"}
@@ -165,7 +165,7 @@ export default function SideBar() {
               )}
             </Button>
           </Link>
-          <Link href="/admin/users" className="group relative">
+          <Link href="/admin/dashboard/blog" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <Tags className="w-5 h-5" />
 
@@ -177,7 +177,7 @@ export default function SideBar() {
               )}
             </Button>
           </Link>
-          <Link href="/admin/users" className="group relative">
+          <Link href="/admin/dashboard/contact" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <Contact className="w-5 h-5" />
 
@@ -189,7 +189,7 @@ export default function SideBar() {
               )}
             </Button>
           </Link>
-          <Link href="/admin/users" className="group relative">
+          <Link href="/admin/dashboard/gallery" className="group relative">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <Image className="w-5 h-5" />
 

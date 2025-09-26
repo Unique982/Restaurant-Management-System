@@ -37,6 +37,7 @@ import menuRouter from "./routes/admin/menu/menu.Route";
 import orderRouter from "./routes/admin/order/order.Route";
 import cartRouter from "./routes/admin/cart/cart.Routes";
 import listCustomer from "./routes/admin/customer/customer.Route";
+import about from "./routes/admin/about/about.Route";
 
 app.use("/api/auth/", authRouter);
 app.use("/api/category", categoryRouter);
@@ -46,5 +47,6 @@ app.use("/api/menu", menuRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/customer", listCustomer);
+app.use("/api/about", about);
 
 export default app;

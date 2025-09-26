@@ -35,7 +35,7 @@ const orderSlice = createSlice({
       action: PayloadAction<string | number>
     ) {
       const orderId = state.orderDatas.find(
-        (order) => order.id === action.payload
+        (order) => order.order_id === action.payload
       );
       if (orderId) {
         orderId.deleted_at = true;
@@ -47,7 +47,10 @@ const orderSlice = createSlice({
       action: PayloadAction<string | number>
     ) {
       const orderId = action.payload;
-      const index = state.orderDatas.findIndex((order) => order.id === orderId);
+      const index = state.orderDatas.findIndex(
+        (order) => order.order_id === orderId
+      );
+
       if (index !== -1) {
         state.orderDatas.splice(index, 1);
       }
@@ -94,7 +97,7 @@ export function softDeleteOrder(id: string | number) {
     dispatch(setStatus(Status.LOADING));
     try {
       const deletedAt = new Date().toISOString().slice(0, 19).replace("T", " ");
-      const response = await API.patch(`order/soft-delete/${id}`, {
+      const response = await API.patch(`order/soft-delete/` + id, {
         deleted_at: deletedAt,
       });
       if (response.status === 200) {

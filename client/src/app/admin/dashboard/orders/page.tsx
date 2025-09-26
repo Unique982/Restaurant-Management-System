@@ -30,7 +30,7 @@ export default function MenuIfo() {
   const dispatch = useAppDispatch();
   const [searchText, setSearchText] = useState("");
 
-  const { orderDatas } = useAppSelector((store) => store.order);
+  const { orderDatas, status } = useAppSelector((store) => store.order);
 
   useEffect(() => {
     dispatch(getALlOrderList());
@@ -38,13 +38,12 @@ export default function MenuIfo() {
 
   // delete
   const deleteHandle = async (id: string | number) => {
-    const result = await dispatch(softDeleteOrder(id) as any);
-
-    if (result?.payload?.success || result?.success) {
-      dispatch(getMenuItem());
-      toast.success("Delete order successful!");
+    await dispatch(softDeleteOrder(id));
+    if (status === Status.SUCCESS) {
+      dispatch(getALlOrderList());
+      toast.success("Delete Successful!");
     } else {
-      toast.error("Delete failed");
+      toast.error("Something Wrong");
     }
   };
 
@@ -96,7 +95,7 @@ export default function MenuIfo() {
           <TableBody>
             {filteredOrders.length > 0 ? (
               filteredOrders.map((order, index) => (
-                <TableRow key={order.id || index}>
+                <TableRow key={order.order_id || index}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>
                     {order.user?.username
@@ -134,7 +133,7 @@ export default function MenuIfo() {
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button
-                      onClick={() => deleteHandle(order.id)}
+                      onClick={() => deleteHandle(order.order_id)}
                       variant="destructive"
                       size="sm"
                       title="Delete"

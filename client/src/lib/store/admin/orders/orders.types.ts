@@ -50,7 +50,7 @@ export interface IOrderPostData {
   deleted_at: Boolean;
 }
 export interface IIOrderItems extends IOrderPostData {
-  id: string | number;
+  order_id: string | number;
   created_at: string;
   table: ITableData;
   user?: IIUserOrderData;
