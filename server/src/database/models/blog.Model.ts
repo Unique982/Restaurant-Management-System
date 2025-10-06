@@ -40,7 +40,7 @@ class Blog extends Model {
     type: DataType.STRING,
     allowNull: false,
   })
-  declare category: string;
+  declare blogCategory: string;
 }
 
 export default Blog;

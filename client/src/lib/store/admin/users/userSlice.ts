@@ -3,7 +3,7 @@ import { Status } from "@/lib/types/type";
 import { IInitialState, IUserList } from "./userSlice.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
-import API from "@/lib/http";
+import APIWITHTOKEN from "@/lib/http";
 
 const initailState: IInitialState = {
   usersData: [],
@@ -40,7 +40,7 @@ export function getUserList() {
   return async function getUserListThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get("/customer");
+      const response = await APIWITHTOKEN.get("/customer");
       if (response.status === 200) {
         response.data.data.length > 0 &&
           dispatch(fetchUser(response.data.data));
@@ -57,7 +57,7 @@ export function deleteUser(id: string | number) {
   return async function deleteUserThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.delete("customer/" + id);
+      const response = await APIWITHTOKEN.delete("customer/" + id);
       if (response.status === 200) {
         dispatch(deleteUserById(id));
         dispatch(setStatus(Status.SUCCESS));

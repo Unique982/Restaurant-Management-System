@@ -23,9 +23,14 @@ const authSlice = createSlice({
     setStatus(state: IInitialState, action: PayloadAction<Status>) {
       state.status = action.payload;
     },
+    logout(state: IInitialState) {
+      state.user = { username: "", token: "" };
+      // remove token
+      localStorage.removeItem("token");
+    },
   },
 });
-export const { setUser, setStatus } = authSlice.actions;
+export const { setUser, setStatus, logout } = authSlice.actions;
 export default authSlice.reducer;
 
 // Login
@@ -37,10 +42,21 @@ export function userLogin(data: ILoginData) {
       if (response.status === 200) {
         dispatch(setUser(response.data.data));
         localStorage.setItem("token", response.data.token);
+        console.log(response.data.token);
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -54,9 +70,19 @@ export function userRegister(data: IRegisterInput) {
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
         response.data.length > 0 && dispatch(setUser(response.data.data));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -105,5 +131,12 @@ export function changePassord(email: string, password: string) {
     } catch (err) {
       dispatch(setStatus(Status.ERROR));
     }
+  };
+}
+// logout
+export function userLogout() {
+  return async function userLogoutThunk(dispatch: AppDispatch) {
+    dispatch(logout());
+    return { success: true };
   };
 }

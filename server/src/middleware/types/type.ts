@@ -1,13 +1,9 @@
 import { Request } from "express";
+
 export enum userRole {
   Admin = "admin",
-  customer = "customer",
+  Customer = "customer",
 }
 export interface IExtendedRequest extends Request {
-  user?: {
-    id: number;
-    role: userRole;
-    username: string;
-    password: string;
-  };
+  user?: any;
 }

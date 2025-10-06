@@ -2,7 +2,7 @@ import { Status } from "@/lib/types/type";
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
-import API from "@/lib/http";
+import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 import {
   IInitialState,
   IMenuItems,
@@ -48,7 +48,7 @@ export function createMenuItems(data: IMenuItemsData) {
   return async function addMenuItemsThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("menu", data);
+      const response = await APIWITHTOKEN.post("menu", data);
       if (response.status === 200) {
         response.data.menuDatas && dispatch(addMenuItems(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
@@ -72,7 +72,7 @@ export function createMenuItems(data: IMenuItemsData) {
 export function getMenuItem() {
   return async function getMenuItem(dispatch: AppDispatch) {
     try {
-      const response = await API.get("menu");
+      const response = await APIWITHTOKEN.get("menu");
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
         response.data.data && dispatch(fetchMenuItems(response.data.data));
@@ -87,7 +87,7 @@ export function deletemenuItem(id: string | number) {
   return async function deleteMenuItemByIdThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.delete("menu/" + id);
+      const response = await APIWITHTOKEN.delete("menu/" + id);
       if (response.status === 200) {
         dispatch(deleteMenuItemById(id));
         dispatch(setStatus(Status.SUCCESS));

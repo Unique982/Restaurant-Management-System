@@ -9,17 +9,29 @@ const router: Router = express.Router();
 router
   .route("/")
   .post(
-    // Middleware.isLoggedIn,
-    // Middleware.restrictTo(userRole.Admin),
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
     asyncErrorHandle(Category.createCategory)
   )
-  .get(asyncErrorHandle(Category.getCategory));
+  .get(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(Category.getCategory)
+  );
 
 // edit / delete / single
 router
   .route("/:id")
-  .delete(asyncErrorHandle(Category.deleteCategory))
+  .delete(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(Category.deleteCategory)
+  )
   .get(asyncErrorHandle(Category.singleCategory))
-  .patch(asyncErrorHandle(Category.editCategory));
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(Category.editCategory)
+  );
 
 export default router;

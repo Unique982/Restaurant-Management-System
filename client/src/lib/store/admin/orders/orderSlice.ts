@@ -8,7 +8,7 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
 import { id } from "zod/v4/locales";
-import API from "@/lib/http";
+import APIWITHTOKEN from "@/lib/http";
 import { success } from "zod";
 
 const initialState: IInitialState = {
@@ -71,7 +71,7 @@ export function createOrders(data: IOrderPostData) {
   return async function createOrdersThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("order", data);
+      const response = await APIWITHTOKEN.post("order", data);
       if (response.status === 200) {
         response.data.data && dispatch(addOrder(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
@@ -97,7 +97,7 @@ export function softDeleteOrder(id: string | number) {
     dispatch(setStatus(Status.LOADING));
     try {
       const deletedAt = new Date().toISOString().slice(0, 19).replace("T", " ");
-      const response = await API.patch(`order/soft-delete/` + id, {
+      const response = await APIWITHTOKEN.patch(`order/soft-delete/` + id, {
         deleted_at: deletedAt,
       });
       if (response.status === 200) {
@@ -116,7 +116,7 @@ export function hardDeleteOrder(id: string | number) {
   return async function hardDeleteOrderThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.delete("order/" + id);
+      const response = await APIWITHTOKEN.delete("order/" + id);
       if (response.status === 200) {
         dispatch(hardDeleteOrderById(id));
         dispatch(setStatus(Status.SUCCESS));
@@ -140,7 +140,7 @@ export function getALlOrderList() {
   return async function getALlOrderListThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get("order");
+      const response = await APIWITHTOKEN.get("order");
       if (response.status === 200) {
         response.data.data.length > 0 &&
           dispatch(fetchOrder(response.data.data));

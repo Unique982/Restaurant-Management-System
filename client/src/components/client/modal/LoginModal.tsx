@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,7 +22,6 @@ import {
 } from "@/lib/validations/auth";
 import { Input } from "@/components/ui/input";
 import toast, { useToaster } from "react-hot-toast";
-import { Status } from "@/lib/types/type";
 
 interface LoginProps {
   open: boolean;
@@ -31,6 +31,7 @@ interface LoginProps {
 export default function LoginModal({ open, onOpenChange }: LoginProps) {
   const [isLogin, setIsLogin] = useState(true);
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const {
     formState: { errors },
   } = useForm<loginSchemaType>({
@@ -81,27 +82,27 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
       confirmPassword: "",
     },
   });
-  const onSignupSubmit = (data: registerSchemaType) => {
-    dispatch(userRegister(data));
+  const onSignupSubmit = async (data: registerSchemaType) => {
+    const result: any = await dispatch(userRegister(data));
+    if (result.success) {
+      toast.success("Register Successfully");
+      setIsLogin(true);
+    } else {
+      toast.error(result?.message || "Something went wrong!");
+    }
   };
 
-  const onSubmit = (data: loginSchemaType) => {
-    dispatch(userLogin(data));
-  };
-  // rehister ko lagi
-  useEffect(() => {
-    if (status === Status.SUCCESS) {
-      setIsLogin(true);
-      toast.success("Registration successful! Please Login.");
+  const onSubmit = async (data: loginSchemaType) => {
+    const result: any = await dispatch(userLogin(data));
+    665;
+    if (result.success) {
+      toast.success("Added Successfully");
+      onOpenChange(false);
+      router.push("/admin/dashboard");
+    } else {
+      toast.error(result?.message || "Something went wrong!");
     }
-  }, [status]);
-  // if login vay apaxi
-  // useEffect(() => {
-  //   if (status === Status.SUCCESS) {
-  //     toast.success(`Welcome back ${user.username || ""}`);
-  //     onOpenChange(false);
-  //   }
-  // }, [status, user, onOpenChange]);
+  };
 
   return (
     <>

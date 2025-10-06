@@ -3,7 +3,7 @@ import { IInitialState, ITables, ITablesData } from "./tableSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { table } from "console";
 import { AppDispatch } from "../../store";
-import API from "@/lib/http";
+import APIWITHTOKEN from "@/lib/http";
 
 const initialState: IInitialState = {
   data: [],
@@ -43,7 +43,7 @@ export function createTables(data: ITablesData) {
   return async function createTablesThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("/tables", data);
+      const response = await APIWITHTOKEN.post("/tables", data);
       if (response.status === 200) {
         response.data.data && dispatch(addTable(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
@@ -59,7 +59,7 @@ export function getTables() {
   return async function getTablesThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get("tables");
+      const response = await APIWITHTOKEN.get("tables");
       if (response.status === 200) {
         response.data.data.length > 0 &&
           dispatch(fetchTbales(response.data.data));
@@ -75,7 +75,7 @@ export function deleteTablesById(id: string | number) {
   return async function deleteTableByIdThubk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.delete("tables/" + id);
+      const response = await APIWITHTOKEN.delete("tables/" + id);
       if (response.status === 200) {
         dispatch(deleteTableById(id));
         dispatch(setStatus(Status.SUCCESS));

@@ -1,5 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { userLogout } from "@/lib/store/auth/authSlice";
+import { useAppDispatch } from "@/lib/store/hooks";
 import { spawn } from "child_process";
 import {
   LayoutDashboard,
@@ -27,9 +29,16 @@ import {
 import Link from "next/link";
 
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const router = useRouter();
+
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    dispatch(userLogout());
+    router.push("/");
+  };
 
   return (
     <>
@@ -216,7 +225,11 @@ export default function SideBar() {
         </nav>
 
         <div className="p-4 border-t">
-          <Button variant="destructive" className="w-full justify-start gap-2">
+          <Button
+            variant="destructive"
+            className="w-full justify-start gap-2"
+            onClick={handleLogout}
+          >
             <LogOut className="w-5 h-5" />
             {sidebarOpen && "Logout"}
           </Button>

@@ -7,8 +7,7 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IRegisterData } from "../../auth/authSlice.type";
 import { AppDispatch } from "../../store";
-import API from "@/lib/http";
-import App from "next/app";
+import APIWITHTOKEN from "@/lib/http";
 
 const initialState: IInitialState = {
   reservationData: [],
@@ -57,7 +56,7 @@ export function createReservation(data: IReservationPostData) {
   return async function createReservationThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("reservations", data);
+      const response = await APIWITHTOKEN.post("reservations", data);
       if (response.status === 200) {
         response.data.data && dispatch(addReservation(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
@@ -74,7 +73,7 @@ export function getReservation() {
   return async function getReservationThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get("reservations");
+      const response = await APIWITHTOKEN.get("reservations");
       if (response.status === 200) {
         response.data.data.length > 0 &&
           dispatch(fetchReservation(response.data.data));
@@ -92,7 +91,7 @@ export function deleteReservation(id: string | number) {
   return async function deleteReservationThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.delete("reservations/" + id);
+      const response = await APIWITHTOKEN.delete("reservations/" + id);
       if (response.status === 200) {
         dispatch(deleteReservationById(id));
         dispatch(setStatus(Status.SUCCESS));

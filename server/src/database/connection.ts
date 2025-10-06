@@ -12,6 +12,8 @@ import About from "./models/about.Model";
 import Service from "./models/service";
 import Blog from "./models/blog.Model";
 import ContactUs from "./models/contact.Model";
+import Cart from "./models/cart.Model";
+import Payment from "./models/payment.Model";
 // load env
 config();
 

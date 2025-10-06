@@ -5,7 +5,8 @@ import { Response } from "express";
 
 class About {
   static async aboutSection(req: IExtendedRequest, res: Response) {
-    const { aboutTitle, aboutDescription, aboutImage } = req.body;
+    const { aboutTitle, aboutDescription } = req.body;
+    const aboutImage = req.file ? req.file.path : null;
     console.log(req.body);
     if (!aboutTitle || !aboutDescription || !aboutImage)
       return res.status(400).json({ message: "All field required!" });
@@ -16,6 +17,7 @@ class About {
 
     if (exists.length > 0) {
       const aboutId = exists[0].id;
+
       // exits id ko data lai update garnu paro
       await sequelize.query(
         `UPDATE about SET aboutTitle=?, aboutDescription=?, aboutImage=?, updatedAt=NOW() 

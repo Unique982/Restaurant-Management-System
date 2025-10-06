@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { NextFunction, Response } from "express";
 import { IExtendedRequest, userRole } from "./types/type";
 import jwt from "jsonwebtoken";
 import User from "../database/models/users.Model";
@@ -7,12 +7,12 @@ class Middleware {
     req: IExtendedRequest,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {
+  ) => {
     try {
       const token = req.headers.authorization;
-      if (!token) return;
-      res.status(401).json({ message: "Please Provide token" });
-
+      if (!token) {
+        return res.status(401).json({ message: "Please Provide token" });
+      }
       // token verfiy
       jwt.verify(
         token,
