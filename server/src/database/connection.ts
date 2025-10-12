@@ -14,6 +14,7 @@ import Blog from "./models/blog.Model";
 import ContactUs from "./models/contact.Model";
 import Cart from "./models/cart.Model";
 import Payment from "./models/payment.Model";
+import CartItem from "./models/cartItems.Model";
 // load env
 config();
 
@@ -71,8 +72,24 @@ Order.belongsTo(Tables, { foreignKey: "table_id" });
 // order
 Order.hasMany(OrderItem, { foreignKey: "order_id" });
 OrderItem.belongsTo(Order, { foreignKey: "order_id" });
-
+// MenuItem ↔ OrderItem
 MenuItem.hasMany(OrderItem, { foreignKey: "menu_item_id" });
 OrderItem.belongsTo(MenuItem, { foreignKey: "menu_item_id" });
+
+// User ↔ Cart
+User.hasMany(Cart, { foreignKey: "user_id" });
+Cart.belongsTo(User, { foreignKey: "user_id" });
+
+// Cart ↔ CartItem
+Cart.hasMany(CartItem, { foreignKey: "cart_id" });
+CartItem.belongsTo(Cart, { foreignKey: "cart_id" });
+
+// MenuItem ↔ CartItem
+MenuItem.hasMany(CartItem, { foreignKey: "menu_item_id" });
+CartItem.belongsTo(MenuItem, { foreignKey: "menu_item_id" });
+
+// order and payent relationship
+Order.hasMany(Payment, { foreignKey: "orderId" });
+Payment.belongsTo(Order, { foreignKey: "orderId" });
 
 export default sequelize;

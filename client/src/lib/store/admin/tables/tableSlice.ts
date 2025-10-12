@@ -3,7 +3,7 @@ import { IInitialState, ITables, ITablesData } from "./tableSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { table } from "console";
 import { AppDispatch } from "../../store";
-import APIWITHTOKEN from "@/lib/http";
+import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
 const initialState: IInitialState = {
   data: [],
@@ -47,10 +47,19 @@ export function createTables(data: ITablesData) {
       if (response.status === 200) {
         response.data.data && dispatch(addTable(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
-        return true;
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -79,9 +88,19 @@ export function deleteTablesById(id: string | number) {
       if (response.status === 200) {
         dispatch(deleteTableById(id));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }

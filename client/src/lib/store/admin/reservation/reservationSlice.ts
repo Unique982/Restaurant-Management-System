@@ -5,10 +5,9 @@ import {
   IReservationPostData,
 } from "./reservationSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IRegisterData } from "../../auth/authSlice.type";
-import { AppDispatch } from "../../store";
-import APIWITHTOKEN from "@/lib/http";
 
+import { AppDispatch } from "../../store";
+import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 const initialState: IInitialState = {
   reservationData: [],
   status: Status.LOADING,
@@ -60,10 +59,19 @@ export function createReservation(data: IReservationPostData) {
       if (response.status === 200) {
         response.data.data && dispatch(addReservation(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
-        return true;
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -95,9 +103,16 @@ export function deleteReservation(id: string | number) {
       if (response.status === 200) {
         dispatch(deleteReservationById(id));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
       }
     } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }

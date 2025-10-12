@@ -49,10 +49,19 @@ export function addCategory(data: ICategoryData) {
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
         response.data.data && dispatch(setCategory(response.data.data));
-        return true;
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -66,12 +75,14 @@ export function getCategory() {
         response.data.data.length > 0 &&
           dispatch(fetchCategory(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
+        return true;
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
     }
   };
 }
+
 // delete
 export function deleteCategoryById(id: string | number) {
   return async function deleteCategoryByIdThunk(dispatch: AppDispatch) {
@@ -81,12 +92,23 @@ export function deleteCategoryById(id: string | number) {
       if (response.status === 200) {
         dispatch(setCategoryDeleteById(id));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
+
 // edit
 export function editCategoryById(id: string) {
   return async function editCategoryById(dispatch: AppDispatch) {
@@ -95,9 +117,19 @@ export function editCategoryById(id: string) {
       const response = await APIWITHTOKEN.patch("/category/" + id);
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }

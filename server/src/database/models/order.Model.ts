@@ -92,12 +92,6 @@ class Order extends Model {
   declare status: OrderStatus;
 
   @Column({
-    type: DataType.ENUM("cash", "esewa", "khalti"),
-    defaultValue: "cash",
-  })
-  declare payment_method: PaymentMethod;
-
-  @Column({
     type: DataType.ENUM("unpaid", "paid", "refunded"),
     defaultValue: "unpaid",
   })

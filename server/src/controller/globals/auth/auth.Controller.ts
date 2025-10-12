@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import generatedJwtWebToken from "../../../services/generatedJWTWEBTOKEN";
 import generatedOTP from "../../../services/generatedOtp";
 import mailSend from "../../../services/mailSend";
+import { userRole } from "../../../middleware/types/type";
 
 interface OTP {
   otp: number | null;
@@ -107,8 +108,18 @@ class Authentication {
       // if not match then
       if (!isMatch) return res.json({ message: "Invalid credentials" });
       //token verify
-      const token = generatedJwtWebToken({ id: userExists.id });
-      res.status(200).json({ message: "Login successfully", token: token });
+      const token = generatedJwtWebToken({
+        id: userExists.id,
+        role: userExists.role,
+      });
+      res.status(200).json({
+        message: "Login successfully",
+        token: token,
+        user: {
+          id: userExists.id,
+          role: userExists.role,
+        },
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "something wrong" });

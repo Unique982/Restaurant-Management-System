@@ -1,30 +1,29 @@
 import {
-  AutoIncrement,
+  Table,
   Column,
+  Model,
   DataType,
   PrimaryKey,
-  Table,
-  Model,
+  AutoIncrement,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
 } from "sequelize-typescript";
+import User from "./users.Model";
 
 @Table({
   tableName: "carts",
-  modelName: "Cart",
   timestamps: true,
 })
 class Cart extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column({
-    type: DataType.INTEGER,
-  })
+  @Column({ type: DataType.INTEGER })
   declare id: number;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  declare quantity: number;
+  @ForeignKey(() => User)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  declare user_id: number;
 }
 
 export default Cart;

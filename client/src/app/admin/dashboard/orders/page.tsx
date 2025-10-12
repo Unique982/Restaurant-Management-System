@@ -103,7 +103,12 @@ export default function MenuIfo() {
                         order.user.username.slice(1)
                       : "No User"}
                   </TableCell>
-                  <TableCell>{order.table?.tableNumber}</TableCell>
+                  <TableCell>
+                    {order.table?.tableNumber
+                      ? order.table.tableNumber
+                      : "Online Order"}
+                  </TableCell>
+
                   <TableCell>
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer capitalize

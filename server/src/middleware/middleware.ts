@@ -16,18 +16,23 @@ class Middleware {
       // token verfiy
       jwt.verify(
         token,
-        process.env.JJWT_WEB_TOKEN as string,
+        process.env.JWT_WEB_TOKEN as string,
         async (error, resultaayo: any) => {
           if (error) {
             return res.status(400).json({ messag: "Token invalid Vayo" });
           } else {
-            const userData = await User.findByPk(resultaayo.id);
+            const userData = await User.findByPk(resultaayo.id, {
+              attributes: ["id", "role"],
+            });
 
             if (!userData) {
-              res.status(403).json({ message: "Invalid Token" });
+              res.status(403).json({ message: "Invalid token" });
             } else {
-              req.user = userData;
-              console.log(userData);
+              req.user = {
+                id: userData.id,
+                role: userData.role as userRole,
+              };
+
               next();
             }
           }

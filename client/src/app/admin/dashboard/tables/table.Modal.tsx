@@ -59,12 +59,12 @@ export default function AddTable({ open, onOpenChange }: categoryProps) {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result: any = await dispatch(createTables(tablesData));
-    if (result) {
+    if (result.success) {
       toast.success("Table added successfully!");
       onOpenChange(false);
       dispatch(getTables());
     } else {
-      toast.error("Failed to added tables!");
+      toast.error(result?.message || "Something went wrong!");
     }
   };
 

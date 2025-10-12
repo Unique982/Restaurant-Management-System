@@ -1,15 +1,8 @@
 import { Status } from "@/lib/types/type";
-import {
-  IInitialState,
-  IIOrderItems,
-  IOrderItem,
-  IOrderPostData,
-} from "./orders.types";
+import { IInitialState, IIOrderItems, IOrderPostData } from "./orders.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
-import { id } from "zod/v4/locales";
-import APIWITHTOKEN from "@/lib/http";
-import { success } from "zod";
+import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
 const initialState: IInitialState = {
   orderDatas: [],
@@ -103,11 +96,19 @@ export function softDeleteOrder(id: string | number) {
       if (response.status === 200) {
         dispatch(softDeleteOrderById(id));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
       } else {
         dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
     } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }

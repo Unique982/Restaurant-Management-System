@@ -10,6 +10,7 @@ const initialState: IInitialState = {
   user: {
     username: "",
     token: "",
+    role: "",
   },
   status: Status.LOADING,
 };
@@ -24,7 +25,7 @@ const authSlice = createSlice({
       state.status = action.payload;
     },
     logout(state: IInitialState) {
-      state.user = { username: "", token: "" };
+      state.user = { username: "", token: "", role: "" };
       // remove token
       localStorage.removeItem("token");
     },
@@ -40,14 +41,15 @@ export function userLogin(data: ILoginData) {
     try {
       const response = await API.post("/auth/login", data);
       if (response.status === 200) {
-        dispatch(setUser(response.data.data));
-        localStorage.setItem("token", response.data.token);
-        console.log(response.data.token);
+        const { token, user } = response.data;
+        dispatch(setUser(user));
+        localStorage.setItem("token", token);
+
         dispatch(setStatus(Status.SUCCESS));
-        return { success: true };
+        return { success: true, user };
       } else {
         dispatch(setStatus(Status.ERROR));
-        return { message: response.data?.message || "Failed" };
+        return { success: false, message: response.data?.message || "Failed" };
       }
     } catch (err: any) {
       dispatch(setStatus(Status.ERROR));

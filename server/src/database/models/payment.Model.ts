@@ -5,7 +5,9 @@ import {
   AutoIncrement,
   Column,
   DataType,
+  ForeignKey,
 } from "sequelize-typescript";
+import Order from "./order.Model";
 
 @Table({
   tableName: "payments",
@@ -21,14 +23,29 @@ class Payment extends Model {
   declare id: number;
 
   @Column({
-    type: DataType.ENUM("cod", "khalti"),
-    allowNull: false,
-  })
-  declare paymentMethod: string;
-
-  @Column({
     type: DataType.STRING,
   })
   declare pidx: string;
+
+  @ForeignKey(() => Order)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare orderId: number;
+  @Column({
+    type: DataType.ENUM("pending", "completed", "failed"),
+    defaultValue: "pending",
+  })
+  declare status: string;
+
+  @Column({
+    type: DataType.ENUM("cash", "card", "khalti"),
+  })
+  declare payment_method: string;
+  @Column({
+    type: DataType.DECIMAL,
+  })
+  declare total_amount: number;
 }
 export default Payment;

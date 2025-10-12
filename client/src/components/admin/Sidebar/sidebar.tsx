@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { userLogout } from "@/lib/store/auth/authSlice";
-import { useAppDispatch } from "@/lib/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { spawn } from "child_process";
 import {
   LayoutDashboard,
@@ -31,6 +31,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 export default function SideBar() {
+  const { user } = useAppSelector((store) => store.auth);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
 

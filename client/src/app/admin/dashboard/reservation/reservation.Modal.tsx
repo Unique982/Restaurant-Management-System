@@ -67,12 +67,12 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result: any = await dispatch(createReservation(reservationDatas));
-    if (result) {
+    if (result.success) {
       toast.success("Reservation Booked success!");
       onOpenChange(false);
       dispatch(getReservation());
     } else {
-      toast.error("Some thing Wrong!");
+      toast.error(result?.message || "Something went wrong!");
     }
   };
   return (

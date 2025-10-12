@@ -30,6 +30,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 import authRouter from "./routes/globals/auth/auth.Route";
+
+// admin
 import categoryRouter from "./routes/admin/category/category.Route";
 import tablesRoutes from "./routes/admin/tables/tables.Route";
 import reservationRouter from "./routes/admin/reservations/reservations.Route";
@@ -41,6 +43,14 @@ import about from "./routes/admin/about/about.Route";
 import blog from "./routes/admin/blog/blog.Route";
 import service from "./routes/admin/service/service.Route";
 
+// customer
+import dashboardOverView from "./routes/customer/dashboardOverview/dashboardOverView.Route";
+import menuViwe from "./routes/customer/menu/menu.Route";
+import reservationTable from "./routes/customer/reservation/reservation.Route";
+import myOrder from "./routes/customer/myOrder/order.Route";
+import myCart from "./routes/customer/cart/cart.Route";
+
+// admin api
 app.use("/api/auth/", authRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/tables", tablesRoutes);
@@ -52,5 +62,12 @@ app.use("/api/customer", listCustomer);
 app.use("/api/about", about);
 app.use("/api/blog", blog);
 app.use("/api/service", service);
+
+// customer
+app.use("/api/customer/dashboard", dashboardOverView);
+app.use("/api/customer/view-menu", menuViwe);
+app.use("/api/customer/reservations/booking", reservationTable);
+app.use("/api/customer/myOrder", myOrder);
+app.use("/api/customer/mycart", myCart);
 
 export default app;

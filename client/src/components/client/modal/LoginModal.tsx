@@ -94,13 +94,23 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
 
   const onSubmit = async (data: loginSchemaType) => {
     const result: any = await dispatch(userLogin(data));
-    665;
-    if (result.success) {
-      toast.success("Added Successfully");
+
+    if (result.success && result.user) {
+      toast.success("Login Successfully");
       onOpenChange(false);
-      router.push("/admin/dashboard");
+
+      // ✅ Role-based redirect
+      const role = result.user.role;
+
+      if (role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (role === "customer") {
+        router.push("/customer/dashboard");
+      } else {
+        router.push("/"); // fallback
+      }
     } else {
-      toast.error(result?.message || "Something went wrong!");
+      toast.error(result?.message || "Login failed");
     }
   };
 

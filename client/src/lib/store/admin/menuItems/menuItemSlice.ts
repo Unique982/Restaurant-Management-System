@@ -8,7 +8,6 @@ import {
   IMenuItems,
   IMenuItemsData,
 } from "./menuItemSlice.type";
-import { success } from "zod";
 
 const initialState: IInitialState = {
   menuDatas: [],
@@ -91,9 +90,19 @@ export function deletemenuItem(id: string | number) {
       if (response.status === 200) {
         dispatch(deleteMenuItemById(id));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
