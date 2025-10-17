@@ -19,11 +19,19 @@ import {
   deleteReservation,
   deleteReservationById,
   getReservation,
+  statusUpdate,
+  updateStatus,
 } from "@/lib/store/admin/reservation/reservationSlice";
 import { current } from "@reduxjs/toolkit";
 import { toLowerCase } from "zod";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import { initSocket } from "@/lib/socket";
+import {
+  IReservationPostData,
+  ReservationStatus,
+} from "@/lib/store/admin/reservation/reservationSlice.type";
+import next from "next";
 export default function ReservationInfo() {
   const [isModal, setIsModal] = useState(false);
   const { reservationData, status } = useAppSelector(
@@ -34,19 +42,47 @@ export default function ReservationInfo() {
 
   useEffect(() => {
     dispatch(getReservation());
+    const socket = initSocket();
+    const handleAdded = (data: IReservationPostData) => {
+      dispatch(getReservation());
+      toast.success("Reservation added successfully!");
+    };
+    const handleUpdated = (data: IReservationPostData) => {
+      dispatch(getReservation());
+      toast.success("Reservation updated successfully!");
+    };
+    const handleDeleted = (data: { id: number }) => {
+      dispatch(getReservation());
+      toast.success("Reservation deleted successfully!");
+    };
+    socket.on("reservationAdded", handleAdded);
+    socket.on("reservationUpdated", handleUpdated);
+    socket.on("reservationDeleted", handleDeleted);
+    return () => {
+      socket.off("tableAdded", handleAdded);
+      socket.off("tableUpdated", handleUpdated);
+      socket.off("tableDeleted", handleDeleted);
+    };
   }, []);
 
-  const handleStatus = (current: string) => {
-    if (current === "Pending") return "Booked";
-    else if (current === "Booked") return "Completed";
-    else return "Pending";
+  const handleStatus = async (
+    id: number | string,
+    currentStatus: ReservationStatus
+  ) => {
+    let nextStatus: ReservationStatus;
+    switch (currentStatus) {
+      case ReservationStatus.Pending:
+        nextStatus = ReservationStatus.Booking;
+        break;
+      case ReservationStatus.Booking:
+        nextStatus = ReservationStatus.Cancelled;
+        break;
+      default:
+        nextStatus = ReservationStatus.Pending;
+    }
+    await dispatch(statusUpdate(id, nextStatus));
   };
-  //color set
-  const setColor = (current: string) => {
-    if (current === "Pending") return "bg-yellow-500 text-black";
-    if (current === "Booked") return "bg-red-500 text-white";
-    if (current == "Completed") return "bg-green-500 text-white";
-  };
+
   // search
   const filterData = reservationData.filter(
     (reservation) =>
@@ -131,13 +167,18 @@ export default function ReservationInfo() {
                       {reservation.guests}
                     </TableCell>
                     <TableCell>{reservation.reservation_date}</TableCell>
-                    <TableCell>{reservation.reservation_time}</TableCell>
                     <TableCell>
                       <span
-                        onClick={() => handleStatus(reservation.status)}
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${setColor(
-                          reservation.status
-                        )}`}
+                        onClick={() =>
+                          handleStatus(reservation.id, reservation.status)
+                        }
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer capitalize ${
+                          reservation.status === ReservationStatus.Pending
+                            ? "bg-blue-500 text-white"
+                            : reservation.status === ReservationStatus.Booking
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                        }`}
                       >
                         {reservation.status.charAt(0).toUpperCase() +
                           reservation.status.slice(1)}

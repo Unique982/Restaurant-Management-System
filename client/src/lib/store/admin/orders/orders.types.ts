@@ -1,10 +1,11 @@
 import { Status } from "@/lib/types/type";
 
 export enum OrderType {
-  DineIn = "dine_in",
-  TakeAway = "take_away",
+  DineIn = "dine-in",
+  TakeAway = "takeaway",
   Delivery = "delivery",
 }
+// dine-in', 'takeaway', 'delivery')
 export enum OrderStatus {
   Pending = "pending",
   Confirmed = "confirmed",
@@ -13,6 +14,7 @@ export enum OrderStatus {
   Ready = "ready",
   Completed = "completed",
 }
+
 export enum PaymentMethod {
   Cash = "cash",
   Khalti = "khalti",
@@ -41,6 +43,7 @@ export interface IOrderPostData {
   table_id: string | number;
   order_type: OrderType;
   discount?: number;
+  final_amount?: number;
   status: OrderStatus;
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;

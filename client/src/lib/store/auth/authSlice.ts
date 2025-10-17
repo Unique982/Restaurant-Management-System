@@ -89,18 +89,26 @@ export function userRegister(data: IRegisterInput) {
   };
 }
 //  forget
-
 export function forgetPassword(email: string) {
   return async function forgetPasswordThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("/auth/forget", email);
+      const response = await API.post("/auth/forget", { email });
       if (response.status === 200) {
-        response.data.data.length > 0 && dispatch(setUser(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true, message: response.data.message };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -112,9 +120,19 @@ export function otpVerify(email: string, otp: number) {
       const response = await API.post("/auth/otp", { email, otp });
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true, message: response.data.message };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }
@@ -128,10 +146,19 @@ export function changePassord(email: string, password: string) {
         password,
       });
       if (response.status === 200) {
-        dispatch(setStatus(Status.SUCCESS));
+        return { success: true, message: response.data.message };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }

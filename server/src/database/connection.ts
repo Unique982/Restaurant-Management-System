@@ -15,6 +15,8 @@ import ContactUs from "./models/contact.Model";
 import Cart from "./models/cart.Model";
 import Payment from "./models/payment.Model";
 import CartItem from "./models/cartItems.Model";
+import Gallery from "./models/gallery.Model";
+import Setting from "./models/setting.Model";
 // load env
 config();
 

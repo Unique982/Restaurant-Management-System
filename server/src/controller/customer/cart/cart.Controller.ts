@@ -102,6 +102,25 @@ class MyCart {
   static async deleteCart(req: IExtendedRequest, res: Response) {
     const userId = req.user?.id;
     const cartId = req.params.id;
+    const exitsId = await sequelize.query(
+      `SELECT id FROM carts WHERE id =? AND user_id =?`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: [cartId, userId],
+      }
+    );
+    if (!exitsId || exitsId.length === 0) {
+      return res.status(400).json({ message: "cart id not found" });
+    }
+    await sequelize.query(`DELETE FROM cart_items WHERE cart_id =?`, {
+      type: QueryTypes.DELETE,
+      replacements: [cartId],
+    });
+    await sequelize.query(`DELETE FROM carts WHERE id =? AND user_id=?`, {
+      type: QueryTypes.DELETE,
+      replacements: [cartId, userId],
+    });
+    res.status(200).json({ message: "Cart delete successfull" });
   }
 }
 

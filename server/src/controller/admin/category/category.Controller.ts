@@ -2,11 +2,12 @@ import { Response } from "express";
 import { IExtendedRequest } from "../../../middleware/types/type";
 import sequelize from "../../../database/connection";
 import { QueryTypes } from "sequelize";
+import { getIO } from "../../../../server";
 
 class Category {
   static async createCategory(req: IExtendedRequest, res: Response) {
     if (req.body === undefined)
-      return res.status(400).json({ messag: "Enter value!" });
+      return res.status(400).json({ message: "Enter value!" });
 
     const { categoryName, categoryDescription } = req.body;
     if (!categoryName || !categoryDescription)
@@ -26,15 +27,23 @@ class Category {
       return res.status(400).json({ message: "Already exists!" });
 
     // isnert query
-    await sequelize.query(
+    const [result]: any = await sequelize.query(
       `INSERT INTO category(categoryName,categoryDescription,createdAt,updatedAt)VALUES(?,?,NOW(),NOW())`,
       {
         type: QueryTypes.INSERT,
         replacements: [categoryName, categoryDescription],
       }
     );
+    // emit socket event
+    getIO().emit("categoryAdded", {
+      id: result,
+      categoryName,
+      categoryDescription,
+    });
 
-    res.status(200).json({ message: "category added successfully!" });
+    res
+      .status(200)
+      .json({ message: "category added successfully!", id: result });
   }
 
   // get category
@@ -42,6 +51,10 @@ class Category {
   static async getCategory(req: IExtendedRequest, res: Response) {
     const categoryData = await sequelize.query(`SELECT * FROM category`, {
       type: QueryTypes.SELECT,
+    });
+    // emit socket event
+    getIO().emit("categoryGet", {
+      categoryData,
     });
     res
       .status(200)
@@ -71,6 +84,8 @@ class Category {
       type: QueryTypes.DELETE,
       replacements: [id],
     });
+    // emit delete event
+    getIO().emit("categoryDeleted", id);
     res.status(200).json({ message: "delete successfully!" });
   }
 
@@ -94,6 +109,7 @@ class Category {
         replacements: [id],
       }
     );
+    getIO().emit("singleCategoryFetched", dataCategory[0]);
     res
       .status(200)
       .json({ message: "Single category fetch!", data: dataCategory });
@@ -121,6 +137,8 @@ class Category {
         replacements: [categoryName, categoryDescription, id],
       }
     );
+    getIO().emit("categoryUpdated", { id, categoryName, categoryDescription });
+
     res.status(200).json({ message: "Update successfully!" });
   }
 }

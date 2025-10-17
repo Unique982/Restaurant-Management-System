@@ -6,8 +6,8 @@ export interface ITablesData {
   tableStatus: tableStatus;
 }
 export enum tableStatus {
-  "Available" = "available",
-  "Unavailable" = "unavailable",
+  Available = "available",
+  Unavailable = "unavailable",
 }
 
 export interface ITables extends ITablesData {

@@ -59,6 +59,12 @@ class Reservation extends Model {
 
   @Column({ type: DataType.STRING, allowNull: false })
   declare specailRequest: string;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  declare deleted_at: Date | null;
 }
 
 export default Reservation;

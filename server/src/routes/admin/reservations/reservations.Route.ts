@@ -33,4 +33,29 @@ router
     asyncErrorHandle(ReservationBooking.updateReservation)
   );
 
+// soft delete
+router
+  .route("/soft-delete/:id")
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(ReservationBooking.softDeleteReservation)
+  );
+// soft delete
+router
+  .route("/restore/:id")
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(ReservationBooking.restoreDeleteReservation)
+  );
+// status update
+router
+  .route("/status/:id")
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(ReservationBooking.statusUpdateReservation)
+  );
+
 export default router;

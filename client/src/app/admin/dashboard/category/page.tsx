@@ -23,6 +23,8 @@ import {
 import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import { get } from "http";
+import { initSocket, getSocket } from "@/lib/socket";
 
 export default function CategoryInfo() {
   const { data: categories, status } = useAppSelector(
@@ -34,16 +36,42 @@ export default function CategoryInfo() {
 
   useEffect(() => {
     dispatch(getCategory());
+    const socket = initSocket();
+    // lisiting for backend events
+    socket.on("categoryAdded", (data: ICategory) => {
+      dispatch(getCategory());
+      toast.success(`Category added successfully!`);
+    });
+    // update
+    socket.on("categoryUpdated", (data: ICategory) => {
+      dispatch(getCategory());
+      toast.success(`Category updated successful!`);
+    });
+    // fetch all
+    socket.on("categoryGet", (data) => {
+      console.log("All categories:", data.categoryData);
+    });
+    // delete
+    socket.on("categoryDeleted", (id: number) => {
+      dispatch(getCategory());
+      toast.success(`Category deleted successfully!`);
+    });
+    //single data
+    socket.on("singleCategoryFetched", (data) => {
+      console.log("single category data:", data);
+    });
+
+    return () => {
+      socket.off("categoryAdded");
+      socket.off("CategoryUpdated");
+      socket.off("categoryDeleted");
+      socket.off("singleCategoryFetched");
+      socket.off("categoryGet");
+    };
   }, []);
   // delete
   const handleCategoryDelete = async (id: string | number) => {
     await dispatch(deleteCategoryById(id));
-    if (status === Status.SUCCESS) {
-      dispatch(getCategory());
-      toast.success("Category Delete successfully!");
-    } else {
-      toast.error("Failed to delete !");
-    }
   };
   // search
   const filterData = categories.filter((category) =>

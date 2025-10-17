@@ -145,7 +145,7 @@ class Authentication {
     const otp = generatedOTP();
     emailExists.otp = otp;
     emailExists.otp_exp = new Date(Date.now() + 5 * 60 * 1000);
-    emailExists.save();
+    await emailExists.save();
 
     // send email
     const mailInformation = {

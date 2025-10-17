@@ -3,6 +3,7 @@ import asyncErrorHandle from "../../../services/asyncErrorhandle";
 import OrderController from "../../../controller/admin/order/order.Controller";
 import Middleware from "../../../middleware/middleware";
 import { userRole } from "../../../middleware/types/type";
+import { use } from "passport";
 const router: Router = express.Router();
 
 router
@@ -28,7 +29,23 @@ router
     Middleware.restrictTo(userRole.Admin),
     asyncErrorHandle(OrderController.deleteOrder)
   );
+// order status update
+router
+  .route("/status/:id")
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(OrderController.orderStatusChange)
+  );
 
+// order type status chnage
+router
+  .route("/types/status/:id")
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(OrderController.orderTypeUpdate)
+  );
 // soft delete api
 router
   .route("/soft-delete/:id")

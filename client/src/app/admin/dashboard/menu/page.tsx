@@ -22,6 +22,8 @@ import {
 import { de } from "zod/v4/locales";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import { initSocket } from "@/lib/socket";
+import { IMenuItems } from "@/lib/store/admin/menuItems/menuItemSlice.type";
 
 export default function MenuIfo() {
   const [isModal, setIsModal] = useState(false);
@@ -32,17 +34,33 @@ export default function MenuIfo() {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getMenuItem());
+    const socket = initSocket();
+    // added
+    socket.on("menuAdded", (data: IMenuItems) => {
+      dispatch(getMenuItem());
+      toast.success("Menu added successfully!");
+    });
+
+    // delete
+    socket.on("menuDeleted", (id: number) => {
+      dispatch(getMenuItem());
+      toast.success("Menu deleted successfully!");
+    });
+    socket.on("menuUpdated", (data: IMenuItems) => {
+      dispatch(getMenuItem());
+      toast.success(`Menu ${data.name} updated successfully!`);
+    });
+
+    return () => {
+      socket.off("menuAdded");
+      socket.off("menuDeleted");
+      socket.off("menuUpdated");
+    };
   }, []);
 
   // delete
   const deleteHandle = async (id: string | number) => {
     await dispatch(deletemenuItem(id));
-    if (status === Status.SUCCESS) {
-      dispatch(getMenuItem());
-      toast.success("Delete menu items successful!");
-    } else {
-      toast.error("Delete failed");
-    }
   };
 
   return (

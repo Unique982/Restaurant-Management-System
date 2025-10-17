@@ -63,9 +63,7 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
     e.preventDefault();
     const result: any = await dispatch(createMenuItems(menuData));
     if (result.success) {
-      toast.success("Added Successfully");
       onOpenChange(false);
-      dispatch(getMenuItem());
     } else {
       toast.error(result?.message || "Something went wrong!");
     }

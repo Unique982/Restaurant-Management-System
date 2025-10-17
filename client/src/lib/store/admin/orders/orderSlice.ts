@@ -1,5 +1,11 @@
 import { Status } from "@/lib/types/type";
-import { IInitialState, IIOrderItems, IOrderPostData } from "./orders.types";
+import {
+  IInitialState,
+  IIOrderItems,
+  IOrderPostData,
+  OrderStatus,
+  OrderType,
+} from "./orders.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
@@ -48,6 +54,29 @@ const orderSlice = createSlice({
         state.orderDatas.splice(index, 1);
       }
     },
+
+    // order status chnage
+    updateOrderStatusById(
+      state: IInitialState,
+      action: PayloadAction<{ id: string | number; status: OrderStatus }>
+    ) {
+      const { id, status } = action.payload;
+      const order = state.orderDatas.find((o) => o.order_id === id);
+      if (order) {
+        order.status = status;
+      }
+    },
+    // order type status
+    updateOrderTypeById(
+      state: IInitialState,
+      action: PayloadAction<{ id: string | number; order_type: OrderType }>
+    ) {
+      const { id, order_type } = action.payload;
+      const order = state.orderDatas.find((o) => o.order_id === id);
+      if (order) {
+        order.order_type = order_type;
+      }
+    },
   },
 });
 export const {
@@ -56,6 +85,8 @@ export const {
   softDeleteOrderById,
   hardDeleteOrderById,
   fetchOrder,
+  updateOrderStatusById,
+  updateOrderTypeById,
 } = orderSlice.actions;
 export default orderSlice.reducer;
 
@@ -146,6 +177,63 @@ export function getALlOrderList() {
         response.data.data.length > 0 &&
           dispatch(fetchOrder(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+
+// order status update
+export function orderStatusUpdate(id: string | number, status: OrderStatus) {
+  return async function orderStatusUpdate(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch(`/order/status/${id}`, {
+        id,
+        status,
+      });
+      if (response.status === 200) {
+        dispatch(updateOrderStatusById({ id, status }));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+
+// order type update
+export function orderTypeUpdate(id: string | number, order_type: OrderType) {
+  return async function orderTypeUpdateThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch(`/order/types/status/${id}`, {
+        order_type,
+      });
+      if (response.status === 200) {
+        dispatch(updateOrderTypeById({ id, order_type }));
+        dispatch(setStatus(Status.SUCCESS));
+        return { data: response.data, success: true };
       } else {
         dispatch(setStatus(Status.ERROR));
         return { message: response.data?.message || "Failed" };

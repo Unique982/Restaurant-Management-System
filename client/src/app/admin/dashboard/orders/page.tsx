@@ -21,9 +21,17 @@ import toast from "react-hot-toast";
 import AddOrders from "./ordersModal";
 import {
   getALlOrderList,
+  orderStatusUpdate,
+  orderTypeUpdate,
   softDeleteOrder,
 } from "@/lib/store/admin/orders/orderSlice";
-import { OrderStatus } from "@/lib/store/admin/orders/orders.types";
+import {
+  IOrderPostData,
+  OrderStatus,
+  OrderType,
+  PaymentStatus,
+} from "@/lib/store/admin/orders/orders.types";
+import { initSocket } from "@/lib/socket";
 
 export default function MenuIfo() {
   const [isModal, setIsModal] = useState(false);
@@ -34,19 +42,80 @@ export default function MenuIfo() {
 
   useEffect(() => {
     dispatch(getALlOrderList());
+    const socket = initSocket();
+
+    const handleAdded = (data: IOrderPostData) => {
+      dispatch(getALlOrderList());
+      toast.success("Order added successfully!");
+    };
+    const handleUpdated = (data: IOrderPostData) => {
+      dispatch(getALlOrderList());
+      toast.success("Order updated successfully!");
+    };
+    const handleDeleted = (data: { order_id: number }) => {
+      dispatch(getALlOrderList());
+    };
+
+    socket.on("orderAdded", handleAdded);
+    socket.on("orderUpdated", handleUpdated);
+    socket.on("orderDeleted", handleDeleted);
+
+    return () => {
+      socket.off("orderAdded", handleAdded);
+      socket.off("orderUpdated", handleUpdated);
+      socket.off("orderDeleted", handleDeleted);
+    };
   }, [dispatch]);
 
-  // delete
+  // delete handler
   const deleteHandle = async (id: string | number) => {
-    await dispatch(softDeleteOrder(id));
-    if (status === Status.SUCCESS) {
-      dispatch(getALlOrderList());
-      toast.success("Delete Successful!");
+    const res: any = await dispatch(softDeleteOrder(id));
+    if (res.success) {
+      toast.success("Order deleted successfully!");
     } else {
-      toast.error("Something Wrong");
+      toast.error(res.message || "Something went wrong!");
     }
   };
+  // order statius chnage
+  const handleOrderTypeChange = async (
+    id: number | string,
+    currentType: OrderType
+  ) => {
+    let nextType: OrderType;
+    if (currentType === OrderType["DineIn"]) {
+      nextType = OrderType.TakeAway;
+    } else if (currentType === OrderType.TakeAway) {
+      nextType = OrderType.Delivery;
+    } else {
+      nextType = OrderType.DineIn;
+    }
+    const res: any = await dispatch(orderTypeUpdate(id, nextType));
+  };
+  const handleOrderStatusChange = async (
+    id: number | string,
+    currentStatus: OrderStatus
+  ) => {
+    let nextStatus: OrderStatus;
 
+    switch (currentStatus) {
+      case OrderStatus.Pending:
+        nextStatus = OrderStatus.Confirmed;
+        break;
+      case OrderStatus.Confirmed:
+        nextStatus = OrderStatus.Preparing;
+        break;
+      case OrderStatus.Preparing:
+        nextStatus = OrderStatus.Ready;
+        break;
+      case OrderStatus.Ready:
+        nextStatus = OrderStatus.Completed;
+        break;
+      default:
+        nextStatus = OrderStatus.Pending; // fallback
+    }
+
+    const res: any = await dispatch(orderStatusUpdate(id, nextStatus));
+  };
   // search filter
   const filteredOrders = orderDatas.filter((order) => {
     const search = searchText.toLowerCase();
@@ -87,6 +156,9 @@ export default function MenuIfo() {
               <TableHead>User ID</TableHead>
               <TableHead>Table ID</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>OrderType</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Payment Status</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -111,22 +183,62 @@ export default function MenuIfo() {
 
                   <TableCell>
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer capitalize
-      ${
-        order.status === OrderStatus.Ready
-          ? "bg-green-100 text-green-700"
-          : order.status === OrderStatus.Cancelled
-          ? "bg-red-100 text-red-700"
-          : order.status === OrderStatus.Completed
-          ? "bg-blue-100 text-blue-700"
-          : "bg-yellow-100 text-yellow-700"
-      }
-    `}
+                      onClick={() =>
+                        handleOrderStatusChange(order.order_id, order.status)
+                      }
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer capitalize ${
+                        order.status === OrderStatus.Pending
+                          ? "bg-gray-100 text-gray-700"
+                          : order.status === OrderStatus.Confirmed
+                          ? "bg-blue-100 text-blue-700"
+                          : order.status === OrderStatus.Preparing
+                          ? "bg-yellow-100 text-yellow-700"
+                          : order.status === OrderStatus.Ready
+                          ? "bg-blue-100 text-blue-700"
+                          : order.status === OrderStatus.Completed
+                          ? "bg-purple-100 text-purple-700"
+                          : order.status === OrderStatus.Cancelled
+                          ? "bg-red-100 text-red-700"
+                          : "bg-black text-white"
+                      }`}
                     >
                       {order.status}
                     </span>
                   </TableCell>
 
+                  <TableCell>
+                    <span
+                      onClick={() =>
+                        handleOrderTypeChange(order.order_id, order.order_type)
+                      }
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer capitalize
+      ${
+        order.order_type === OrderType.DineIn
+          ? "bg-green-100 text-green-700"
+          : order.order_type === OrderType.TakeAway
+          ? "bg-blue-100 text-blue-700"
+          : "bg-red-500 text-white"
+      }
+    `}
+                    >
+                      {order.order_type}
+                    </span>
+                  </TableCell>
+                  <TableCell>Rs:-{order.final_amount}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs cursor-pointer capitalize font-bold ${
+                        order.payment_status === PaymentStatus.Unpaid
+                          ? "text-red-700"
+                          : order.payment_status === "paid"
+                          ? "text-blue-700"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {order.payment_status.charAt(0).toUpperCase() +
+                        order.payment_status.slice(1)}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     {new Date(order.created_at).toLocaleDateString()}
                   </TableCell>

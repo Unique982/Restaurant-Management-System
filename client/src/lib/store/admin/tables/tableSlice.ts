@@ -1,7 +1,12 @@
 import { Status } from "@/lib/types/type";
-import { IInitialState, ITables, ITablesData } from "./tableSlice.type";
+import {
+  IInitialState,
+  ITables,
+  ITablesData,
+  tableStatus,
+} from "./tableSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { table } from "console";
+
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
@@ -32,10 +37,26 @@ const tableSlice = createSlice({
         state.data.splice(index, 1);
       }
     },
+    // table status update
+    tableStatusUpdateBy(
+      state: IInitialState,
+      action: PayloadAction<{ id: string | number; tableStatus: tableStatus }>
+    ) {
+      const { id, tableStatus } = action.payload;
+      const table = state.data.find((t) => t.id === id);
+      if (table) {
+        table.tableStatus = tableStatus;
+      }
+    },
   },
 });
-export const { setStatus, addTable, deleteTableById, fetchTbales } =
-  tableSlice.actions;
+export const {
+  setStatus,
+  addTable,
+  deleteTableById,
+  fetchTbales,
+  tableStatusUpdateBy,
+} = tableSlice.actions;
 export default tableSlice.reducer;
 
 // add
@@ -87,6 +108,37 @@ export function deleteTablesById(id: string | number) {
       const response = await APIWITHTOKEN.delete("tables/" + id);
       if (response.status === 200) {
         dispatch(deleteTableById(id));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+// table status update
+export function tableStatausUpdate(
+  id: string | number,
+  tableStatus: tableStatus
+) {
+  return async function tableStatausUpdateThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch(`/tables/status/${id}`, {
+        id,
+        tableStatus: tableStatus,
+      });
+      if (response.status === 200) {
+        dispatch(tableStatusUpdateBy({ id, tableStatus }));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {

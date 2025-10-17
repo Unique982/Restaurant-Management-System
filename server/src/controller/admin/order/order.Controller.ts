@@ -2,17 +2,17 @@ import { Response } from "express";
 import { IExtendedRequest } from "../../../middleware/types/type";
 import sequelize from "../../../database/connection";
 import { QueryTypes } from "sequelize";
+import { getIO } from "../../../../server";
 
 class OrderController {
   // order create
   static async createOrder(req: IExtendedRequest, res: Response) {
+    const userId = req.user?.id;
     const {
-      user_id,
       table_id,
       order_type,
       discount,
       status,
-      payment_method,
       payment_status,
       special_request,
       delivery_address,
@@ -44,18 +44,17 @@ class OrderController {
     const final_amount = total_amount - (discount || 0);
     // create order
     const [orderResult] = await sequelize.query(
-      `INSERT INTO orders(user_id,table_id,order_type,total_amount,discount,final_amount,status,payment_method,payment_status,special_request,delivery_address,created_at,updated_at)VALUES(?,?,?,?,?,?,?,?,?,?,?,NOW(),NOW())`,
+      `INSERT INTO orders(user_id,table_id,order_type,total_amount,discount,final_amount,status,payment_status,special_request,delivery_address,created_at,updated_at)VALUES(?,?,?,?,?,?,?,?,?,?,NOW(),NOW())`,
       {
         type: QueryTypes.INSERT,
         replacements: [
-          user_id || null,
+          userId,
           table_id,
           order_type,
           total_amount,
           discount || 0,
           final_amount,
           status,
-          payment_method,
           payment_status,
           special_request || null,
           delivery_address || null,
@@ -66,7 +65,7 @@ class OrderController {
     console.log(orderResult, "k k aayo");
     // oderItems add garnu paro
     for (let item of items) {
-      await sequelize.query(
+      const [result]: any = await sequelize.query(
         `INSERT INTO order_items(order_id,menu_item_id,quantity,price,created_at,updated_at)VALUES(?,?,?,?,NOW(),NOW())`,
         {
           type: QueryTypes.INSERT,
@@ -74,6 +73,14 @@ class OrderController {
         }
       );
     }
+    getIO().emit("orderAdded", {
+      order_id: order_id,
+      user_id: userId,
+      table_id: table_id,
+      total_amount: total_amount,
+      final_amount: total_amount - (discount || 0),
+      items: items,
+    });
     res.status(200).json({ message: "Order create successfully!" });
   }
   // get all order
@@ -179,6 +186,7 @@ class OrderController {
       type: QueryTypes.DELETE,
       replacements: [id],
     });
+    getIO().emit("orderDeleted", id);
 
     res.status(200).json({ message: "Delete order successfully!" });
   }
@@ -276,7 +284,15 @@ class OrderController {
     res.status(200).json({ message: "All order list", data: orders });
   }
   // update order
-  static async updateOrder(req: IExtendedRequest, res: Response) {}
+  static async updateOrder(req: IExtendedRequest, res: Response) {
+    //   getIO().emit("orderUpdated", {
+    //   order_id: id,
+    //   status,
+    //   payment_status,
+    //   discount,
+    //   items,
+    // });
+  }
   // soft delete
   static async softDeleteOrder(req: IExtendedRequest, res: Response) {
     const { id } = req.params;
@@ -301,6 +317,8 @@ class OrderController {
         replacements: [id],
       }
     );
+    getIO().emit("orderDeleted", { order_id: id });
+
     res.status(200).json({ message: "Soft delete successfully!" });
   }
   // recover delete
@@ -323,7 +341,64 @@ class OrderController {
         replacements: [id],
       }
     );
+    getIO().emit("orderAdded", { order_id: id });
     res.status(200).json({ message: "Order restore successfully!" });
+  }
+
+  // status update
+  static async orderStatusChange(req: IExtendedRequest, res: Response) {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    // Check if order exists
+    const orderExists = await sequelize.query(
+      `SELECT id, status FROM orders WHERE id = ?`,
+      { type: QueryTypes.SELECT, replacements: [id] }
+    );
+
+    if (!orderExists || orderExists.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Update only status
+    await sequelize.query(
+      `UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ?`,
+      { type: QueryTypes.UPDATE, replacements: [status, id] }
+    );
+
+    // socket update
+    getIO().emit("orderUpdated", { order_id: id, status });
+
+    return res
+      .status(200)
+      .json({ message: "Order status updated successfully" });
+  }
+  // order Type update
+  static async orderTypeUpdate(req: IExtendedRequest, res: Response) {
+    const { id } = req.params;
+    const { order_type } = req.body;
+
+    if (!order_type)
+      return res.status(400).json({ message: "Order type is required" });
+
+    const [result] = await sequelize.query(
+      `UPDATE orders SET order_type=? , updated_at=NOW() WHERE id=?`,
+      {
+        type: QueryTypes.UPDATE,
+        replacements: [order_type, id],
+      }
+    );
+
+    // emit socket event if needed
+    getIO().emit("orderUpdated", { order_id: id, order_type });
+
+    return res
+      .status(200)
+      .json({ message: "Order type updated successfully!" });
   }
 }
 

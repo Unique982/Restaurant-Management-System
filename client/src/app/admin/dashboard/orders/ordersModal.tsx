@@ -93,9 +93,7 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
     e.preventDefault();
     const result: any = await dispatch(createOrders(orderData));
     if (result.success) {
-      toast.success("Order added successfully!");
       onOpenChange(false);
-      dispatch(getALlOrderList());
     } else {
       toast.error(result?.message || "Something went wrong!");
     }
@@ -113,16 +111,6 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
         <form onSubmit={submitHandle} className="space-y-4">
           {/* User & Table */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>User ID (optional)</Label>
-              <Input
-                type="text"
-                name="user_id"
-                value={orderData.user_id}
-                onChange={handleChange}
-                placeholder="User ID"
-              />
-            </div>
             <div className="space-y-1">
               <Label>Table ID</Label>
               <Select

@@ -17,4 +17,12 @@ router
     asyncErrorHandle(MyCart.getCart)
   );
 
+router
+  .route("/:id")
+  .delete(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Customer),
+    asyncErrorHandle(MyCart.deleteCart)
+  );
+
 export default router;

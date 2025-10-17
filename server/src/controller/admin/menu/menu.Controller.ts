@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { QueryTypes } from "sequelize";
 import sequelize from "../../../database/connection";
 import { IExtendedRequest } from "../../../middleware/types/type";
+import { getIO } from "../../../../server";
 
 class Menu {
   // Create new menuItems
@@ -45,7 +46,7 @@ class Menu {
     }
 
     // Insert query
-    await sequelize.query(
+    const [result]: any = await sequelize.query(
       `INSERT INTO menu_items(name,description,price,category_id,image_url, ingredients,availability,type,created_at,updated_at)
          VALUES (?,?,?,?,?,?,?,?,NOW(),NOW())`,
       {
@@ -62,6 +63,17 @@ class Menu {
         ],
       }
     );
+    getIO().emit("menuAdded", {
+      id: result,
+      name,
+      description,
+      price,
+      category_id,
+      image_url,
+      ingredients,
+      availability,
+      type,
+    });
 
     res.status(201).json({ message: "Menu Items added successfully!" });
   }
@@ -154,6 +166,17 @@ class Menu {
         ],
       }
     );
+    getIO().emit("menuUpdated", {
+      id: Number(id),
+      name,
+      description,
+      price,
+      category_id,
+      image_url,
+      ingredients,
+      availability,
+      type,
+    });
 
     res.status(200).json({ message: "Menu items updated successfully!" });
   }
@@ -178,6 +201,7 @@ class Menu {
       type: QueryTypes.DELETE,
       replacements: [id],
     });
+    getIO().emit("menuDeleted", Number(id));
 
     res.status(200).json({ message: "Menu Items deleted successfully!" });
   }

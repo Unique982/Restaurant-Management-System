@@ -18,38 +18,63 @@ import {
   deleteTableById,
   deleteTablesById,
   getTables,
+  tableStatausUpdate,
 } from "@/lib/store/admin/tables/tableSlice";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
-import { table } from "console";
+import { initSocket } from "@/lib/socket";
+import { ITableData } from "@/lib/store/admin/orders/orders.types";
+import { ITables, tableStatus } from "@/lib/store/admin/tables/tableSlice.type";
 
-export default function ReservationInfo() {
+export default function TableInfo() {
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
-  const [tableStatus, setStatus] = useState("Available");
   const dispatch = useAppDispatch();
   const { data: tables, status } = useAppSelector((store) => store.tables);
   useEffect(() => {
     dispatch(getTables());
+    const socket = initSocket();
+    const handleAdded = (data: ITableData) => {
+      dispatch(getTables());
+      toast.success("Table added successfully!");
+    };
+    const handleUpdated = (data: ITableData) => {
+      dispatch(getTables());
+      toast.success("Table updated successfully!");
+    };
+    const handleDeleted = (data: { id: number }) => {
+      dispatch(getTables());
+      toast.success("Table deleted successfully!");
+    };
+    socket.on("tableAdded", handleAdded);
+    socket.on("tableUpdated", handleUpdated);
+    socket.on("tableDeleted", handleDeleted);
+    return () => {
+      socket.off("tableAdded", handleAdded);
+      socket.off("tableUpdated", handleUpdated);
+      socket.off("tableDeleted", handleDeleted);
+    };
   }, []);
+  const handleStatus = async (
+    id: number | string,
+    currentStatus: tableStatus
+  ) => {
+    let nextStatus: tableStatus;
 
-  const handleStatus = () => {
-    if (tableStatus === "Available") setStatus("Unavailable");
-    else setStatus("Available");
-  };
-  //color set
-  const setColor = () => {
-    if (tableStatus === "Available") return "bg-green-500 text-white";
-    if (tableStatus === "Unavailable") return "bg-red-500 text-white";
+    switch (currentStatus) {
+      case tableStatus.Available:
+        nextStatus = tableStatus.Unavailable;
+        break;
+      case tableStatus.Unavailable:
+        nextStatus = tableStatus.Available;
+        break;
+      default:
+        nextStatus = tableStatus.Available;
+    }
+    const res: any = await dispatch(tableStatausUpdate(id, nextStatus));
   };
   const deleteHandleTable = async (id: string | number) => {
     (await id) && dispatch(deleteTablesById(id));
-    if (status === Status.SUCCESS) {
-      dispatch(getTables());
-      toast.success("Delete successful!");
-    } else {
-      toast.error("Deleted Failed");
-    }
   };
 
   // search
@@ -106,10 +131,17 @@ export default function ReservationInfo() {
                       </TableCell>
                       <TableCell>
                         <span
-                          onClick={handleStatus}
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${setColor()}`}
+                          onClick={() =>
+                            handleStatus(table.id, table.tableStatus)
+                          }
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${
+                            table.tableStatus === tableStatus.Available
+                              ? "bg-green-500 text-white"
+                              : "bg-red-500 text-white"
+                          }`}
                         >
-                          {status}
+                          {table.tableStatus.charAt(0).toUpperCase() +
+                            table.tableStatus.slice(1)}
                         </span>
                       </TableCell>
 

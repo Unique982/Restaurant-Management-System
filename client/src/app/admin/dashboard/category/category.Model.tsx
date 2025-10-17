@@ -53,9 +53,7 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
   const onSubmit = async (data: categorySchemaType) => {
     const success = await dispatch(addCategory(data));
     if (success) {
-      toast.success("Category added successfully!");
       onOpenChange(false); // Close modal
-      dispatch(getCategory());
     } else {
       toast.error("Failed to add category!");
     }

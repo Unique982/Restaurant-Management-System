@@ -1,3 +1,4 @@
+import { getIO } from "../../../../server";
 import sequelize from "../../../database/connection";
 import { IExtendedRequest } from "../../../middleware/types/type";
 import { Response } from "express";
@@ -20,13 +21,20 @@ class Tables {
       return res.status(400).json({ message: "Table number already exists!" });
 
     // insert
-    await sequelize.query(
+    const [result]: any = await sequelize.query(
       `INSERT INTO tables (tableNumber,seats,tableStatus,createdAt,updatedAt) VALUES(?,?,?,NOW(),NOW())`,
       {
         type: QueryTypes.INSERT,
         replacements: [tableNumber, seats, tableStatus],
       }
     );
+    const tableId = result;
+    getIO().emit("tableCreated", {
+      table_id: tableId,
+      tableNumber,
+      seats,
+      tableStatus,
+    });
     res.status(200).json({ message: "Table saved successfully!" });
   }
 
@@ -57,6 +65,7 @@ class Tables {
       type: QueryTypes.DELETE,
       replacements: [id],
     });
+    getIO().emit("tableDeleted", { table_id: id });
     res.status(200).json({ message: "Delete table successfullY" });
   }
 
@@ -121,7 +130,36 @@ class Tables {
         replacements: [tableNumber, seats, tableStatus, id],
       }
     );
+    getIO().emit("tableUpdated", {
+      table_id: id,
+      tableNumber,
+      seats,
+      tableStatus,
+    });
     res.status(200).json({ message: "Update Successfully!" });
+  }
+
+  // table status chnage
+  static async tableStatusUdapte(req: IExtendedRequest, res: Response) {
+    const { id } = req.params;
+    const { tableStatus } = req.body;
+    if (!tableStatus)
+      return res.status(400).json({ message: "Table status required" });
+
+    const [result] = await sequelize.query(
+      `UPDATE tables SET tableStatus=? ,updatedAt=NOW() WHERE id=?`,
+      {
+        type: QueryTypes.UPDATE,
+        replacements: [tableStatus, id],
+      }
+    );
+
+    // emit socket event if needed
+    getIO().emit("tableUpdated", { order_id: id, tableStatus });
+
+    return res
+      .status(200)
+      .json({ message: "Table status update successfully!" });
   }
 }
 

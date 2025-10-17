@@ -30,6 +30,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 import authRouter from "./routes/globals/auth/auth.Route";
+import profile from "./routes/globals/profile/profile.Route";
+import resetPassword from "./routes/globals/password/password.Route";
 
 // admin
 import categoryRouter from "./routes/admin/category/category.Route";
@@ -42,6 +44,9 @@ import listCustomer from "./routes/admin/customer/customer.Route";
 import about from "./routes/admin/about/about.Route";
 import blog from "./routes/admin/blog/blog.Route";
 import service from "./routes/admin/service/service.Route";
+import inqueryMsg from "./routes/admin/inqueryMsg/inqueryMsg.Route";
+import gallery from "./routes/admin/gallery/gallery.Route";
+import restoreData from "./routes/admin/Restore/restore.Route";
 
 // customer
 import dashboardOverView from "./routes/customer/dashboardOverview/dashboardOverView.Route";
@@ -50,8 +55,13 @@ import reservationTable from "./routes/customer/reservation/reservation.Route";
 import myOrder from "./routes/customer/myOrder/order.Route";
 import myCart from "./routes/customer/cart/cart.Route";
 
+// contact us
+import contactUs from "./routes/customer/contact/contact.Route";
+
 // admin api
 app.use("/api/auth/", authRouter);
+app.use("/api/profile", profile);
+app.use("/api/reset/password", resetPassword);
 app.use("/api/category", categoryRouter);
 app.use("/api/tables", tablesRoutes);
 app.use("/api/reservations", reservationRouter);
@@ -62,6 +72,9 @@ app.use("/api/customer", listCustomer);
 app.use("/api/about", about);
 app.use("/api/blog", blog);
 app.use("/api/service", service);
+app.use("/api/inquery/contact", inqueryMsg);
+app.use("/api/gallery", gallery);
+app.use("/api/restore", restoreData);
 
 // customer
 app.use("/api/customer/dashboard", dashboardOverView);
@@ -69,5 +82,8 @@ app.use("/api/customer/view-menu", menuViwe);
 app.use("/api/customer/reservations/booking", reservationTable);
 app.use("/api/customer/myOrder", myOrder);
 app.use("/api/customer/mycart", myCart);
+
+// contact user new and old user
+app.use("/contact", contactUs);
 
 export default app;

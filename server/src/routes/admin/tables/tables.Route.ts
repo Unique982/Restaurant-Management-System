@@ -33,5 +33,13 @@ router
     Middleware.restrictTo(userRole.Admin),
     asyncErrorHandle(Tables.updateTables)
   );
+// table status update
+router
+  .route("/status/:id")
+  .patch(
+    Middleware.isLoggedIn,
+    Middleware.restrictTo(userRole.Admin),
+    asyncErrorHandle(Tables.tableStatusUdapte)
+  );
 
 export default router;
