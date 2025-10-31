@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
@@ -37,6 +37,7 @@ import {
 interface LoginProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  redirectUrl?: string;
 }
 
 export default function LoginModal({ open, onOpenChange }: LoginProps) {
@@ -76,6 +77,7 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
       onOpenChange(false);
 
       const role = result.user.role;
+
       if (role === "admin") router.push("/admin/dashboard");
       else if (role === "customer") router.push("/customer/dashboard");
       else router.push("/");

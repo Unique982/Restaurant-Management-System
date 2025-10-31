@@ -26,7 +26,7 @@ import {
   getMenuItem,
 } from "@/lib/store/admin/menuItems/menuItemSlice";
 import { IMenuItemsData } from "@/lib/store/admin/menuItems/menuItemSlice.type";
-import { getCategory } from "@/lib/store/admin/category/categorySlice";
+import { getCategory } from "@/lib/store/customer/category/categorySlice";
 
 interface menuProps {
   open: boolean;
@@ -160,7 +160,7 @@ export default function AddMenu({ open, onOpenChange }: menuProps) {
                 id="file"
                 name="image_url"
                 onChange={chnageHandle}
-                type="text"
+                type="file"
                 placeholder="Enter your name.."
                 className="w-full"
               />

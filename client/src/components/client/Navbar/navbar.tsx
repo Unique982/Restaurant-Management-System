@@ -1,29 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, ShoppingCart, User } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 
 import LoginModal from "@/components/client/modal/LoginModal";
 import Cart from "@/components/client/cart/Cart";
+import { deleteCart, fetchCart } from "@/lib/store/customer/cart/cartSlice";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: "Burger", qty: 1, price: 10 },
-    { id: 2, name: "Pizza", qty: 2, price: 20 },
-  ]);
+  // ✅ Get cart items from Redux
+  const { items } = useAppSelector((state) => state.cart);
 
-  const totalPrice = cartItems.reduce(
-    (acc, item) => acc + item.qty * item.price,
-    0
-  );
+  // ✅ Fetch cart when Navbar mounts (or use socket in future)
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
+  // ✅ Remove item handler
   const removeItem = (id: number) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    dispatch(deleteCart(id));
   };
 
   return (
@@ -61,9 +63,9 @@ export default function Navbar() {
             className="hover:text-orange-400 relative"
           >
             <ShoppingCart size={30} />
-            {cartItems.length > 0 && (
+            {items.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-orange-500 text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {cartItems.length}
+                {items.length}
               </span>
             )}
           </button>
@@ -71,7 +73,7 @@ export default function Navbar() {
           {/* Login Modal Trigger */}
           <button
             onClick={() => setLoginOpen(true)}
-            className=" flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 hover:bg-orange-500 transition"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 hover:bg-orange-500 transition"
           >
             <User size={24} />
           </button>
@@ -85,6 +87,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+
       {/* Mobile Dropdown Menu */}
       <div
         className={`md:hidden bg-gray-900 overflow-hidden transition-all duration-300 ${
@@ -116,13 +119,21 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Cart Drawer */}
       <Cart
         open={cartOpen}
         onOpenChange={setCartOpen}
-        cartItems={cartItems}
-        removeItem={removeItem}
+        // cartItems={items.map((item) => ({
+        //   id: item.id,
+        //   name: item.name,
+        //   price: item.price,
+        //   qty: item.quantity,
+        //   image: item.image,
+        // }))}
+        // removeItem={removeItem}
       />
-      {/* Login model */}
+
+      {/* Login Modal */}
       <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
     </nav>
   );

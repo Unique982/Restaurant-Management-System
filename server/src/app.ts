@@ -54,6 +54,7 @@ import menuViwe from "./routes/customer/menu/menu.Route";
 import reservationTable from "./routes/customer/reservation/reservation.Route";
 import myOrder from "./routes/customer/myOrder/order.Route";
 import myCart from "./routes/customer/cart/cart.Route";
+import ViewCategory from "./routes/customer/category/category.Route";
 
 // contact us
 import contactUs from "./routes/customer/contact/contact.Route";
@@ -82,6 +83,7 @@ app.use("/api/customer/view-menu", menuViwe);
 app.use("/api/customer/reservations/booking", reservationTable);
 app.use("/api/customer/myOrder", myOrder);
 app.use("/api/customer/mycart", myCart);
+app.use("/category", ViewCategory);
 
 // contact user new and old user
 app.use("/contact", contactUs);

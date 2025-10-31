@@ -10,7 +10,7 @@ export interface cartItems {
   image: string;
 }
 export interface DeteleAction {
-  cart_id: number | number;
+  cart_id: number | string;
 }
 export interface IInitialState {
   items: cartItems[];
