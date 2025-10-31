@@ -1,13 +1,12 @@
-
 import { Sequelize } from "sequelize-typescript";
 import { config } from "dotenv";
 import User from "./models/users.Model";
 
 import Tables from "./models/table.Model";
 import Reservation from "./models/reservations.Model";
-import Category from "./models/category.model";
+import Category from "./models/category.Model";
 import MenuItem from "./models/menuItem.Model";
-import Order from "./models/order.model";
+import Order from "./models/order.Model";
 import OrderItem from "./models/orderItems.Model";
 import About from "./models/about.Model";
 import Service from "./models/service";

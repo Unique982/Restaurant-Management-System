@@ -1,26 +1,34 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from "sequelize-typescript";
+import {
+  Column,
+  DataType,
+  Model,
+  Table,
+  PrimaryKey,
+  AutoIncrement,
+} from "sequelize-typescript";
 
 @Table({
-  tableName: "categories", // DB table name
-  modelName: "Category",   // model name inside project
+  tableName: "category",
   timestamps: true,
-  createdAt: "created_at",
-  updatedAt: "updated_at"
+  modelName: "Category",
 })
 class Category extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column({
-    type: DataType.BIGINT
-  })
+  @Column({ type: DataType.INTEGER })
   declare id: number;
-
+  // categoryName
   @Column({
     type: DataType.STRING,
     allowNull: false,
-    unique: true
   })
   declare categoryName: string;
+  // category deescription
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  declare categoryDescription: string;
 }
 
 export default Category;

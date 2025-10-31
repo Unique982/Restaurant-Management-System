@@ -1,58 +1,119 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, ForeignKey, BelongsTo, Default } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  AutoIncrement,
+  ForeignKey,
+  BelongsTo,
+  Default,
+} from "sequelize-typescript";
 import User from "./users.Model";
+import Tables from "./table.Model";
 
 export type OrderType = "dine-in" | "takeaway" | "delivery";
-export type OrderStatus = "pending" | "confirmed" | "preparing" | "ready" | "completed" | "cancelled";
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "ready"
+  | "completed"
+  | "cancelled";
 export type PaymentMethod = "cash" | "esewa" | "khalti";
+export type PaymentStatus = "unpaid" | "paid" | "refunded";
 
 @Table({
   tableName: "orders",
   modelName: "Order",
   timestamps: true,
   createdAt: "created_at",
-  updatedAt: "updated_at"
+  updatedAt: "updated_at",
 })
 class Order extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column({
-    type: DataType.BIGINT
+    type: DataType.INTEGER,
   })
   declare id: number;
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.BIGINT,
-    allowNull: false
+    type: DataType.INTEGER,
+    allowNull: true,
   })
   declare user_id: number;
 
-  @BelongsTo(() => User, "user_id")
-  declare customer: User;
+  @ForeignKey(() => Tables)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  declare table_id: number;
 
   @Column({
     type: DataType.ENUM("dine-in", "takeaway", "delivery"),
-    allowNull: false
+    allowNull: false,
+    defaultValue: "dine-in",
   })
   declare order_type: OrderType;
 
   @Column({
     type: DataType.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: false,
   })
-  declare total_price: number;
+  declare total_amount: number;
 
-  @Default("pending")
   @Column({
-    type: DataType.ENUM("pending", "confirmed", "preparing", "ready", "completed", "cancelled")
+    type: DataType.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.0,
+  })
+  declare discount: number;
+
+  @Column({
+    type: DataType.DECIMAL(10, 2),
+    allowNull: false,
+  })
+  declare final_amount: number;
+
+  @Column({
+    type: DataType.ENUM(
+      "pending",
+      "confirmed",
+      "preparing",
+      "ready",
+      "completed",
+      "cancelled"
+    ),
+    defaultValue: "pending",
   })
   declare status: OrderStatus;
 
-  @Default("cash")
   @Column({
-    type: DataType.ENUM("cash", "esewa", "khalti")
+    type: DataType.ENUM("unpaid", "paid", "refunded"),
+    defaultValue: "unpaid",
   })
-  declare payment_method: PaymentMethod;
+  declare payment_status: PaymentStatus;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: true,
+  })
+  declare special_request: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare delivery_address: string;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  declare deleted_at: Date | null;
 }
 
 export default Order;
