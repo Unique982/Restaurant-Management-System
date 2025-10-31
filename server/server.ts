@@ -1,9 +1,14 @@
 import app from "./src/app";
+<<<<<<< HEAD
 import { Server } from "socket.io";
 import http from "http";
 //dotenv config garna
+=======
+>>>>>>> fb35e2af63cda14e17943774b4a92e04452ece25
 import { config } from "dotenv";
+config()
 
+<<<<<<< HEAD
 config();
 
 // create http server  from express app
@@ -37,3 +42,18 @@ const startServer = () => {
   });
 };
 startServer();
+=======
+//database connection import 
+// import garena vane connect hudainw or file execute hudainw 
+import "./src/database/connection"
+function startServer(){
+    const port = process.env.PORT 
+    app.listen(port,function(){
+        console.log(`Server has started at port ${port}`)
+    }) 
+}
+
+startServer()
+
+//sudo /Applications/XAMPP/xamppfiles/xampp start
+>>>>>>> fb35e2af63cda14e17943774b4a92e04452ece25

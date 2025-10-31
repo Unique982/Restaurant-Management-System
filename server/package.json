@@ -19,6 +19,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "init": "^0.1.2",
+<<<<<<< HEAD
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
@@ -29,6 +30,10 @@
     "passport-google-oauth20": "^2.0.0",
     "sequelize": "^6.37.7",
     "socket.io": "^4.8.1"
+=======
+    "mysql2": "^3.14.4",
+    "sequelize-typescript": "^2.1.6"
+>>>>>>> fb35e2af63cda14e17943774b4a92e04452ece25
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
