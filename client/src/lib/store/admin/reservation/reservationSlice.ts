@@ -6,7 +6,6 @@ import {
   ReservationStatus,
 } from "./reservationSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 import API from "@/lib/http";

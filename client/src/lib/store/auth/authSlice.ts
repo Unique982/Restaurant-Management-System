@@ -1,7 +1,6 @@
 import { Status } from "@/lib/types/type";
 import { IInitialState, IUserData } from "./authSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import { AppDispatch } from "../store";
 import API from "@/lib/http";
 import { ILoginData, IRegisterInput } from "@/lib/types/auth/authTypes";

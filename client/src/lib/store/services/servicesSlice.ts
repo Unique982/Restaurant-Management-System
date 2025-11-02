@@ -1,7 +1,6 @@
 import { Status } from "@/lib/types/type";
 import { IInitialState, serviceItems } from "./servicesSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { de } from "zod/v4/locales";
 import { AppDispatch } from "../store";
 import API from "@/lib/http";
 

@@ -3,7 +3,6 @@ import { IContactUs, IContactUsPost, IInitialState } from "./contactSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../store";
 import API from "@/lib/http";
-
 const initialState: IInitialState = {
   data: [],
   status: Status.LOADING,

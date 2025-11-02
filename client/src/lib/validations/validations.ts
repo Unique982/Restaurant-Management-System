@@ -1,4 +1,3 @@
-import { availableMemory } from "process";
 import { z } from "zod";
 
 // category schema

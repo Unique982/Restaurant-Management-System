@@ -1,5 +1,5 @@
 import { Status } from "@/lib/types/type";
-import { IAbout, IAboutPost, IInitialState } from "./aboutSlice.type";
+import { IAbout, IInitialState } from "./aboutSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
 import API from "@/lib/http";

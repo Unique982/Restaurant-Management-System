@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -24,9 +24,7 @@ import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
 
 export default function CategoryInfo() {
-  const { data: categories, status } = useAppSelector(
-    (store) => store.category
-  );
+  const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
@@ -35,12 +33,12 @@ export default function CategoryInfo() {
     dispatch(getCategory());
     const socket = initSocket();
     // lisiting for backend events
-    socket.on("categoryAdded", (data: ICategory) => {
+    socket.on("categoryAdded", (ICategory) => {
       dispatch(getCategory());
       toast.success(`Category added successfully!`);
     });
     // update
-    socket.on("categoryUpdated", (data: ICategory) => {
+    socket.on("categoryUpdated", (ICategory) => {
       dispatch(getCategory());
       toast.success(`Category updated successful!`);
     });

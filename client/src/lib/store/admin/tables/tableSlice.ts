@@ -6,7 +6,6 @@ import {
   tableStatus,
 } from "./tableSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
