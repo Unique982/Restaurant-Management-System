@@ -1,44 +1,15 @@
+"use client";
+import { fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { ArrowRight } from "lucide-react";
-const blogContent = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80",
-    date: "2082/05/23",
-    category: "Food",
-    title: " Lorem ipsum dolor sit amet.",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt cumque quas tempora quisquam qui quis laudantiu massumenda a iste atque.",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80",
-    date: "2082/05/23",
-    category: "Food",
-    title: " Lorem ipsum dolor sit amet.",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt cumque quas tempora quisquam qui quis laudantiu massumenda a iste atque.",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80",
-    date: "2082/05/23",
-    category: "Food",
-    title: " Lorem ipsum dolor sit amet.",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt cumque quas tempora quisquam qui quis laudantiu massumenda a iste atque.",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80",
-    date: "2082/05/23",
-    category: "Food",
-    title: " Lorem ipsum dolor sit amet.",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt cumque quas tempora quisquam qui quis laudantiu massumenda a iste atque.",
-  },
-];
+import { useEffect } from "react";
 
 export default function BlogSection() {
+  const dispatch = useAppDispatch();
+  const { blogData } = useAppSelector((state) => state.blog);
+  useEffect(() => {
+    dispatch(fectchBlogs());
+  }, [dispatch]);
   return (
     <>
       <section id="about" className="px-4  py-20 bg-white">
@@ -52,27 +23,35 @@ export default function BlogSection() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 lg:grid-cols-4">
-          {blogContent.map((blog, index) => {
+          {blogData.slice(0, 4).map((blog, index) => {
             return (
               <div
                 className="bg-white rounded-xl overflow-hidden relative group shadow-sm"
                 key={index}
               >
                 <img
-                  src={blog.image}
+                  src={blog.blogImage}
                   alt="No Image"
                   className="w-full h-50 object-cover"
                 />
                 <div className="absolute top-4 right-4 bg-orange-700 text-white px-4 py-2 rounded-full text-xs font-semibold">
-                  {blog.category}
+                  {blog.blogCategory}
                 </div>
 
                 <div className="p-6">
-                  <p className="text-sm text-gary-500 mb-2">{blog.date}</p>
+                  <p className="text-sm text-gary-500 mb-2">
+                    {" "}
+                    {new Date(blog.createdAt).toLocaleDateString()}
+                  </p>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    {blog.title}
+                    {blog.blogTitle.charAt(0).toUpperCase() +
+                      blog.blogTitle.slice(1)}
                   </h3>
-                  <p className="text-gray-600 text-sm">{blog.description}</p>
+                  <p className="text-gray-600 text-sm">
+                    {blog.blogDescription.length > 100
+                      ? blog.blogDescription.slice(0, 100) + "..."
+                      : blog.blogDescription}
+                  </p>
                   <a
                     href="/product"
                     className="flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition"

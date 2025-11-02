@@ -3,7 +3,6 @@ import { cartItems, DeteleAction, IInitialState } from "./cartSlice.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
 import API from "@/lib/http";
-import { Item } from "@radix-ui/react-dropdown-menu";
 
 const initialState: IInitialState = {
   items: [],
@@ -45,37 +44,47 @@ export function addCart(data: cartItems) {
   return async function addCartThunk(dispatch: AppDispatch) {
     const token = localStorage.getItem("token");
     if (!token) {
-      const guestCart: cartItems[] = JSON.parse(
+      let guestCart: cartItems[] = JSON.parse(
         localStorage.getItem("guest_cart") || "[]"
       );
-      const exist = guestCart.find((i: cartItems) => i.id === data.id);
-      if (exist) {
-        exist.quantity += data.quantity;
+
+      const existingItem = guestCart.find((item) => item.id === data.id);
+
+      if (existingItem) {
+        existingItem.quantity += data.quantity;
       } else {
         guestCart.push(data);
       }
+
       localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+
       dispatch(setItems(guestCart));
       dispatch(setStatus(Status.SUCCESS));
-      return { success: true };
+
+      return { success: true, message: "Item added to guest cart" };
     }
-    dispatch(setStatus(Status.LOADING));
     try {
       const response = await API.post("/customer/mycart", data);
-      if (response.status === 200) {
+
+      if (response.status === 200 || response.status === 201) {
         dispatch(setItems(response.data.data));
-        return { success: true };
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true, message: "Item added to user cart" };
       } else {
         dispatch(setStatus(Status.ERROR));
-        return { message: response.data?.message || "Failed" };
+        return {
+          success: false,
+          message: response.data?.message || "Failed to add to cart",
+        };
       }
-    } catch (err: any) {
+    } catch (error: any) {
       dispatch(setStatus(Status.ERROR));
       const message =
-        err.response?.data?.message ||
-        err.message ||
-        err.response?.data?.errors ||
+        error.response?.data?.message ||
+        error.message ||
+        error.response?.data?.errors ||
         "Something went wrong";
+
       return { success: false, message };
     }
   };
@@ -119,13 +128,18 @@ export function fetchCart() {
 export function mergeGuestCartAfterLogin() {
   return async function mergeCartThunk(dispatch: AppDispatch) {
     const guestCart = JSON.parse(localStorage.getItem("guest_cart") || "[]");
-    if (guestCart.length === 0) return;
+    if (!guestCart || guestCart.length === 0) return;
+    try {
+      for (const item of guestCart) {
+        await dispatch(addCart(item));
+      }
 
-    for (const item of guestCart) {
-      await dispatch(addCart(item));
+      // merge पछि guest cart clear गर
+      localStorage.removeItem("guest_cart");
+      console.log("Guest cart merged successfully!");
+    } catch (error) {
+      console.error("Error merging guest cart:", error);
     }
-
-    localStorage.removeItem("guest_cart");
   };
 }
 

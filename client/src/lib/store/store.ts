@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./auth/authSlice";
 import categorySlice from "./admin/category/categorySlice";
 import menuItemsSlice from "./admin/menuItems/menuItemSlice";
@@ -8,6 +8,11 @@ import reservationSlice from "./admin/reservation/reservationSlice";
 import orderSlice from "./admin/orders/orderSlice";
 import cartSlice from "./customer/cart/cartSlice";
 import categoryListSlice from "./customer/category/categorySlice";
+import gallerySlice from "./image/gallerySlice";
+import serviceSlice from "./services/servicesSlice";
+import blogSlice from "./admin/blog/blogSlice";
+import contactUs from "./contactUs/contactSlice";
+import abourSlice from "./admin/about/aboutSlice";
 
 const store = configureStore({
   reducer: {
@@ -20,6 +25,11 @@ const store = configureStore({
     order: orderSlice,
     cart: cartSlice,
     categoryList: categoryListSlice,
+    gallery: gallerySlice,
+    services: serviceSlice,
+    blog: blogSlice,
+    contact: contactUs,
+    about: abourSlice,
   },
 });
 

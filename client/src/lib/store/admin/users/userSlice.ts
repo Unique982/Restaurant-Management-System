@@ -5,14 +5,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
-const initailState: IInitialState = {
+const initialState: IInitialState = {
   usersData: [],
   status: Status.LOADING,
 };
 
 const userSlice = createSlice({
   name: "userSlice",
-  initialState: initailState,
+  initialState: initialState,
   reducers: {
     setStatus(state: IInitialState, action: PayloadAction<Status>) {
       state.status = action.payload;

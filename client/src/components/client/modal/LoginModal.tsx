@@ -33,6 +33,7 @@ import {
   changePasswordSchema,
   changePasswordSchemeType,
 } from "@/lib/validations/auth";
+import { mergeGuestCartAfterLogin } from "@/lib/store/customer/cart/cartSlice";
 
 interface LoginProps {
   open: boolean;
@@ -74,17 +75,21 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
     const result: any = await dispatch(userLogin(data));
     if (result.success && result.user) {
       toast.success("Login Successfully");
+
+      // Merge guest cart after login
+      await dispatch(mergeGuestCartAfterLogin());
+
       onOpenChange(false);
 
       const role = result.user.role;
-
       if (role === "admin") router.push("/admin/dashboard");
-      else if (role === "customer") router.push("/customer/dashboard");
+      else if (role === "customer") router.push("/");
       else router.push("/");
     } else {
       toast.error(result?.message || "Login failed");
     }
   };
+
   // Register
   const onSubmitSignup = async (data: registerSchemaType) => {
     const result: any = await dispatch(userRegister(data));

@@ -27,11 +27,17 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 relative z-10">
           {/* contain about section */}
           <div>
-            <h2 className="text-2xl font-bold text-black mb-4">About Us</h2>
+            <h2 className="text-2xl font-bold text-black mb-4">
+              About The 90’s Restaurant & Bar
+            </h2>
             <p className="mb-4 leading-relaxed opacity-90 text-black">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum
-              voluptatem accusamus expedita eaque iure, praesentium recusandae
-              aut ipsum sapiente in.
+              Step back in time and relive the golden era at The 90’s Restaurant
+              & Bar — where nostalgia meets flavor. We blend the vibrant spirit
+              of the 90s with modern dining to create an unforgettable
+              experience. From delicious dishes crafted with passion to
+              refreshing drinks served with style, every moment here is a
+              celebration of good food, great music, and timeless vibes. Come
+              for the taste. Stay for the memories. ✨
             </p>
             {/* socauil link */}
             <div className="flex space-x-3">

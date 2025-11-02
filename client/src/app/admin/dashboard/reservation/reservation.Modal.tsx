@@ -53,6 +53,8 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
       reservation_time: "",
       status: ReservationStatus.Pending,
       specailRequest: "",
+      name: null,
+      phoneNumber: null,
     });
 
   const handleChange = (

@@ -16,14 +16,17 @@ export interface ITablesReservation {
 }
 
 export interface IReservationPostData {
-  user_id: string | number;
+  user_id: string | number | null;
   table_id: string | number;
   guests: number;
   reservation_date: string;
   reservation_time: string;
   status: ReservationStatus;
   specailRequest: string;
+  name: string | null;
+  phoneNumber: string | null;
 }
+
 export interface IIReservation extends IReservationPostData {
   id: string | number;
   createdAt: string;

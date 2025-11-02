@@ -6,6 +6,8 @@ class ReservationTable {
   static async createReservation(req: IExtendedRequest, res: Response) {
     const userId = req.user?.id;
     const {
+      name,
+      phone,
       table_id,
       guests,
       reservation_date,
@@ -16,6 +18,8 @@ class ReservationTable {
 
     //
     if (
+      !name ||
+      !phone ||
       !table_id ||
       !guests ||
       !reservation_date ||

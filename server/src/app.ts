@@ -58,7 +58,7 @@ import ViewCategory from "./routes/customer/category/category.Route";
 
 // contact us
 import contactUs from "./routes/customer/contact/contact.Route";
-
+import tableBooking from "./routes/tableBooking/table.Route";
 // admin api
 app.use("/api/auth/", authRouter);
 app.use("/api/profile", profile);
@@ -86,6 +86,7 @@ app.use("/api/customer/mycart", myCart);
 app.use("/category", ViewCategory);
 
 // contact user new and old user
-app.use("/contact", contactUs);
+app.use("/api/contact", contactUs);
+app.use("/api/booking/table", tableBooking);
 
 export default app;

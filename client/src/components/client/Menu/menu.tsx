@@ -85,7 +85,7 @@ export default function MenuSection() {
   };
 
   return (
-    <section className="px-4 py-20 bg-white">
+    <section id="menu" className="px-4 py-20 bg-white">
       <div className="container mx-auto text-center mb-12">
         <h2 className="text-2xl font-bold text-gray-800">Our Special Menu</h2>
         <p className="text-gray-600 mt-2">Check out our categories!</p>

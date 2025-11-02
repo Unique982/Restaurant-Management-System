@@ -26,7 +26,7 @@ class Reservation extends Model {
 
   // Foreign key to User
   @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: true })
   declare user_id: number;
 
   @BelongsTo(() => User)
@@ -54,7 +54,14 @@ class Reservation extends Model {
     defaultValue: "pending",
   })
   declare status: ReservationStatus;
-
+  @Column({
+    type: DataType.STRING,
+  })
+  declare name: string;
+  @Column({
+    type: DataType.STRING,
+  })
+  declare phoneNumber: string;
   // specailRequest
 
   @Column({ type: DataType.STRING, allowNull: false })

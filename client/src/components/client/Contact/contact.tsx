@@ -1,9 +1,43 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { addContactUs } from "@/lib/store/contactUs/contactSlice";
+import { IContactUsPost } from "@/lib/store/contactUs/contactSlice.type";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Phone, Mail, MapPin, Clock, Link } from "lucide-react";
+import { ChangeEvent, FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 export default function ContactSection() {
+  const dispatch = useAppDispatch();
+  const { data } = useAppSelector((state) => state.contact);
+  const [contact, setContactData] = useState<IContactUsPost>({
+    username: "",
+    email: "",
+    phoneNumber: "",
+    message: "",
+  });
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setContactData({
+      ...contact,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await dispatch(addContactUs(contact));
+    if (result.success) {
+      toast.success("Message sent successfully!");
+      setContactData({ username: "", email: "", phoneNumber: "", message: "" });
+    } else {
+      toast.error(result.message || "Failed to send message!");
+    }
+  };
   return (
     <>
       <section id="services" className="px-4 py-20 bg-gray-100">
@@ -51,29 +85,44 @@ export default function ContactSection() {
             </div>
           </div>
           <div className="lg:w-1/2 bg-white p-8 rounded-xl shadow-sm">
-            <h3 className="text-2xl font-semibold mb-4">Sned a Message..</h3>
-            <form action="" className="flex flex-col gap-3">
+            <h3 className="text-2xl font-semibold mb-4">Send a Message..</h3>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               <Label>Username:</Label>
               <Input
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Enter your username"
+                onChange={handleChange}
+                name="username"
+                value={contact.username}
               />
               <Label>Email:</Label>
               <Input
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Enter your email"
+                name="email"
+                value={contact.email}
+                onChange={handleChange}
               />
               <Label>Phone No:</Label>
               <Input
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Enter your phone number"
+                name="phoneNumber"
+                value={contact.phoneNumber}
+                onChange={handleChange}
               />
               <Label>Message</Label>
               <Textarea
                 className="w-full p-3 border border-gray-300 rounded h-32 focus:outline-none focus:ring-2 focus:ring-organe-500"
                 placeholder="Write message..."
+                name="message"
+                value={contact.message}
+                onChange={handleChange}
               ></Textarea>
-              <Button className="bg-orange-700 text-white  px-6 py-3 rounded hover:bg-orange-600 transition-colors duration-300">
+              <Button
+                className="bg-orange-700 text-white  px-6 py-3 rounded hover:bg-orange-600 transition-colors duration-300"
+                type="submit"
+              >
                 Send
               </Button>
             </form>

@@ -14,11 +14,7 @@ router
     upload.array("image", 30),
     asyncErrorHandle(Gallery.uploadImage)
   )
-  .get(
-    Middleware.isLoggedIn,
-    Middleware.restrictTo(userRole.Admin),
-    asyncErrorHandle(Gallery.getAllImage)
-  );
+  .get(asyncErrorHandle(Gallery.getAllImage));
 
 // delete
 router

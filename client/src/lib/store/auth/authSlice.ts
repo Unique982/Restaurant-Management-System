@@ -42,11 +42,19 @@ export function userLogin(data: ILoginData) {
       const response = await API.post("/auth/login", data);
       if (response.status === 200) {
         const { token, user } = response.data;
-        dispatch(setUser(user));
+        dispatch(
+          setUser({
+            username: user.username,
+            email: user.email,
+            token: token,
+            role: user.role,
+          })
+        );
         localStorage.setItem("token", token);
 
         dispatch(setStatus(Status.SUCCESS));
         return { success: true, user };
+        console.log(response.data);
       } else {
         dispatch(setStatus(Status.ERROR));
         return { success: false, message: response.data?.message || "Failed" };
