@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.ts"
+    "dev": "ts-node server.ts",
+    "start": "nodemon server.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +16,7 @@
   "dependencies": {
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
-    "cloudinary": "^2.7.0",
+    "cloudinary": "^1.41.3",
     "cookieparser": "^0.1.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
