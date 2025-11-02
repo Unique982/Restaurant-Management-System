@@ -29,10 +29,7 @@ import {
 } from "@/lib/store/admin/orders/orders.types";
 import { Plus, Trash2 } from "lucide-react";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import {
-  createOrders,
-  getALlOrderList,
-} from "@/lib/store/admin/orders/orderSlice";
+import { createOrders } from "@/lib/store/admin/orders/orderSlice";
 
 interface OrderProps {
   open: boolean;

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
+import Image from "next/image";
 const images = [
   "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1600",
   "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=1600",
@@ -16,10 +16,11 @@ export default function HeroSection() {
     <section className="relative w-full min-h-screen flex items-center bg-gray-900 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src={images[current]}
           alt="restaurant"
-          className="w-full h-full object-cover transition-all duration-700"
+          fill
+          className="object-cover transition-all duration-700"
         />
         <div className="absolute inset-0 bg-black/70" />
       </div>

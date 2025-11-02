@@ -3,12 +3,10 @@ import {
   CalendarCheck,
   Clock,
   DollarSign,
-  Group,
   MessageCircle,
   ShoppingBag,
   Table2,
   User,
-  User2Icon,
   XCircle,
 } from "lucide-react";
 export default function CardView() {

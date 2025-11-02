@@ -1,5 +1,5 @@
 "use client";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
@@ -28,10 +28,6 @@ import {
   loginSchemaType,
   registerSchema,
   registerSchemaType,
-  otpVerifySchema,
-  otpVerifySchemeType,
-  changePasswordSchema,
-  changePasswordSchemeType,
 } from "@/lib/validations/auth";
 import { mergeGuestCartAfterLogin } from "@/lib/store/customer/cart/cartSlice";
 

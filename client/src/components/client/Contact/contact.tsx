@@ -6,8 +6,8 @@ import { addContactUs } from "@/lib/store/contactUs/contactSlice";
 import { IContactUsPost } from "@/lib/store/contactUs/contactSlice.type";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { Phone, Mail, MapPin, Clock, Link } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { ChangeEvent, useState } from "react";
 import toast from "react-hot-toast";
 export default function ContactSection() {
   const dispatch = useAppDispatch();

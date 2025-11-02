@@ -24,7 +24,6 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   createReservation,
-  fetchReservation,
   getReservation,
 } from "@/lib/store/admin/reservation/reservationSlice";
 import toast from "react-hot-toast";

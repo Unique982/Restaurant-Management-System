@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchGallery } from "@/lib/store/image/gallerySlice";
 import { ArrowRight } from "lucide-react";
 import { useEffect } from "react";
-
+import Image from "next/image";
 export default function GallerySection() {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.gallery);
@@ -25,10 +25,13 @@ export default function GallerySection() {
               key={index}
               className="relative group overflow-hidden rounded-xl shadow hover:shadow-xl transition-all durations-300"
             >
-              <img
+              <Image
                 src={image.image}
-                alt={`No Image${index + 1}`}
+                alt={`No Image ${index + 1}`}
+                width={700}
+                height={224}
                 className="w-full h-48 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+                style={{ width: "100%", height: "auto" }}
               />
 
               <div className="absolute top-4 right-4 bg-orange-700 text-white px-3 py-1 rounded-full text-xs font-semibold opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">

@@ -8,17 +8,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  addCategory,
-  getCategory,
-} from "@/lib/store/admin/category/categorySlice";
-import { ICategoryData } from "@/lib/store/admin/category/categorySlice.type";
+import { addCategory } from "@/lib/store/admin/category/categorySlice";
 import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { Status } from "@/lib/types/type";
+
 import { Label } from "@radix-ui/react-dropdown-menu";
 
-import { ChangeEvent, FormEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   categorySchema,

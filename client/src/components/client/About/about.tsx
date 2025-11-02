@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { aboutFetch, fetchAbout } from "@/lib/store/admin/about/aboutSlice";
+import { aboutFetch } from "@/lib/store/admin/about/aboutSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { stat } from "fs";
+
 import { useEffect } from "react";
 
 export default function AboutSection() {

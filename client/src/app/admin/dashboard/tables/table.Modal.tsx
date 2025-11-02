@@ -18,18 +18,13 @@ import {
 
 import { ChangeEvent, FormEvent, useState } from "react";
 import {
-  ITables,
   ITablesData,
   tableStatus,
 } from "@/lib/store/admin/tables/tableSlice.type";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { useDispatch } from "react-redux";
-import {
-  addTable,
-  createTables,
-  getTables,
-} from "@/lib/store/admin/tables/tableSlice";
-import { Status } from "@/lib/types/type";
+
+import { createTables, getTables } from "@/lib/store/admin/tables/tableSlice";
+
 import toast from "react-hot-toast";
 
 interface categoryProps {

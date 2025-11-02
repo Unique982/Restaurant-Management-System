@@ -9,8 +9,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
 
-import { useState } from "react";
-
 interface UserProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

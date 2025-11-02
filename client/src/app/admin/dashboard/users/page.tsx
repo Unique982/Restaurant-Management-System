@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2, User } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,13 +15,7 @@ import {
 import Pagination from "@/components/admin/Pagination/pagination";
 import AddUser from "./user.Model";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { useDispatch } from "react-redux";
-import {
-  deleteUser,
-  deleteUserById,
-  fetchUser,
-  getUserList,
-} from "@/lib/store/admin/users/userSlice";
+import { deleteUser, getUserList } from "@/lib/store/admin/users/userSlice";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
 

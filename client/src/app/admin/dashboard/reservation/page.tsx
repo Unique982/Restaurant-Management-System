@@ -2,11 +2,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -17,13 +16,10 @@ import AddReservation from "./reservation.Modal";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   deleteReservation,
-  deleteReservationById,
   getReservation,
   statusUpdate,
-  updateStatus,
 } from "@/lib/store/admin/reservation/reservationSlice";
-import { current } from "@reduxjs/toolkit";
-import { toLowerCase } from "zod";
+
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
@@ -31,7 +27,7 @@ import {
   IReservationPostData,
   ReservationStatus,
 } from "@/lib/store/admin/reservation/reservationSlice.type";
-import next from "next";
+
 export default function ReservationInfo() {
   const [isModal, setIsModal] = useState(false);
   const { reservationData, status } = useAppSelector(
@@ -86,10 +82,10 @@ export default function ReservationInfo() {
   // search
   const filterData = reservationData.filter(
     (reservation) =>
-      reservation.username
+      reservation.user.username
         .toLocaleString()
         .includes(searchText.toLowerCase()) ||
-      reservation.username
+      reservation.user.username
         .toString()
         .toLowerCase()
         .includes(searchText.toLowerCase()) ||
@@ -155,13 +151,13 @@ export default function ReservationInfo() {
                   <TableRow key={index}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell className="whitespace-normal break-words">
-                      {reservation.username
-                        ? reservation.username.charAt(0).toUpperCase() +
-                          reservation.username.slice(1)
+                      {reservation.user.username
+                        ? reservation.user.username.charAt(0).toUpperCase() +
+                          reservation.user.username.slice(1)
                         : "Unknown User"}
                     </TableCell>
                     <TableCell className="whitespace-normal break-words">
-                      {reservation.tableNumber || "No Table"}
+                      {reservation.table.tableNumber || "No Table"}
                     </TableCell>
                     <TableCell className="whitespace-normal break-words">
                       {reservation.guests}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,20 +16,16 @@ import AddMenu from "./menu.Modal";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   deletemenuItem,
-  deleteMenuItemById,
   getMenuItem,
 } from "@/lib/store/admin/menuItems/menuItemSlice";
-import { de } from "zod/v4/locales";
-import { Status } from "@/lib/types/type";
+
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
 import { IMenuItems } from "@/lib/store/admin/menuItems/menuItemSlice.type";
 
 export default function MenuIfo() {
   const [isModal, setIsModal] = useState(false);
-  const { menuDatas: menuItems, status } = useAppSelector(
-    (store) => store.menuItems
-  );
+  const { menuDatas: menuItems } = useAppSelector((store) => store.menuItems);
   const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
   useEffect(() => {

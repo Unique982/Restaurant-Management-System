@@ -6,7 +6,6 @@ import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -17,14 +16,12 @@ import AddCategory from "./category.Model";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   deleteCategoryById,
-  fetchCategory,
   getCategory,
 } from "@/lib/store/admin/category/categorySlice";
 import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
-import { Status } from "@/lib/types/type";
+
 import toast from "react-hot-toast";
-import { get } from "http";
-import { initSocket, getSocket } from "@/lib/socket";
+import { initSocket } from "@/lib/socket";
 
 export default function CategoryInfo() {
   const { data: categories, status } = useAppSelector(

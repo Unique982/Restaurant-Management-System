@@ -2,11 +2,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -17,7 +16,6 @@ import Pagination from "@/components/admin/Pagination/pagination";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   deleteCategoryById,
-  fetchCategory,
   getCategory,
 } from "@/lib/store/admin/category/categorySlice";
 import { ICategory } from "@/lib/store/admin/category/categorySlice.type";

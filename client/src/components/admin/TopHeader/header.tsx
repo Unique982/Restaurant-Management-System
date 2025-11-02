@@ -17,7 +17,7 @@ import {
   DatabaseBackup,
   KeyIcon,
 } from "lucide-react";
-import { Profiler } from "react";
+
 export default function TopHeader() {
   return (
     <>

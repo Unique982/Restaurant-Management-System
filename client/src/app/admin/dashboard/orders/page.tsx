@@ -14,8 +14,7 @@ import {
 import Pagination from "@/components/admin/Pagination/pagination";
 
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { getMenuItem } from "@/lib/store/admin/menuItems/menuItemSlice";
-import { Status } from "@/lib/types/type";
+
 import toast from "react-hot-toast";
 
 import AddOrders from "./ordersModal";

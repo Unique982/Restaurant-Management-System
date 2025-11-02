@@ -1,6 +1,4 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Icon, Section } from "lucide-react";
-
+import Image from "next/image";
 export default function Testimonials() {
   const testimonials = [
     {
@@ -63,10 +61,12 @@ export default function Testimonials() {
           >
             {/* Profile */}
             <div className="flex items-center gap-3 mb-3">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
                 alt=""
-                className="w-20 h-20 rounded-full"
+                width={80}
+                height={80}
+                className="rounded-full"
               />
               <div className="flex flex-col">
                 <h3 className="font-semibold text-lg text-gray-800">

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, PlusCircle, Trash2, User } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,16 +15,14 @@ import Pagination from "@/components/admin/Pagination/pagination";
 import AddTable from "./table.Modal";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
-  deleteTableById,
   deleteTablesById,
   getTables,
   tableStatausUpdate,
 } from "@/lib/store/admin/tables/tableSlice";
-import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
 import { ITableData } from "@/lib/store/admin/orders/orders.types";
-import { ITables, tableStatus } from "@/lib/store/admin/tables/tableSlice.type";
+import { tableStatus } from "@/lib/store/admin/tables/tableSlice.type";
 
 export default function TableInfo() {
   const [isModal, setIsModal] = useState(false);

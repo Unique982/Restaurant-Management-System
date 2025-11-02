@@ -4,8 +4,6 @@ import { userLogout } from "@/lib/store/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   LayoutDashboard,
-  Users,
-  Settings,
   LogOut,
   Menu,
   Info,

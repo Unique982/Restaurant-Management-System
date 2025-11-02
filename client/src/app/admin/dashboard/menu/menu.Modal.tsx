@@ -21,10 +21,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 
 import toast from "react-hot-toast";
-import {
-  createMenuItems,
-  getMenuItem,
-} from "@/lib/store/admin/menuItems/menuItemSlice";
+import { createMenuItems } from "@/lib/store/admin/menuItems/menuItemSlice";
 import { IMenuItemsData } from "@/lib/store/admin/menuItems/menuItemSlice.type";
 import { getCategory } from "@/lib/store/customer/category/categorySlice";
 

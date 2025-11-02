@@ -7,6 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
@@ -88,10 +89,12 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   key={item.id}
                   className="flex justify-between items-center border-b pb-2"
                 >
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.name}
-                    className="w-12 h-12 rounded-full"
+                    width={48}
+                    height={48}
+                    className="rounded-full"
                   />
                   <div className="flex-1 ml-2">
                     <p className="font-semibold">{item.name}</p>

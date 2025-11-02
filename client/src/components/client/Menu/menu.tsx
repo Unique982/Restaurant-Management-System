@@ -4,18 +4,14 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, PlusCircle } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import {
-  addCart,
-  setItems,
-  updateItems,
-} from "@/lib/store/customer/cart/cartSlice";
+import { addCart, setItems } from "@/lib/store/customer/cart/cartSlice";
 import { getMenuItem } from "@/lib/store/admin/menuItems/menuItemSlice";
 import { getCategory } from "@/lib/store/customer/category/categorySlice";
 import { setStatus } from "@/lib/store/auth/authSlice";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
 import { cartItems } from "@/lib/store/customer/cart/cartSlice.type";
-
+import Image from "next/image";
 type CategoryType = "All" | string;
 
 export default function MenuSection() {
@@ -52,7 +48,6 @@ export default function MenuSection() {
       menu_item_id: item.id,
     };
 
-    // ✅ If user is NOT logged in → use localStorage (guest cart)
     if (!user) {
       const guestCart: cartItems[] = JSON.parse(
         localStorage.getItem("guest_cart") || "[]"
@@ -79,7 +74,6 @@ export default function MenuSection() {
       return;
     }
 
-    // ✅ If user IS logged in → save to DB & update redux
     dispatch(addCart(cartItem));
     toast.success("Item added to your cart");
   };
@@ -126,7 +120,7 @@ export default function MenuSection() {
               key={item.id}
               className="flex items-start space-x-4 p-4 border rounded-md transition"
             >
-              <img
+              <Image
                 src={item.image_url}
                 alt={item.name}
                 className="w-20 h-20 object-cover rounded-full flex-shrink-0"
