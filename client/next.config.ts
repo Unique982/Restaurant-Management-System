@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   } /* config options here */,
+  images: {
+    domains: ["images.unsplash.com"], // ← Unsplash images को domain allow गरियो
+  },
   async rewrites() {
     return [
       {

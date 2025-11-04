@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 const images = [
   "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1600",
@@ -12,6 +12,12 @@ const images = [
 export default function HeroSection() {
   const [current, setCurrent] = useState(0);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % images.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section className="relative w-full min-h-screen flex items-center bg-gray-900 overflow-hidden">
       {/* Background */}
