@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://restaurant-management-system-j9p7.vercel.app/ ",
+baseURL: "https://restaurant-management-system-j9p7.vercel.app/api/",
   //https://restaurant-management-system-j9p7.vercel.app/ http://localhost:4000/api/
   headers: {
     "Content-Type": "application/json", // send vayirako data ko formate
@@ -9,4 +9,5 @@ const API = axios.create({
   },
 });
 export default API;
+
 
