@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import store from "@/lib/store/store";
-
+import { Analytics } from "@vercel/analytics/next";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,6 +33,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased font-serif`}
         >
           {children}
+          <Analytics />
           <Toaster position="top-right" />
         </body>
       </html>
