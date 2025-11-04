@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const APIWITHTOKEN = axios.create({
-  baseURL: "http://localhost:4000/api/",
+  baseURL:"https://restaurant-management-system-j9p7.vercel.app/api",
+  // https://restaurant-management-system-j9p7.vercel.app/ "http://localhost:4000/api/"
   headers: {
     Authorization:
       typeof window !== "undefined" ? localStorage.getItem("token") : null,
@@ -10,3 +11,4 @@ const APIWITHTOKEN = axios.create({
   },
 });
 export default APIWITHTOKEN;
+
