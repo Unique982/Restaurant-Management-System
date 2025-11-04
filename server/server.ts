@@ -31,9 +31,9 @@ io.on("connection", (socket) => {
 
 // create server
 const startServer = () => {
-  const port = process.env.PORT;
-  server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+  const PORT = process.env.PORT || 4000;
+  server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
   });
 };
 startServer();
