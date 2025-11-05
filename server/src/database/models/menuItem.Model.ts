@@ -9,7 +9,7 @@ import {
   BelongsTo,
   Default,
 } from "sequelize-typescript";
-import Category from "./category.Model";
+import Category from "./category.model";
 
 export type DishStatus = "available" | "unavailable";
 export type DishType = "veg" | "non-veg";

@@ -9,7 +9,7 @@ import {
   BelongsTo,
   HasMany,
 } from "sequelize-typescript";
-import User from "./users.Model";
+import User from "./users.model";
 
 @Table({
   tableName: "carts",

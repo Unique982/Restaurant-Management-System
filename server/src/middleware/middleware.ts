@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import { IExtendedRequest, userRole } from "./types/type";
 import jwt from "jsonwebtoken";
-import User from "../database/models/users.Model";
+import User from "../database/models/users.model";
 class Middleware {
   static isLoggedIn = async (
     req: IExtendedRequest,

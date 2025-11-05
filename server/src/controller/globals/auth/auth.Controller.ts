@@ -1,6 +1,6 @@
 // login
 import { Request, Response } from "express";
-import User from "../../../database/models/users.Model";
+import User from "../../../database/models/users.model";
 
 import bcrypt from "bcrypt";
 import generatedJwtWebToken from "../../../services/generatedJWTWEBTOKEN";

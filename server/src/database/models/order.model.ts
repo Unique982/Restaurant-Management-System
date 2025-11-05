@@ -9,8 +9,8 @@ import {
   BelongsTo,
   Default,
 } from "sequelize-typescript";
-import User from "./users.Model";
-import Tables from "./table.Model";
+import User from "./users.model";
+import Tables from "./table.model";
 
 export type OrderType = "dine-in" | "takeaway" | "delivery";
 export type OrderStatus =

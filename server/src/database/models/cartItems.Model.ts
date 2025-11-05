@@ -8,8 +8,8 @@ import {
   ForeignKey,
   BelongsTo,
 } from "sequelize-typescript";
-import Cart from "./cart.Model";
-import MenuItem from "./menuItem.Model";
+import Cart from "./cart.model";
+import MenuItem from "./menuItem.model";
 
 @Table({
   tableName: "cart_items",

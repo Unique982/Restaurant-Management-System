@@ -1,22 +1,22 @@
 import { Sequelize } from "sequelize-typescript";
 import { config } from "dotenv";
-import User from "./models/users.Model";
+import User from "./models/users.model";
 
-import Tables from "./models/table.Model";
-import Reservation from "./models/reservations.Model";
-import Category from "./models/category.Model";
-import MenuItem from "./models/menuItem.Model";
-import Order from "./models/order.Model";
-import OrderItem from "./models/orderItems.Model";
-import About from "./models/about.Model";
-import Service from "./models/service";
-import Blog from "./models/blog.Model";
-import ContactUs from "./models/contact.Model";
-import Cart from "./models/cart.Model";
-import Payment from "./models/payment.Model";
-import CartItem from "./models/cartItems.Model";
-import Gallery from "./models/gallery.Model";
-import Setting from "./models/setting.Model";
+import Tables from "./models/table.model";
+import Reservation from "./models/reservations.model";
+import Category from "./models/category.model";
+import MenuItem from "./models/menuItem.model";
+import Order from "./models/order.model";
+import OrderItem from "./models/orderItems.model";
+import About from "./models/about.model";
+import Service from "./models/service.model";
+import Blog from "./models/blog.model";
+import ContactUs from "./models/contact.model";
+import Cart from "./models/cart.model";
+import Payment from "./models/payment.model";
+import CartItem from "./models/cartItems.model";
+import Gallery from "./models/gallery.model";
+import Setting from "./models/setting.,odel";
 // load env
 config();
 

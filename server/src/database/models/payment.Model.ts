@@ -7,7 +7,7 @@ import {
   DataType,
   ForeignKey,
 } from "sequelize-typescript";
-import Order from "./order.Model";
+import Order from "./order.model";
 
 @Table({
   tableName: "payments",

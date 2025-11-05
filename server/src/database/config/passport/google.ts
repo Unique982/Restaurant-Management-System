@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebokStrategy } from "passport-facebook";
-import User from "../../models/users.Model";
+import User from "../../models/users.model";
 import { config } from "dotenv";
 import mailSend from "../../../services/mailSend";
 

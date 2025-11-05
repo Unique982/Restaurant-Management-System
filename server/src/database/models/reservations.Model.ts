@@ -8,8 +8,8 @@ import {
   PrimaryKey,
   AutoIncrement,
 } from "sequelize-typescript";
-import User from "./users.Model";
-import Tables from "./table.Model";
+import User from "./users.model";
+import Tables from "./table.model";
 
 export type ReservationStatus = "pending" | "booking" | "cancelled";
 
