@@ -8,7 +8,7 @@ import {
 } from "sequelize-typescript";
 
 @Table({
-  tableName: "Gallery",
+  tableName: "gallery",
   timestamps: true,
   modelName: "Gallery",
 })

@@ -5,11 +5,9 @@ import { Response } from "express";
 
 class About {
   static async aboutSection(req: IExtendedRequest, res: Response) {
-    const { aboutTitle, aboutDescription } = req.body;
     const aboutImage = req.file ? req.file.path : null;
+    const { aboutTitle, aboutDescription } = req.body;
     console.log(req.body);
-    if (!aboutTitle || !aboutDescription || !aboutImage)
-      return res.status(400).json({ message: "All field required!" });
     // check record exists or not
     const exists: any[] = await sequelize.query(`SELECT * FROM about LIMIT 1`, {
       type: QueryTypes.SELECT,

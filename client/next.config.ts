@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   } /* config options here */,
   images: {
-    domains: ["images.unsplash.com"], // ← Unsplash images को domain allow गरियो
+    domains: ["res.cloudinary.com", "images.unsplash.com"],
   },
   async rewrites() {
     return [

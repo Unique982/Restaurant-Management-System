@@ -123,8 +123,11 @@ export default function MenuSection() {
               <Image
                 src={item.image_url}
                 alt={item.name}
-                className="w-20 h-20 object-cover rounded-full flex-shrink-0"
+                width={80}
+                height={80}
+                className="object-cover rounded-full flex-shrink-0"
               />
+
               <div className="flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="text-base font-bold">{item.name}</h3>

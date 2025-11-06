@@ -3,7 +3,7 @@ import { Status } from "@/lib/types/type";
 export interface IAboutPost {
   aboutTitle: string;
   aboutDescription: string;
-  aboutImage: string;
+  aboutImage: File | null;
 }
 export interface IAbout extends IAboutPost {
   id: string | number;

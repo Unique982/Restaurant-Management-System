@@ -38,6 +38,11 @@ class Service {
       .status(200)
       .json({ message: "All service fetch data!", data: serviceData });
   }
+
+  // delete
+  static async deleteService(req: IExtendedRequest, res: Response) {
+    const userId = req.user?.id;
+  }
 }
 
 export default Service;

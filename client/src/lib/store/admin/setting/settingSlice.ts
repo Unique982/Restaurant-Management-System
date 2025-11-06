@@ -1,41 +1,42 @@
 import { Status } from "@/lib/types/type";
-import { IAbout, IAboutPost, IInitialState } from "./aboutSlice.type";
+import {
+  IInitialState,
+  IISetting,
+  ISettingPostData,
+} from "./settingSlice.type";
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../../store";
-import API from "@/lib/http";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
 const initialState: IInitialState = {
-  about: [],
+  setting: [],
   status: Status.LOADING,
 };
 
-const aboutSlice = createSlice({
-  name: "aboutSlice",
+const settingSlice = createSlice({
+  name: "settingSlice",
   initialState,
   reducers: {
-    setStatus(state, action: PayloadAction<Status>) {
+    setStatus(state: IInitialState, action: PayloadAction<Status>) {
       state.status = action.payload;
     },
-    fetchAbout(state: IInitialState, action: PayloadAction<IAbout[]>) {
-      state.about = action.payload;
-    },
-    addAbout(state: IInitialState, action: PayloadAction<IAbout>) {
-      state.about.push(action.payload);
+    setSetting(state: IInitialState, action: PayloadAction<IISetting[]>) {
+      state.setting = action.payload;
     },
   },
 });
 
-export const { setStatus, fetchAbout, addAbout } = aboutSlice.actions;
-export default aboutSlice.reducer;
+export const { setStatus, setSetting } = settingSlice.actions;
+export default settingSlice.reducer;
 
-export function aboutFetch() {
-  return async function aboutFetchThunk(dispatch: AppDispatch) {
+export function addSettings(data: ISettingPostData) {
+  return async function addSettingsThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get(`/about`);
+      const response = await APIWITHTOKEN.post(`/setting`, data);
       if (response.status === 200) {
-        dispatch(fetchAbout(response.data.data));
+        dispatch(setSetting(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {
@@ -53,15 +54,14 @@ export function aboutFetch() {
     }
   };
 }
-export function aboutAdd(about: IAboutPost) {
-  return async function aboutAddThunk(dispatch: AppDispatch) {
+
+export function settingFetch() {
+  return async function settingFetchThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await APIWITHTOKEN.post(`/about`, about, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await APIWITHTOKEN.get(`/setting`);
       if (response.status === 200) {
-        dispatch(addAbout(response.data.data));
+        dispatch(setSetting(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {

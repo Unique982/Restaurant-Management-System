@@ -16,7 +16,7 @@ import Cart from "./models/cart.model";
 import Payment from "./models/payment.model";
 import CartItem from "./models/cartItems.model";
 import Gallery from "./models/gallery.model";
-import Setting from "./models/setting.,odel";
+import Setting from "./models/setting.model";
 // load env
 config();
 
@@ -41,7 +41,7 @@ sequelize
     console.log(err);
   });
 // sequelize migrate sync
-sequelize.sync({ alter: true }).then(() => {
+sequelize.sync({ alter: false }).then(() => {
   console.log("migrated successfully!");
 });
 

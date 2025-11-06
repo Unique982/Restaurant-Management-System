@@ -47,6 +47,7 @@ import service from "./routes/admin/service/service.Route";
 import inqueryMsg from "./routes/admin/inqueryMsg/inqueryMsg.Route";
 import gallery from "./routes/admin/gallery/gallery.Route";
 import restoreData from "./routes/admin/Restore/restore.Route";
+import systemSetting from "./routes/admin/setting/setting.Route";
 
 // customer
 import dashboardOverView from "./routes/customer/dashboardOverview/dashboardOverView.Route";
@@ -76,6 +77,7 @@ app.use("/api/service", service);
 app.use("/api/inquery/contact", inqueryMsg);
 app.use("/api/gallery", gallery);
 app.use("/api/restore", restoreData);
+app.use("/api/setting", systemSetting);
 
 // customer
 app.use("/api/customer/dashboard", dashboardOverView);

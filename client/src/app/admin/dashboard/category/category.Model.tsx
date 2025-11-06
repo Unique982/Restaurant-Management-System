@@ -28,11 +28,6 @@ interface categoryProps {
 
 export default function AddCategory({ open, onOpenChange }: categoryProps) {
   const dispatch = useAppDispatch();
-  // const { status } = useAppSelector((store) => store.category);
-  // const [data, setCategoryData] = useState<ICategoryData>({
-  //   categoryName: "",
-  //   categoryDescription: "",
-  // });
 
   const {
     register: category,

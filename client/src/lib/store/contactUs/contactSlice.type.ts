@@ -3,6 +3,7 @@ import { Status } from "@/lib/types/type";
 export interface IContactUs extends IContactUsPost {
   id: string | number;
   createdAt: string;
+  isReplied: boolean;
 }
 export interface IContactUsPost {
   username: string;

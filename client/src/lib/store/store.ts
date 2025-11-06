@@ -13,6 +13,7 @@ import serviceSlice from "./services/servicesSlice";
 import blogSlice from "./admin/blog/blogSlice";
 import contactUs from "./contactUs/contactSlice";
 import abourSlice from "./admin/about/aboutSlice";
+import settingSlice from "./admin/setting/settingSlice";
 
 const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ const store = configureStore({
     blog: blogSlice,
     contact: contactUs,
     about: abourSlice,
+    setting: settingSlice,
   },
 });
 

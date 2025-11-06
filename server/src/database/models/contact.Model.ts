@@ -41,6 +41,11 @@ class ContactUs extends Model {
     allowNull: false,
   })
   declare message: string;
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  declare isReplied: boolean;
 }
 
 export default ContactUs;
