@@ -1,7 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
 import { config } from "dotenv";
 import User from "./models/users.model";
-
 import Tables from "./models/table.model";
 import Reservation from "./models/reservations.model";
 import Category from "./models/category.model";

@@ -6,8 +6,6 @@ import {
   PrimaryKey,
   AutoIncrement,
   ForeignKey,
-  BelongsTo,
-  Default,
 } from "sequelize-typescript";
 import User from "./users.model";
 import Tables from "./table.model";

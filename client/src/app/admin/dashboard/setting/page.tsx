@@ -77,7 +77,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="max-w-8xl mx-auto bg-white rounded-2xl shadow-sm">
+    <div className="w-full max-w-8xl mx-auto bg-white rounded-2xl shadow-sm">
       {/* Header Tabs */}
       <div className="border-b flex flex-wrap justify-between items-center p-4">
         <h1 className="text-xl font-bold text-gray-800">Settings</h1>
