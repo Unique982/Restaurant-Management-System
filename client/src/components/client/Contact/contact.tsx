@@ -40,7 +40,7 @@ export default function ContactSection() {
   };
   return (
     <>
-      <section id="services" className="px-4 py-20 bg-gray-100">
+      <section id="contact" className="px-4 py-20 bg-gray-100">
         <div className="container mx-auto px-4 text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">Contact Us</h2>
           <p className="text-center text-gray-600 mb-8">

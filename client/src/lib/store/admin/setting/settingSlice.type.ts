@@ -2,12 +2,11 @@ import { Status } from "@/lib/types/type";
 
 export interface ISettingPostData {
   restaurantName: string;
-  logo: string;
   address: string;
   contactNumber: string;
   openingTime: string;
   closingTime: string;
-  timeZone: string;
+  timezone: string;
   websiteUrl: string;
   facebookUrl: string;
   instagramUrl: string;

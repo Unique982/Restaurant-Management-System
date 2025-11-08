@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
-  Users,
   Settings,
   LogOut,
   Bell,
@@ -17,7 +16,7 @@ import {
   DatabaseBackup,
   KeyIcon,
 } from "lucide-react";
-
+import Link from "next/link";
 export default function TopHeader() {
   return (
     <>
@@ -40,22 +39,19 @@ export default function TopHeader() {
             <DropdownMenuContent className="w-48" align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <KeyIcon className="mr-2 h-4 w-4" />
-                Password Change
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <DatabaseBackup className="mr-2 h-4 w-4" />
-                System Backup
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <User2Icon className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
+              <Link href="/admin/dashboard/setting" passHref>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </DropdownMenuItem>
+              </Link>
+
+              <Link href="/admin/dashboard/profile" passHref>
+                <DropdownMenuItem>
+                  <User2Icon className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />

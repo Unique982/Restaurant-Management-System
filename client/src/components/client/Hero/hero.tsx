@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 const images = [
   "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1600",
   "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=1600",
@@ -46,9 +47,11 @@ export default function HeroSection() {
           <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded-full">
             Explore Menu
           </Button>
-          <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded-full">
-            Book a Table
-          </Button>
+          <Link href="#reservation">
+            <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded-full">
+              Book a Table
+            </Button>
+          </Link>
         </div>
 
         {/* Image Select Dots */}

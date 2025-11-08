@@ -53,19 +53,26 @@ export default function Navbar() {
           <Link href="/" className="hover:text-orange-400">
             Home
           </Link>
-          <Link href="/menu" className="hover:text-orange-400">
+          <Link href="#menu" className="hover:text-orange-400" scroll={true}>
             Menu
           </Link>
-          <Link href="/about" className="hover:text-orange-400">
+          <Link href="#about" className="hover:text-orange-400" scroll={true}>
             About
           </Link>
-          <Link href="/services" className="hover:text-orange-400">
+          <Link
+            href="#services"
+            className="hover:text-orange-400"
+            scroll={true}
+          >
             Services
           </Link>
-          <Link href="/gallery" className="hover:text-orange-400">
+          <Link href="#gallery" className="hover:text-orange-400" scroll={true}>
             Gallery
           </Link>
-          <Link href="/#contact" className="hover:text-orange-400">
+          <Link href="#blog" className="hover:text-orange-400" scroll={true}>
+            Blog
+          </Link>
+          <Link href="#contact" className="hover:text-orange-400" scroll={true}>
             Contact
           </Link>
         </div>
@@ -159,24 +166,48 @@ export default function Navbar() {
         }`}
       >
         <div className="px-4 pb-4 space-y-3">
-          <Link href="/" className="block hover:text-orange-400">
+          <Link href="/" className="block hover:text-orange-400 " scroll={true}>
             Home
           </Link>
-          <Link href="/menu" className="block hover:text-orange-400">
+          <Link
+            href="/menu"
+            className="block hover:text-orange-400"
+            scroll={true}
+          >
             Menu
           </Link>
-          <Link href="/about" className="block hover:text-orange-400">
+          <Link
+            href="/about"
+            className="block hover:text-orange-400"
+            scroll={true}
+          >
             About
           </Link>
-          <Link href="/services" className="block hover:text-orange-400">
+          <Link
+            href="/services"
+            className="block hover:text-orange-400"
+            scroll={true}
+          >
             Services
           </Link>
-          <Link href="/contact" className="block hover:text-orange-400">
+          <Link
+            href="/blog"
+            className="block hover:text-orange-400"
+            scroll={true}
+          >
+            Blog
+          </Link>
+          <Link
+            href="/contact"
+            className="block hover:text-orange-400"
+            scroll={true}
+          >
             Contact
           </Link>
           <Link
-            href="/reservation"
+            href="#reservation"
             className="block bg-orange-500 px-4 py-2 rounded-lg font-medium text-center hover:bg-orange-600 transition"
+            scroll={true}
           >
             Book Table
           </Link>

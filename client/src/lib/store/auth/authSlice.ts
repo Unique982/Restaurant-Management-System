@@ -176,3 +176,7 @@ export function userLogout() {
     return { success: true };
   };
 }
+// profile
+export function profileUdate() {
+  return async function profileUdateThunk() {};
+}

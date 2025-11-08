@@ -79,3 +79,27 @@ export function aboutAdd(about: IAboutPost) {
     }
   };
 }
+export function singleAbout(id: string | number) {
+  return async function singleAboutThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await API.get(`/about` + id);
+      if (response.status === 200) {
+        dispatch(fetchAbout(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}

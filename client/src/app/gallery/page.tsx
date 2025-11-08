@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { fetchGallery } from "@/lib/store/image/gallerySlice";
 import Navbar from "@/components/client/Navbar/navbar";
+import Footer from "@/components/client/Footer/footer";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 export default function GalleryPage() {
   const dispatch = useAppDispatch();
@@ -13,17 +16,25 @@ export default function GalleryPage() {
   useEffect(() => {
     dispatch(fetchGallery());
   }, [dispatch]);
+  const handleDownload = (url: string, id: number | string) => {
+    fetch(url)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `Gallery_${id}.jpg`;
+        link.click();
+      });
+  };
 
   return (
     <>
       <Navbar />
       <section className="bg-gray-50 min-h-screen">
         {/* Banner */}
-        <div className="bg-blue-100 py-12">
+        <div className="bg-gradient-to-r from-green-200 to-orange-200 py-20">
           <div className="container mx-auto max-w-6xl text-center px-4">
-            <h1 className="text-4xl font-bold text-orange-700 mb-4">
-              Our Gallery
-            </h1>
+            <h1 className="text-4xl font-bold text-black mb-4">Our Gallery</h1>
             <p className="text-gray-700 text-lg">
               Explore our collection of images. Click on any image to view in
               full size and download.
@@ -34,7 +45,6 @@ export default function GalleryPage() {
         {/* Gallery */}
         <div className="container mx-auto  px-4 py-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {" "}
             {/* increased gap for better spacing */}
             {data.map((img) => (
               <div
@@ -48,17 +58,15 @@ export default function GalleryPage() {
                   onClick={() => setSelectedImage(img.image)}
                 />
 
-                {/* Download Button */}
-                <a
-                  href={img.image}
-                  download
-                  className="absolute top-2 right-2 bg-orange-600 text-white px-2 py-1 text-xs rounded hover:bg-orange-700 transition"
-                  onClick={(e) => e.stopPropagation()}
+                <button
+                  className="absolute top-2 right-2 bg-orange-600 text-white px-4 py-1 rounded"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(img.image, img.id);
+                  }}
                 >
-                  Download
-                </a>
-
-                {/* Optional Date */}
+                  <Download className="w-4 h-5" />
+                </button>
                 <div className="absolute bottom-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded">
                   {new Date(img.createdAt).toLocaleDateString()}
                 </div>
@@ -66,8 +74,6 @@ export default function GalleryPage() {
             ))}
           </div>
         </div>
-
-        {/* Lightbox / Zoom */}
         {selectedImage && (
           <div
             className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
@@ -81,6 +87,8 @@ export default function GalleryPage() {
           </div>
         )}
       </section>
+
+      <Footer />
     </>
   );
 }

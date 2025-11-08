@@ -12,7 +12,7 @@ export default function BlogSection() {
   }, [dispatch]);
   return (
     <>
-      <section id="about" className="px-4  py-20 bg-white">
+      <section id="blog" className="px-4  py-20 bg-white">
         <div className="container mx-auto max-w-6xl mb-12">
           {/* Top Heading */}
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-4">
@@ -53,7 +53,7 @@ export default function BlogSection() {
                       : blog.blogDescription}
                   </p>
                   <a
-                    href="/product"
+                    href="/blog"
                     className="flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition"
                   >
                     Read
@@ -66,7 +66,7 @@ export default function BlogSection() {
         </div>
         <div className="flex justify-center mt-6">
           <a
-            href="/product"
+            href="/blog"
             className="flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition"
           >
             View More

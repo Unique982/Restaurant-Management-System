@@ -21,13 +21,16 @@ const settingSlice = createSlice({
     setStatus(state: IInitialState, action: PayloadAction<Status>) {
       state.status = action.payload;
     },
-    setSetting(state: IInitialState, action: PayloadAction<IISetting[]>) {
+    setUpdate(state: IInitialState, action: PayloadAction<IISetting[]>) {
+      state.setting = action.payload;
+    },
+    fetchSetting(state: IInitialState, action: PayloadAction<IISetting[]>) {
       state.setting = action.payload;
     },
   },
 });
 
-export const { setStatus, setSetting } = settingSlice.actions;
+export const { setStatus, setUpdate, fetchSetting } = settingSlice.actions;
 export default settingSlice.reducer;
 
 export function addSettings(data: ISettingPostData) {
@@ -36,7 +39,7 @@ export function addSettings(data: ISettingPostData) {
     try {
       const response = await APIWITHTOKEN.post(`/setting`, data);
       if (response.status === 200) {
-        dispatch(setSetting(response.data.data));
+        dispatch(setUpdate(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {
@@ -61,7 +64,7 @@ export function settingFetch() {
     try {
       const response = await APIWITHTOKEN.get(`/setting`);
       if (response.status === 200) {
-        dispatch(setSetting(response.data.data));
+        dispatch(fetchSetting(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {

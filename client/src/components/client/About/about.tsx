@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { aboutFetch } from "@/lib/store/admin/about/aboutSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import Link from "next/link";
 
 import { useEffect } from "react";
 
@@ -51,13 +52,11 @@ export default function AboutSection() {
                 </p>
               ))}
               <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-                <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-6 rounded-b-lg">
-                  Learn More
-                </Button>
-
-                <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-3 py-6 rounded-b-lg">
-                  Book a Table
-                </Button>
+                <Link href={`/about/${about[0]?.id}`}>
+                  <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-2 py-3 rounded-b-lg">
+                    Read More
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
