@@ -1,7 +1,10 @@
+"use client";
 import SideBar from "@/components/admin/Sidebar/sidebar";
 import TopHeader from "@/components/admin/TopHeader/header";
+import { useAppSelector } from "@/lib/store/hooks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { ReactNode } from "react";
-
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <>

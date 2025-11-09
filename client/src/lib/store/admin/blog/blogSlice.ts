@@ -6,6 +6,7 @@ import API from "@/lib/http";
 
 const initialState: IInitialState = {
   blogData: [],
+  singleBlog: null,
   status: Status.LOADING,
 };
 
@@ -19,10 +20,16 @@ const blogSlice = createSlice({
     fetchBlog(state: IInitialState, action: PayloadAction<IBlogDetails[]>) {
       state.blogData = action.payload;
     },
+    setSingleBlog(
+      state: IInitialState,
+      action: PayloadAction<IBlogDetails | null>
+    ) {
+      state.singleBlog = action.payload;
+    },
   },
 });
 
-export const { setStatus, fetchBlog } = blogSlice.actions;
+export const { setStatus, fetchBlog, setSingleBlog } = blogSlice.actions;
 export default blogSlice.reducer;
 
 // fetch api
@@ -51,13 +58,13 @@ export function fectchBlogs() {
   };
 }
 
-export function singleBlog(id: string | number) {
+export function singleBlogs(id: string | number) {
   return async function singleBlogThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get(`/blog` + id);
+      const response = await API.get(`/blog/${id}`);
       if (response.status === 200) {
-        dispatch(fetchBlog(response.data.data));
+        dispatch(setSingleBlog(response.data.data[0]));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {

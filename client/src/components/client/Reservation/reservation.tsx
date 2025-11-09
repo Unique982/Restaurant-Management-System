@@ -24,7 +24,7 @@ import toast from "react-hot-toast";
 export default function ReservationSection() {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.tables);
-
+  const [loading, setLoading] = useState(false);
   const [reservationDatas, setReservationDatas] =
     useState<IReservationPostData>({
       user_id: null,
@@ -54,7 +54,9 @@ export default function ReservationSection() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const result: any = await dispatch(bookingTable(reservationDatas));
+    setLoading(false);
     if (result.success) {
       toast.success("Reservation Booked success!");
       setReservationDatas({
@@ -222,10 +224,35 @@ export default function ReservationSection() {
             />
 
             <Button
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               type="submit"
+              disabled={loading}
+              className={`w-full bg-orange-600 hover:bg-orange-700 text-white ${
+                loading ? "cursor-not-allowed opacity-70" : ""
+              }`}
             >
-              Book Now
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              )}
+              {loading ? "Processing..." : "Book Now"}
             </Button>
           </form>
         </div>

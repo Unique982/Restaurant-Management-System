@@ -17,7 +17,6 @@ type CategoryType = "All" | string;
 export default function MenuSection() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
-
   const menuItems = useAppSelector((state) => state.menuItems.menuDatas);
   // const categories = useAppSelector((state) => state.category.data);
   const categories = useAppSelector((state) => state.categoryList.data);

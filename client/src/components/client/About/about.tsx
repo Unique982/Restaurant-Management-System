@@ -43,21 +43,32 @@ export default function AboutSection() {
                 {about[0]?.aboutTitle || "About Our Restaurant"}
               </h3>
 
-              {about[0]?.aboutDescription?.split("\n").map((line, idx) => (
-                <p
-                  key={idx}
-                  className="text-gray-600 mb-4 leading-relaxed text-justify"
-                >
-                  {line}
-                </p>
-              ))}
-              <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+              {about[0]?.aboutDescription && (
+                <div>
+                  {about[0].aboutDescription
+                    .slice(0, 500)
+                    .split("\n")
+                    .map((line, idx) => (
+                      <p
+                        key={idx}
+                        className="text-gray-600 mb-4 leading-relaxed text-justify"
+                      >
+                        {line}
+                      </p>
+                    ))}
+                  {about[0].aboutDescription.length > 500 && (
+                    <p className="text-gray-600 font-semibold">...</p>
+                  )}
+                </div>
+              )}
+
+              {/* <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
                 <Link href={`/about/${about[0]?.id}`}>
                   <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-2 py-3 rounded-b-lg">
                     Read More
                   </Button>
                 </Link>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

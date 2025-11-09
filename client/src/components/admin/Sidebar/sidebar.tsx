@@ -87,7 +87,7 @@ export default function SideBar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+      <nav className="flex-1 overflow-none p-2 space-y-1">
         {sidebarOpen && (
           <p className="text-gray-400 uppercase text-xs px-2 mb-2">Operation</p>
         )}
@@ -132,9 +132,6 @@ export default function SideBar() {
   );
 }
 
-/**
- * 🔸 Reusable Nav Item Component
- */
 function NavItem({
   href,
   icon: Icon,
@@ -153,7 +150,7 @@ function NavItem({
         className="w-full justify-start gap-2 hover:bg-gray-100"
       >
         <Icon className="w-5 h-5" />
-        {sidebarOpen && label}
+        {sidebarOpen && <span>{label}</span>}
         {!sidebarOpen && (
           <span className="absolute left-full ml-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap shadow-lg">
             {label}

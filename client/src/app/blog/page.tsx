@@ -62,7 +62,7 @@ export default function GalleryPage() {
                         : blog.blogDescription}
                     </p>
                     <Link
-                      href={`/blog/${blogData[0].id}`}
+                      href={`/blog/${blog.id}`}
                       className="flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition"
                     >
                       Read

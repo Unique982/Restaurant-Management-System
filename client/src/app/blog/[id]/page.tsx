@@ -1,100 +1,96 @@
 "use client";
-
-import Footer from "@/components/client/Footer/footer";
-import Navbar from "@/components/client/Navbar/navbar";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
+import toast from "react-hot-toast";
+import {
+  fetchContactAllUser,
+  sendReply,
+} from "@/lib/store/contactUs/contactSlice";
+import { useState } from "react";
 
-export default function BlogDetails() {
+interface contactReply {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  email: string;
+  id: string | number;
+}
+
+export default function Replysend({
+  open,
+  onOpenChange,
+  email,
+  id,
+}: contactReply) {
   const dispatch = useAppDispatch();
-  const { blogData } = useAppSelector((store) => store.blog);
-  const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
-
-  const [singleBlog, setSingleBlog] = useState<(typeof blogData)[0] | null>(
-    null
+  const [message, setMessage] = useState("");
+  const [subject, setSubject] = useState(
+    "Reply from The 90's Restaurant & Bar"
   );
 
-  useEffect(() => {
-    if (id) {
-      dispatch(fectchBlogs()); // fetch all blogs (or create separate fetchSingleBlog)
+  // send maila
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await dispatch(sendReply({ id, email, subject, message }));
+    if (!id) return;
+    if (result?.success) {
+      toast.success("Reply sent successfully!");
+      setMessage("");
+      onOpenChange(false);
+      dispatch(fetchContactAllUser());
+    } else {
+      toast.error(result.message || "Failed to send reply");
     }
-  }, [dispatch, id]);
-
-  // Select single blog from array
-  useEffect(() => {
-    if (blogData.length > 0 && id) {
-      const found = blogData.find((b) => b.id.toString() === id.toString());
-      setSingleBlog(found || null);
-    }
-  }, [blogData, id]);
-
-  if (!singleBlog) return <p className="text-center py-20">Loading...</p>;
-
-  const shortDescription = singleBlog.blogDescription
-    .split(" ")
-    .slice(0, 200)
-    .join(" ");
-  const longDescription = singleBlog.blogDescription
-    .split(" ")
-    .slice(200)
-    .join(" ");
-
+  };
   return (
-    <>
-      <Navbar />
-      <section className="min-h-screen py-16 bg-gradient-to-b from-gray-100 to-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-left">
-            <a
-              href="/blog"
-              className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-gray-700"
-            >
-              ← Back to Blog
-            </a>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-full sm:h-auto   sm:max-w-md rounded-lg p-6 bg-white border border-gray-200 shadow-lg">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold text-center">
+            Reply to User
+          </DialogTitle>
+        </DialogHeader>
+
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="space-y-1">
+            <Label>Email</Label>
+            <Input value={email} readOnly />
           </div>
 
-          {/* Title */}
-          <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold mb-6 text-center text-gray-900">
-            {singleBlog.blogTitle}
-          </h1>
-
-          {/* Short Description */}
-          <p className="text-xl sm:text-xl md:text-xl text-gray-700 mb-4 text-justify font-medium">
-            {shortDescription}...
-          </p>
-
-          {/* Meta */}
-          <div className="flex flex-col sm:flex-row justify-center text-gray-500 text-sm sm:text-base font-semibold mb-6 gap-3">
-            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-orange-100">
-              {singleBlog.blogCategory}
-            </span>
-            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-orange-100">
-              Date: {new Date(singleBlog.createdAt).toLocaleDateString()}
-            </span>
-            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-orange-100">
-              Author: The 90's Restaurant
-            </span>
-          </div>
-
-          {/* Blog Image */}
-          <div className="mb-10">
-            <img
-              src={singleBlog.blogImage}
-              alt={singleBlog.blogTitle}
-              className="rounded-3xl shadow-2xl w-full h-[300px] sm:h-[400px] md:h-[500px] object-cover border-4 border-gray-200"
+          <div className="space-y-1">
+            <Label>Subject</Label>
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
             />
           </div>
 
-          {/* Long Description */}
-          <div className="text-xl sm:text-xl md:text-xl text-gray-700 text-justify font-medium leading-relaxed">
-            {longDescription}
+          <div className="space-y-1">
+            <Label>Message</Label>
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type your reply..."
+              rows={5}
+            />
           </div>
-        </div>
-      </section>
-      <Footer />
-    </>
+
+          <Button
+            type="submit"
+            className="w-full bg-orange-500 hover:bg-orange-600"
+          >
+            Send Reply
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -7,11 +7,12 @@ export interface IBlogPost {
   blogCategory: string;
 }
 export interface IBlogDetails extends IBlogPost {
-  id: string | number;
+  id: number;
   createdAt: string;
 }
 
 export interface IInitialState {
   blogData: IBlogDetails[];
   status: Status;
+  singleBlog: IBlogDetails | null;
 }

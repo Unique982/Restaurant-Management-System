@@ -30,6 +30,7 @@ import {
   registerSchemaType,
 } from "@/lib/validations/auth";
 import { mergeGuestCartAfterLogin } from "@/lib/store/customer/cart/cartSlice";
+import { fa } from "zod/v4/locales";
 
 interface LoginProps {
   open: boolean;
@@ -49,7 +50,7 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
   const [forgotEmail, setForgotEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const {
     register: loginRegister,
     handleSubmit: handleLoginSubmit,
@@ -68,67 +69,97 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
 
   // Login handle
   const onSubmitLogin = async (data: loginSchemaType) => {
-    const result: any = await dispatch(userLogin(data));
-    if (result.success && result.user) {
-      toast.success("Login Successfully");
+    setLoading(true);
+    try {
+      const result: any = await dispatch(userLogin(data));
+      if (result.success && result.user) {
+        toast.success("Login Successfully");
 
-      // Merge guest cart after login
-      await dispatch(mergeGuestCartAfterLogin());
+        // Merge guest cart after login
+        await dispatch(mergeGuestCartAfterLogin());
 
-      onOpenChange(false);
+        onOpenChange(false);
 
-      const role = result.user.role;
-      if (role === "admin") router.push("/admin/dashboard");
-      else if (role === "customer") router.push("/");
-      else router.push("/");
-    } else {
-      toast.error(result?.message || "Login failed");
+        const role = result.user.role;
+        if (role === "admin") router.push("/admin/dashboard");
+        else if (role === "customer") router.push("/");
+        else router.push("/");
+      } else {
+        toast.error(result?.message || "Login failed");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   // Register
   const onSubmitSignup = async (data: registerSchemaType) => {
-    const result: any = await dispatch(userRegister(data));
-    if (result.success) {
-      toast.success("Register Successfully");
-      setIsLogin(true);
-    } else {
-      toast.error(result?.message || "Something went wrong!");
+    setLoading(true);
+    try {
+      const result: any = await dispatch(userRegister(data));
+
+      if (result.success) {
+        toast.success("Register Successfully");
+        setIsLogin(true);
+      } else {
+        toast.error(result?.message || "Something went wrong!");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   // forget password
   const handleForgotEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result: any = await dispatch(forgetPassword(forgotEmail));
-    if (result.success) {
-      toast.success("OTP sent to your email");
-      setForgotStep("otp");
-    } else {
-      toast.error(result?.message || "Failed to send OTP");
+    setLoading(true);
+    try {
+      const result: any = await dispatch(forgetPassword(forgotEmail));
+      if (result.success) {
+        toast.success("OTP sent to your email");
+        setForgotStep("otp");
+      } else {
+        toast.error(result?.message || "Failed to send OTP");
+      }
+    } finally {
+      setLoading(false);
     }
   };
   // otp verify
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result: any = await dispatch(otpVerify(forgotEmail, Number(otpCode)));
-    if (result.success) {
-      toast.success("OTP verified successfully");
-      setForgotStep("reset");
-    } else {
-      toast.error(result?.message || "Invalid OTP");
+    setLoading(true);
+    try {
+      const result: any = await dispatch(
+        otpVerify(forgotEmail, Number(otpCode))
+      );
+      if (result.success) {
+        toast.success("OTP verified successfully");
+        setForgotStep("reset");
+      } else {
+        toast.error(result?.message || "Invalid OTP");
+      }
+    } finally {
+      setLoading(false);
     }
   };
   // Reset Password
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result: any = await dispatch(changePassord(forgotEmail, newPassword));
-    if (result.success) {
-      toast.success("Password reset successfully");
-      setForgotStep("none");
-      setIsLogin(true);
-    } else {
-      toast.error(result?.message || "Failed to reset password");
+    setLoading(true);
+    try {
+      const result: any = await dispatch(
+        changePassord(forgotEmail, newPassword)
+      );
+      if (result.success) {
+        toast.success("Password reset successfully");
+        setForgotStep("none");
+        setIsLogin(true);
+      } else {
+        toast.error(result?.message || "Failed to reset password");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,9 +187,34 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
             />
             <Button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600"
+              disabled={loading}
+              className={`w-full bg-orange-500 hover:bg-orange-600 ${
+                loading ? "cursor-not-allowed opacity-70" : ""
+              }`}
             >
-              Send OTP
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              )}
+              {loading ? "Processing..." : "Send Otp"}
             </Button>
           </form>
         )}
@@ -205,9 +261,34 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
             </div>
             <Button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 mt-4"
+              disabled={loading}
+              className={`w-full bg-orange-500 hover:bg-orange-600 mt-4 ${
+                loading ? "cursor-not-allowed opacity-70" : ""
+              }`}
             >
-              Verify OTP
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              )}
+              {loading ? "Processing..." : "Verify OTP"}
             </Button>
           </form>
         )}
@@ -223,9 +304,34 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
             />
             <Button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600"
+              disabled={loading}
+              className={`w-full bg-orange-500 hover:bg-orange-600 mt-4 ${
+                loading ? "cursor-not-allowed opacity-70" : ""
+              }`}
             >
-              Change Password
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              )}
+              {loading ? "Processing..." : "Change Password"}
             </Button>
           </form>
         )}
@@ -267,11 +373,37 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
                     Forgot Password?
                   </button>
                 </div>
+
                 <Button
                   type="submit"
-                  className="w-full bg-orange-500 hover:bg-orange-600"
+                  disabled={loading}
+                  className={`w-full bg-orange-500 hover:bg-orange-600 mt-4 ${
+                    loading ? "cursor-not-allowed opacity-70" : ""
+                  }`}
                 >
-                  Login
+                  {loading && (
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                  )}
+                  {loading ? "Processing..." : "Login"}
                 </Button>
                 <p className="text-center text-sm text-gray-400">
                   Don&apos;t have an account?{" "}
@@ -329,17 +461,46 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
                     {signupErrors.confirmPassword.message}
                   </span>
                 )}
-                <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                  Sign Up
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full bg-orange-500 hover:bg-orange-600 mt-4 ${
+                    loading ? "cursor-not-allowed opacity-70" : ""
+                  }`}
+                >
+                  {loading && (
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                  )}
+                  {loading ? "Processing..." : "Sign Up"}
                 </Button>
                 <p className="text-center text-sm text-gray-400">
                   Already have an account?{" "}
-                  <Button
+                  <a
                     onClick={() => setIsLogin(true)}
                     className="text-orange-400 hover:underline"
                   >
                     Login
-                  </Button>
+                  </a>
                 </p>
               </form>
             )}

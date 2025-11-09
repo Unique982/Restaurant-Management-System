@@ -1,5 +1,7 @@
+"use client";
 import CardView from "@/components/admin/Crad/card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 export default function AdminDashboard() {
   return (
     <>

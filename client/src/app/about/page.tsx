@@ -10,14 +10,9 @@ import Footer from "@/components/client/Footer/footer";
 export default function AboutDetails() {
   const dispatch = useAppDispatch();
   const { about, status } = useAppSelector((state) => state.about);
-
-  const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   useEffect(() => {
-    if (id) dispatch(aboutFetch());
-  }, [dispatch, id]);
-
-  const singleAbout = about && about.length > 0 ? about[0] : null;
+    dispatch(aboutFetch());
+  }, [dispatch]);
 
   return (
     <>
@@ -25,12 +20,12 @@ export default function AboutDetails() {
       <section className="min-h-screen py-8 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 md:px-0">
           <h1 className="text-3xl md:text-5xl font-bold mb-12 text-center md:text-left text-gray-900">
-            {singleAbout?.aboutTitle}
+            {about[0]?.aboutTitle}
           </h1>
 
           <div className="text-lg md:text-xl text-justify text-gray-700 mb-8">
             <p>
-              {(singleAbout?.aboutDescription?.split(" ") || [])
+              {(about[0]?.aboutDescription?.split(" ") || [])
                 .slice(0, 200)
                 .join(" ")}
               ...
@@ -40,7 +35,7 @@ export default function AboutDetails() {
           <div className="mb-8">
             <img
               src={
-                about[0].aboutImage ||
+                about[0]?.aboutImage ||
                 "https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=400"
               }
               alt="About Restaurant"
@@ -50,7 +45,7 @@ export default function AboutDetails() {
 
           <div className="text-lg md:text-xl text-justify text-gray-700">
             <p>
-              {(singleAbout?.aboutDescription?.split(" ") || [])
+              {(about[0]?.aboutDescription?.split(" ") || [])
                 .slice(200)
                 .join(" ")}
             </p>

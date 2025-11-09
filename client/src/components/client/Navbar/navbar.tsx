@@ -53,10 +53,10 @@ export default function Navbar() {
           <Link href="/" className="hover:text-orange-400">
             Home
           </Link>
-          <Link href="#menu" className="hover:text-orange-400" scroll={true}>
+          <Link href="/menu" className="hover:text-orange-400" scroll={true}>
             Menu
           </Link>
-          <Link href="#about" className="hover:text-orange-400" scroll={true}>
+          <Link href="/about" className="hover:text-orange-400" scroll={true}>
             About
           </Link>
           <Link
@@ -66,10 +66,10 @@ export default function Navbar() {
           >
             Services
           </Link>
-          <Link href="#gallery" className="hover:text-orange-400" scroll={true}>
+          <Link href="/gallery" className="hover:text-orange-400" scroll={true}>
             Gallery
           </Link>
-          <Link href="#blog" className="hover:text-orange-400" scroll={true}>
+          <Link href="/blog" className="hover:text-orange-400" scroll={true}>
             Blog
           </Link>
           <Link href="#contact" className="hover:text-orange-400" scroll={true}>
@@ -198,7 +198,7 @@ export default function Navbar() {
             Blog
           </Link>
           <Link
-            href="/contact"
+            href="/#contact"
             className="block hover:text-orange-400"
             scroll={true}
           >
