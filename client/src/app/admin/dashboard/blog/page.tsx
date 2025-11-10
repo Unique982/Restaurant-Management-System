@@ -21,33 +21,40 @@ import {
 import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import { fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
+import { IBlogDetails } from "@/lib/store/admin/blog/blogSlice.type";
 
 export default function CategoryInfo() {
-  const { data: categories, status } = useAppSelector(
-    (store) => store.category
-  );
+  const { blogData, status } = useAppSelector((store) => store.blog);
   const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
 
   useEffect(() => {
-    dispatch(getCategory());
+    dispatch(fectchBlogs());
   }, []);
   // delete
-  const handleCategoryDelete = async (id: string | number) => {
-    await dispatch(deleteCategoryById(id));
+  const handleBlogDelete = async (id: string | number) => {
+    // await dispatch();
     if (status === Status.SUCCESS) {
-      dispatch(getCategory());
+      dispatch(fectchBlogs());
       toast.success("Category Delete successfully!");
     } else {
       toast.error("Failed to delete !");
     }
   };
   // search
-  const filterData = categories.filter((category) =>
-    category.categoryName
-      .toLocaleLowerCase()
-      .includes(searchText.toLocaleLowerCase())
+  const filterData = blogData.filter(
+    (blog) =>
+      blog.blogTitle
+        .toLocaleLowerCase()
+        .includes(searchText.toLocaleLowerCase()) ||
+      blog.blogDescription
+        .toLocaleLowerCase()
+        .includes(searchText.toLocaleLowerCase()) ||
+      blog.blogCategory
+        .toLocaleLowerCase()
+        .includes(searchText.toLocaleLowerCase())
   );
 
   return (
@@ -83,18 +90,18 @@ export default function CategoryInfo() {
             {/* table body */}
             <TableBody>
               {filterData.length > 0 ? (
-                filterData.map((category: ICategory, index) => {
+                filterData.map((blog: IBlogDetails, index) => {
                   return (
                     <TableRow key={index + 1}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell className="whitespace-normal break-words">
-                        {category.categoryName}
+                        {blog.blogTitle}
                       </TableCell>
                       <TableCell className="whitespace-normal break-words">
-                        {category.categoryDescription.substring(0, 30) + "..."}
+                        {blog.blogDescription.substring(0, 30) + "..."}
                       </TableCell>
                       <TableCell>
-                        {new Date(category.createdAt).toLocaleDateString("np")}
+                        {new Date(blog.createdAt).toLocaleDateString("np")}
                       </TableCell>
                       <TableCell className="text-right flex flex-wrap justify-end gap-2">
                         <Button variant="secondary" size="sm" title="View">
@@ -108,7 +115,7 @@ export default function CategoryInfo() {
                           variant="destructive"
                           size="sm"
                           title="Delete"
-                          onClick={() => handleCategoryDelete(category?.id)}
+                          // onClick={() => handleCategoryDelete(blog?.id)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

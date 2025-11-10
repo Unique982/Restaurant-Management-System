@@ -1,11 +1,14 @@
 import { Status } from "@/lib/types/type";
 
-export interface serviceItems {
+export interface serviceItems extends postServiceItems {
   id: number | string;
-  serviceTitle: string;
-  serviceIcon: string;
-  serviceDescription: string;
+
   createdAt: string;
+}
+export interface postServiceItems {
+  serviceTitle: string;
+  serviceIcon: File | null;
+  serviceDescription: string;
 }
 export interface IInitialState {
   data: serviceItems[];

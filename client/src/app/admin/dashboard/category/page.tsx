@@ -22,12 +22,17 @@ import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
 
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
+import ViewCategorModal from "./[id]/categoeryView.Model";
 
 export default function CategoryInfo() {
   const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
+    null
+  );
 
   useEffect(() => {
     dispatch(getCategory());
@@ -74,7 +79,11 @@ export default function CategoryInfo() {
       .toLocaleLowerCase()
       .includes(searchText.toLocaleLowerCase())
   );
+  const handleViewClick = (data: ICategory) => {
+    setSelectedCategory(data);
 
+    setOpenViewModal(true);
+  };
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -123,7 +132,12 @@ export default function CategoryInfo() {
                         {new Date(category.createdAt).toLocaleDateString("np")}
                       </TableCell>
                       <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                        <Button variant="secondary" size="sm" title="View">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          title="View"
+                          onClick={() => handleViewClick(category)}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
                         <Button variant="outline" size="sm" title="Edit">
@@ -154,6 +168,13 @@ export default function CategoryInfo() {
               )}
             </TableBody>
           </Table>
+          {selectedCategory && (
+            <ViewCategorModal
+              open={openViewModal}
+              onOpenChange={setOpenViewModal}
+              data={selectedCategory}
+            />
+          )}
         </div>
         {/* Pagination */}
 

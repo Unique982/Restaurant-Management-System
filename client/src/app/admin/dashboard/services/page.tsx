@@ -12,44 +12,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Pagination from "@/components/admin/Pagination/pagination";
-
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import {
-  deleteCategoryById,
-  getCategory,
-} from "@/lib/store/admin/category/categorySlice";
-import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import {
+  deleteServiceIdBy,
+  fetchServices,
+} from "@/lib/store/services/servicesSlice";
+import AddServices from "./service.Model";
+import { serviceItems } from "@/lib/store/services/servicesSlice.type";
+import ViewModal from "./[id]/view.Model";
 
 export default function Blogs() {
-  const { data: categories, status } = useAppSelector(
-    (store) => store.category
-  );
+  const { data, status } = useAppSelector((store) => store.services);
+  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<serviceItems | null>(null);
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
 
   useEffect(() => {
-    dispatch(getCategory());
+    dispatch(fetchServices());
   }, []);
   // delete
-  const handleCategoryDelete = async (id: string | number) => {
-    await dispatch(deleteCategoryById(id));
+  const handleServiceDelete = async (id: string | number) => {
+    await dispatch(deleteServiceIdBy(id));
     if (status === Status.SUCCESS) {
-      dispatch(getCategory());
-      toast.success("Category Delete successfully!");
+      dispatch(fetchServices());
+      toast.success("Service Delete successfully!");
     } else {
       toast.error("Failed to delete !");
     }
   };
   // search
-  const filterData = categories.filter((category) =>
-    category.categoryName
+  const filterData = data.filter((serv) =>
+    serv.serviceTitle
       .toLocaleLowerCase()
       .includes(searchText.toLocaleLowerCase())
   );
 
+  const handleViewClick = (data: serviceItems) => {
+    setSelectedItems(data);
+    setOpenViewModal(true);
+  };
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -66,6 +72,7 @@ export default function Blogs() {
             <Button onClick={() => setIsModal(true)}>Add Services</Button>
           </div>
         </div>
+        <AddServices open={isModal} onOpenChange={setIsModal} />
 
         {/* Tbale content herre */}
         <div className="overflow-x-auto rounded-md border bg-white">
@@ -74,8 +81,8 @@ export default function Blogs() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[40px]">ID</TableHead>
-                <TableHead>Category Name</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>Servive Title</TableHead>
+                <TableHead>Serice Description</TableHead>
                 <TableHead>CreatedAt</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -83,21 +90,26 @@ export default function Blogs() {
             {/* table body */}
             <TableBody>
               {filterData.length > 0 ? (
-                filterData.map((category: ICategory, index) => {
+                filterData.map((serv, index) => {
                   return (
                     <TableRow key={index + 1}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell className="whitespace-normal break-words">
-                        {category.categoryName}
+                        {serv.serviceTitle}
                       </TableCell>
                       <TableCell className="whitespace-normal break-words">
-                        {category.categoryDescription.substring(0, 30) + "..."}
+                        {serv.serviceDescription.substring(0, 30) + "..."}
                       </TableCell>
                       <TableCell>
-                        {new Date(category.createdAt).toLocaleDateString("np")}
+                        {new Date(serv.createdAt).toLocaleDateString("np")}
                       </TableCell>
                       <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                        <Button variant="secondary" size="sm" title="View">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          title="View"
+                          onClick={() => handleViewClick(serv)}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
                         <Button variant="outline" size="sm" title="Edit">
@@ -108,7 +120,7 @@ export default function Blogs() {
                           variant="destructive"
                           size="sm"
                           title="Delete"
-                          onClick={() => handleCategoryDelete(category?.id)}
+                          onClick={() => handleServiceDelete(serv?.id)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -128,6 +140,13 @@ export default function Blogs() {
               )}
             </TableBody>
           </Table>
+          {selectedItems && (
+            <ViewModal
+              open={openViewModal}
+              onOpenChange={setOpenViewModal}
+              data={selectedItems}
+            />
+          )}
         </div>
         {/* Pagination */}
 
