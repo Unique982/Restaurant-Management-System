@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Loader2, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -22,20 +23,19 @@ import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
 
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
-import ViewCategorModal from "./[id]/categoeryView.Model";
 
 export default function CategoryInfo() {
+  const router = useRouter();
   const { data: categories } = useAppSelector((store) => store.category);
   const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
-  const [openViewModal, setOpenViewModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
-    null
-  );
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     dispatch(getCategory());
+    setLoading(false);
     const socket = initSocket();
     // lisiting for backend events
     socket.on("categoryAdded", (ICategory) => {
@@ -79,11 +79,14 @@ export default function CategoryInfo() {
       .toLocaleLowerCase()
       .includes(searchText.toLocaleLowerCase())
   );
-  const handleViewClick = (data: ICategory) => {
-    setSelectedCategory(data);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
 
-    setOpenViewModal(true);
-  };
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -136,11 +139,26 @@ export default function CategoryInfo() {
                           variant="secondary"
                           size="sm"
                           title="View"
-                          onClick={() => handleViewClick(category)}
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/category/${category.id}`
+                            )
+                          }
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" title="Edit">
+
+                        {/* Edit */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Edit"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/category/edit/${category.id}`
+                            )
+                          }
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                         {/* delete button */}
@@ -168,13 +186,6 @@ export default function CategoryInfo() {
               )}
             </TableBody>
           </Table>
-          {selectedCategory && (
-            <ViewCategorModal
-              open={openViewModal}
-              onOpenChange={setOpenViewModal}
-              data={selectedCategory}
-            />
-          )}
         </div>
         {/* Pagination */}
 

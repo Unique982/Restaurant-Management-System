@@ -12,10 +12,13 @@ export interface IMenuItemsData {
 }
 export interface IMenuItems extends IMenuItemsData {
   id: string;
+  caegoryName: string;
   created_at: string;
   categoryName: string;
+  updated_at: string;
 }
 export interface IInitialState {
   menuDatas: IMenuItems[];
   status: Status;
+  singleMenu: IMenuItems | null;
 }

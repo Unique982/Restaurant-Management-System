@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Loader2, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -31,20 +31,26 @@ import {
   PaymentStatus,
 } from "@/lib/store/admin/orders/orders.types";
 import { initSocket } from "@/lib/socket";
-
+import { useRouter } from "next/navigation";
 export default function MenuIfo() {
+  const router = useRouter();
   const [isModal, setIsModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const [searchText, setSearchText] = useState("");
 
   const { orderDatas, status } = useAppSelector((store) => store.order);
 
   useEffect(() => {
+    setLoading(true);
     dispatch(getALlOrderList());
+    setLoading(false);
     const socket = initSocket();
 
     const handleAdded = (data: IOrderPostData) => {
+      setLoading(true);
       dispatch(getALlOrderList());
+      setLoading(false);
       toast.success("Order added successfully!");
     };
     const handleUpdated = (data: IOrderPostData) => {
@@ -127,7 +133,13 @@ export default function MenuIfo() {
         .includes(search)
     );
   });
-
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
   return (
     <div className="space-y-6 overflow-auto">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -242,10 +254,28 @@ export default function MenuIfo() {
                     {new Date(order.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                    <Button variant="secondary" size="sm" title="View">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      title="View"
+                      onClick={() =>
+                        router.push(`/admin/dashboard/orders/${order.order_id}`)
+                      }
+                    >
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button variant="outline" size="sm" title="Edit">
+
+                    {/* Edit */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      title="Edit"
+                      onClick={() =>
+                        router.push(
+                          `/admin/dashboard/orders/edit/${order.order_id}`
+                        )
+                      }
+                    >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button

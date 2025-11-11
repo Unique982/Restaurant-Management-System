@@ -3,9 +3,11 @@ import { ICategory, ICategoryData, IInitialState } from "./categorySlice.type";
 import { Status } from "@/lib/types/type";
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
+import { act } from "react";
 
 const initialState: IInitialState = {
   data: [],
+  singlecategory: null,
   status: Status.LOADING,
 };
 const categorySlice = createSlice({
@@ -33,11 +35,32 @@ const categorySlice = createSlice({
         state.data.splice(index, 1);
       }
     },
+    setSingleCategory(
+      state: IInitialState,
+      action: PayloadAction<ICategory | null>
+    ) {
+      state.singlecategory = action.payload;
+    },
+    updateCategory(state: IInitialState, action: PayloadAction<ICategory>) {
+      const index = state.data.findIndex(
+        (category) => category.id === action.payload.id
+      );
+
+      if (index !== -1) {
+        state.data[index] = action.payload;
+      }
+    },
   },
 });
 
-export const { setCategory, setStatus, fetchCategory, setCategoryDeleteById } =
-  categorySlice.actions;
+export const {
+  setCategory,
+  setStatus,
+  fetchCategory,
+  setCategoryDeleteById,
+  updateCategory,
+  setSingleCategory,
+} = categorySlice.actions;
 export default categorySlice.reducer;
 
 //  add
@@ -110,12 +133,13 @@ export function deleteCategoryById(id: string | number) {
 }
 
 // edit
-export function editCategoryById(id: string) {
+export function editCategoryById(id: string | number, data: ICategoryData) {
   return async function editCategoryById(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await APIWITHTOKEN.patch("/category/" + id);
+      const response = await APIWITHTOKEN.patch("/category/" + id, data);
       if (response.status === 200) {
+        response.data.data && dispatch(updateCategory(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {
@@ -134,16 +158,24 @@ export function editCategoryById(id: string) {
   };
 }
 // single category
-export function singelCategoryFetchById(id: string) {
+export function singelCategoryFetchById(id: string | number) {
   return async function singelCategoryFetchByIdThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.ERROR));
     try {
       const response = await APIWITHTOKEN.get("/category/" + id);
       if (response.status === 200) {
+        dispatch(setSingleCategory(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { success: false, message: "Category not found" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      return { success: false, message };
     }
   };
 }

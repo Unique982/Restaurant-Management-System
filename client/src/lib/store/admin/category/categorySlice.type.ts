@@ -8,8 +8,10 @@ export interface ICategoryData {
 export interface ICategory extends ICategoryData {
   id: string | number;
   createdAt: string;
+  updatedAt: string;
 }
 export interface IInitialState {
   data: ICategory[];
   status: Status;
+  singlecategory: ICategory | null;
 }

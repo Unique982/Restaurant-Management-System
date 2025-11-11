@@ -11,6 +11,8 @@ import {
 
 const initialState: IInitialState = {
   menuDatas: [],
+  singleMenu: null,
+
   status: Status.LOADING,
 };
 const menuItemSlice = createSlice({
@@ -36,10 +38,31 @@ const menuItemSlice = createSlice({
         state.menuDatas.splice(index, 1);
       }
     },
+    fectchSingleMenu(
+      state: IInitialState,
+      action: PayloadAction<IMenuItems | null>
+    ) {
+      state.singleMenu = action.payload;
+    },
+    updateMenuItems(state: IInitialState, action: PayloadAction<IMenuItems>) {
+      const index = state.menuDatas.findIndex(
+        (menu) => menu.id === action.payload.id
+      );
+
+      if (index !== -1) {
+        state.menuDatas[index] = action.payload;
+      }
+    },
   },
 });
-export const { setStatus, addMenuItems, fetchMenuItems, deleteMenuItemById } =
-  menuItemSlice.actions;
+export const {
+  setStatus,
+  addMenuItems,
+  fetchMenuItems,
+  deleteMenuItemById,
+  fectchSingleMenu,
+  updateMenuItems,
+} = menuItemSlice.actions;
 export default menuItemSlice.reducer;
 
 // create menu items
@@ -107,4 +130,50 @@ export function deletemenuItem(id: string | number) {
   };
 }
 
-// single menu item and edit menu item
+// edit menu item
+export function editMenuItemsById(id: string | number, data: IMenuItemsData) {
+  return async function editCategoryById(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch("/menu/" + id, data);
+      if (response.status === 200) {
+        response.data.data && dispatch(updateMenuItems(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+// single menuItmes
+export function singelFetchMenuItems(id: string | number) {
+  return async function singelCategoryFetchByIdThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.ERROR));
+    try {
+      const response = await APIWITHTOKEN.get("/menu/" + id);
+      if (response.status === 200) {
+        dispatch(singelFetchMenuItems(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { success: false, message: "Menu not found" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}

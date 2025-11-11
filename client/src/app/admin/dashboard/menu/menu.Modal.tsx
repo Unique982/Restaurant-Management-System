@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import toast from "react-hot-toast";
 import { createMenuItems } from "@/lib/store/admin/menuItems/menuItemSlice";
 import { IMenuItemsData } from "@/lib/store/admin/menuItems/menuItemSlice.type";
-import { getCategory } from "@/lib/store/customer/category/categorySlice";
+import { getCategory } from "@/lib/store/admin/category/categorySlice";
 
 interface menuProps {
   open: boolean;

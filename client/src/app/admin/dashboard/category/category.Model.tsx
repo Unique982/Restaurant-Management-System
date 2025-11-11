@@ -51,7 +51,7 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md w-[90%] rounded-lg p-6 bg-white">
+      <DialogContent className="w-full rounded-lg p-6 bg-white ">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             Add Category

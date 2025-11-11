@@ -27,6 +27,7 @@ export enum PaymentStatus {
 
 export interface IOrderItem {
   id: string | number;
+  name: string;
   quantity: number;
   price?: number;
 }
@@ -55,6 +56,7 @@ export interface IOrderPostData {
 export interface IIOrderItems extends IOrderPostData {
   order_id: string | number;
   created_at: string;
+  updated_at: string;
   table: ITableData;
   user?: IIUserOrderData;
 }
@@ -62,4 +64,5 @@ export interface IIOrderItems extends IOrderPostData {
 export interface IInitialState {
   orderDatas: IIOrderItems[];
   status: Status;
+  singleOrder: IIOrderItems | null;
 }

@@ -13,6 +13,7 @@ import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 const initialState: IInitialState = {
   orderDatas: [],
   status: Status.LOADING,
+  singleOrder: null,
 };
 
 const orderSlice = createSlice({
@@ -27,6 +28,12 @@ const orderSlice = createSlice({
     },
     fetchOrder(state: IInitialState, action: PayloadAction<IIOrderItems[]>) {
       state.orderDatas = action.payload;
+    },
+    fectchSingleOrder(
+      state: IInitialState,
+      action: PayloadAction<IIOrderItems | null>
+    ) {
+      state.singleOrder = action.payload;
     },
     // soft Delete
     softDeleteOrderById(
@@ -87,6 +94,7 @@ export const {
   fetchOrder,
   updateOrderStatusById,
   updateOrderTypeById,
+  fectchSingleOrder,
 } = orderSlice.actions;
 export default orderSlice.reducer;
 
@@ -245,6 +253,29 @@ export function orderTypeUpdate(id: string | number, order_type: OrderType) {
         err.message ||
         err.response?.data?.errors ||
         "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+
+// single order
+export function singelFetchOrder(id: string | number) {
+  return async function singelCategoryFetchByIdThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.ERROR));
+    try {
+      const response = await APIWITHTOKEN.get("/order/" + id);
+      if (response.status === 200) {
+        dispatch(singelFetchOrder(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { success: false, message: "Order not found" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
       return { success: false, message };
     }
   };

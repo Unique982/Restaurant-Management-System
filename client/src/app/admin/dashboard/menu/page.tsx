@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Loader2, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -22,14 +22,19 @@ import {
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
 import { IMenuItems } from "@/lib/store/admin/menuItems/menuItemSlice.type";
+import { useRouter } from "next/navigation";
 
 export default function MenuIfo() {
+  const router = useRouter();
   const [isModal, setIsModal] = useState(false);
   const { menuDatas: menuItems } = useAppSelector((store) => store.menuItems);
   const { data: categories } = useAppSelector((store) => store.category);
+  const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   useEffect(() => {
+    setLoading(true);
     dispatch(getMenuItem());
+    setLoading(false);
     const socket = initSocket();
     // added
     socket.on("menuAdded", (data: IMenuItems) => {
@@ -58,6 +63,13 @@ export default function MenuIfo() {
   const deleteHandle = async (id: string | number) => {
     await dispatch(deletemenuItem(id));
   };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -112,10 +124,26 @@ export default function MenuIfo() {
                     </TableCell>
 
                     <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                      <Button variant="secondary" size="sm" title="View">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        title="View"
+                        onClick={() =>
+                          router.push(`/admin/dashboard/menu/${menu.id}`)
+                        }
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm" title="Edit">
+
+                      {/* Edit */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        title="Edit"
+                        onClick={() =>
+                          router.push(`/admin/dashboard/menu/edit/${menu.id}`)
+                        }
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button
