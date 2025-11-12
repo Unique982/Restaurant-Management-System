@@ -65,7 +65,7 @@ export default function CategoryViewPage() {
 
   return (
     <div className="min-h-screen overflow-y-auto bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl  mx-auto">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="mb-6">
           <Button
@@ -157,7 +157,7 @@ export default function CategoryViewPage() {
               onClick={() =>
                 router.push(`/admin/dashboard/category/edit/${category.id}`)
               }
-              className="flex-1"
+              className=""
             >
               Edit Category
             </Button>

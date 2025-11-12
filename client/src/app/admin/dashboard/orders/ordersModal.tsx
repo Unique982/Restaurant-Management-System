@@ -52,11 +52,11 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
     order_type: OrderType.DineIn,
     discount: 0,
     status: OrderStatus.Pending,
-    payment_method: PaymentMethod.Cash,
+    // payment_method: PaymentMethod.Cash,
     payment_status: PaymentStatus.Unpaid,
     special_request: "",
     delivery_address: "",
-    items: [{ id: "", quantity: 1 }],
+    items: [{ id: "", name: "", quantity: 1 }],
     deleted_at: false,
   });
 
@@ -78,7 +78,7 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
   const addItem = () =>
     setOrderData({
       ...orderData,
-      items: [...orderData.items, { id: "", quantity: 1 }],
+      items: [...orderData.items, { id: "", name: "", quantity: 1 }],
     });
 
   const removeItem = (index: number) => {
@@ -170,7 +170,7 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
 
           {/* Payment Method & Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
+            {/* <div className="space-y-1">
               <Label>Payment Method</Label>
               <Select
                 value={orderData.payment_method}
@@ -190,7 +190,7 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
                   <SelectItem value={PaymentMethod.Khalti}>Card</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
             <div className="space-y-1">
               <Label>Payment Status</Label>
               <Select

@@ -84,6 +84,15 @@ const orderSlice = createSlice({
         order.order_type = order_type;
       }
     },
+    updateOrderById(state: IInitialState, action: PayloadAction<IIOrderItems>) {
+      const index = state.orderDatas.findIndex(
+        (o) => o.order_id === action.payload.order_id
+      );
+
+      if (index !== -1) {
+        state.orderDatas[index] = action.payload;
+      }
+    },
   },
 });
 export const {
@@ -95,6 +104,7 @@ export const {
   updateOrderStatusById,
   updateOrderTypeById,
   fectchSingleOrder,
+  updateOrderById,
 } = orderSlice.actions;
 export default orderSlice.reducer;
 
@@ -276,6 +286,32 @@ export function singelFetchOrder(id: string | number) {
       dispatch(setStatus(Status.ERROR));
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+
+// edit order
+export function editOrderById(id: string | number, data: IOrderPostData) {
+  return async function editCategoryById(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch("/orders/" + id, data);
+      if (response.status === 200) {
+        response.data.data && dispatch(updateOrderById(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
       return { success: false, message };
     }
   };

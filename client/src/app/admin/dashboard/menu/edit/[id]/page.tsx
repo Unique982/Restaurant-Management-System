@@ -139,8 +139,8 @@ export default function CategoryEditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-6">
           <Button
@@ -160,16 +160,13 @@ export default function CategoryEditPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Name */}
             <div className="space-y-2">
-              <label
-                htmlFor="name"
-                className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-              >
+              <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                 Name <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Input
                 id="name"
                 name="name"
@@ -184,12 +181,9 @@ export default function CategoryEditPage() {
 
             {/* Description */}
             <div className="space-y-2">
-              <label
-                htmlFor="description"
-                className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-              >
+              <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                 Description
-              </label>
+              </Label>
               <Textarea
                 id="description"
                 name="description"
@@ -203,12 +197,9 @@ export default function CategoryEditPage() {
 
             {/* Price */}
             <div className="space-y-2">
-              <label
-                htmlFor="price"
-                className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-              >
+              <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                 Price <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Input
                 id="price"
                 name="price"
@@ -269,12 +260,9 @@ export default function CategoryEditPage() {
 
             {/* Image URL */}
             <div className="space-y-2">
-              <label
-                htmlFor="image_url"
-                className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-              >
+              <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                 Image URL
-              </label>
+              </Label>
               <Input
                 id="image_url"
                 name="image_url"
@@ -288,9 +276,9 @@ export default function CategoryEditPage() {
             {/* Image Preview */}
             {updateMenuItems.image_url && (
               <div className="space-y-2">
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                   Current Image
-                </label>
+                </Label>
                 <div className="relative w-full h-30 sm:h-64 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                   {!imageError ? (
                     <Image
@@ -314,12 +302,9 @@ export default function CategoryEditPage() {
             {/* Type & Availability */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <label
-                  htmlFor="type"
-                  className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-                >
+                <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                   Type
-                </label>
+                </Label>
                 <Input
                   id="type"
                   name="type"
@@ -330,36 +315,37 @@ export default function CategoryEditPage() {
                   disabled={submitting}
                 />
               </div>
-
               <div className="space-y-2">
-                <label
-                  htmlFor="availability"
-                  className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-                >
-                  Availability
-                </label>
-                <select
-                  id="availability"
-                  name="availability"
+                <Label>Availability</Label>
+                <Select
                   value={updateMenuItems.availability}
-                  onChange={handleInputChange}
-                  className="w-full h-10 sm:h-11 px-3 border border-gray-300 bg-white text-gray-900 rounded-md text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  onValueChange={(value) =>
+                    setUpdateMenuItmes({
+                      ...updateMenuItems,
+                      availability: value,
+                    })
+                  }
                   disabled={submitting}
                 >
-                  <option value="available">Available</option>
-                  <option value="unavailable">Unavailable</option>
-                </select>
+                  <SelectTrigger
+                    id="availability"
+                    className="w-full h-10 sm:h-11"
+                  >
+                    <SelectValue placeholder="Select availability" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             {/* Ingredients */}
             <div className="space-y-2">
-              <label
-                htmlFor="ingredients"
-                className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide"
-              >
+              <Label className="block text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                 Ingredients
-              </label>
+              </Label>
               <Textarea
                 id="ingredients"
                 name="ingredients"

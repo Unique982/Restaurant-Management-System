@@ -52,6 +52,12 @@ export default function TopHeader() {
                   Profile
                 </DropdownMenuItem>
               </Link>
+              <Link href="/admin/dashboard/profile" passHref>
+                <DropdownMenuItem>
+                  <User2Icon className="mr-2 h-4 w-4" />
+                  Restore
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />

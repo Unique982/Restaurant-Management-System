@@ -13,6 +13,7 @@ export enum tableStatus {
 export interface ITables extends ITablesData {
   id: string | number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IInitialState {

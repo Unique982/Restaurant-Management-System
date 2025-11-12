@@ -14,6 +14,7 @@ import {
 } from "@/lib/store/admin/category/categorySlice";
 
 import toast from "react-hot-toast";
+import { ICategoryData } from "@/lib/store/admin/category/categorySlice.type";
 
 export default function CategoryEditPage() {
   const router = useRouter();
@@ -64,13 +65,10 @@ export default function CategoryEditPage() {
     }
   }, [singlecategory]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleInputChange = (key: keyof ICategoryData, value: any) => {
     setUpdatecategory((prev) => ({
       ...prev,
-      [name]: value,
+      [key]: value,
     }));
   };
 
@@ -137,7 +135,9 @@ export default function CategoryEditPage() {
                 id="categoryName"
                 name="categoryName"
                 value={updateCategory.categoryName}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  handleInputChange("categoryName", e.target.value)
+                }
                 placeholder="Enter category name"
                 className="w-full"
                 required
@@ -156,7 +156,9 @@ export default function CategoryEditPage() {
                 id="categoryDescription"
                 name="categoryDescription"
                 value={updateCategory.categoryDescription}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  handleInputChange("categoryDescription", e.target.value)
+                }
                 placeholder="Enter category description"
                 className="w-full resize-none min-h-[150px]"
                 required

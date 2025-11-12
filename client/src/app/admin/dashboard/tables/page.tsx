@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Loader2, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useRouter } from "next/navigation";
 import Pagination from "@/components/admin/Pagination/pagination";
 import AddTable from "./table.Modal";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
@@ -27,10 +28,14 @@ import { tableStatus } from "@/lib/store/admin/tables/tableSlice.type";
 export default function TableInfo() {
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const { data: tables, status } = useAppSelector((store) => store.tables);
+  const router = useRouter();
   useEffect(() => {
+    setLoading(true);
     dispatch(getTables());
+    setLoading(false);
     const socket = initSocket();
     const handleAdded = (data: ITableData) => {
       dispatch(getTables());
@@ -81,7 +86,13 @@ export default function TableInfo() {
       .toLocaleLowerCase()
       .includes(searchText.toLocaleLowerCase())
   );
-
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -147,10 +158,28 @@ export default function TableInfo() {
                         {new Date(table.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                        <Button variant="secondary" size="sm" title="View">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          title="View"
+                          onClick={() =>
+                            router.push(`/admin/dashboard/tables/${table.id}`)
+                          }
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" title="Edit">
+
+                        {/* Edit */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Edit"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/tables/edit/${table.id}`
+                            )
+                          }
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button

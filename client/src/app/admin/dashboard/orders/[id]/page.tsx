@@ -15,7 +15,6 @@ export default function OrderViewPage() {
   const params = useParams();
   const dispatch = useAppDispatch();
   const { orderDatas } = useAppSelector((store) => store.order);
-
   const [orderDetails, setOrderDetails] = useState<IIOrderItems | null>(null);
   const [showBilling, setShowBilling] = useState(false);
   useEffect(() => {
@@ -55,7 +54,7 @@ export default function OrderViewPage() {
   return (
     <>
       <div className="min-h-screen overflow-y-auto bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
           <div className="mb-6">
             <Button
@@ -72,7 +71,7 @@ export default function OrderViewPage() {
           </div>
 
           {/* Order Details */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 overflow-auto space-y-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700 uppercase">
@@ -124,16 +123,7 @@ export default function OrderViewPage() {
                   className="bg-gray-50 border-gray-300 text-gray-900"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 uppercase">
-                  Payment Method
-                </label>
-                <Input
-                  value={orderDetails.payment_method}
-                  readOnly
-                  className="bg-gray-50 border-gray-300 text-gray-900"
-                />
-              </div>
+
               {orderDetails.discount && (
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700 uppercase">
