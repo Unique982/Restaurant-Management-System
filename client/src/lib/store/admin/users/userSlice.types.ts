@@ -13,4 +13,5 @@ export interface IUserList {
 export interface IInitialState {
   usersData: IUserList[];
   status: Status;
+  singleDetails: IUserList | null;
 }

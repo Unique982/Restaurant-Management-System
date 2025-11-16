@@ -82,7 +82,7 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
 
         const role = result.user.role;
         if (role === "admin") router.push("/admin/dashboard");
-        else if (role === "customer") router.push("/");
+        else if (role === "customer") router.push("/customer/dashboard");
         else router.push("/");
       } else {
         toast.error(result?.message || "Login failed");

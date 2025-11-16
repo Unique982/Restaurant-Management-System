@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "../store";
 import API from "@/lib/http";
 import { ILoginData, IRegisterInput } from "@/lib/types/auth/authTypes";
+import { use } from "react";
 
 const initialState: IInitialState = {
   user: {
@@ -47,13 +48,13 @@ export function userLogin(data: ILoginData) {
             email: user.email,
             token: token,
             role: user.role,
+            id: user.id,
           })
         );
         localStorage.setItem("token", token);
 
         dispatch(setStatus(Status.SUCCESS));
         return { success: true, user };
-        console.log(response.data);
       } else {
         dispatch(setStatus(Status.ERROR));
         return { success: false, message: response.data?.message || "Failed" };

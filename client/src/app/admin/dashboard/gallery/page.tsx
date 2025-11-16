@@ -1,138 +1,82 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Pagination from "@/components/admin/Pagination/pagination";
 
-import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import {
-  deleteCategoryById,
-  getCategory,
-} from "@/lib/store/admin/category/categorySlice";
-import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
-import { Status } from "@/lib/types/type";
-import toast from "react-hot-toast";
+interface IPreview {
+  file: File;
+  url: string;
+}
 
-export default function CategoryInfo() {
-  const { data: categories, status } = useAppSelector(
-    (store) => store.category
-  );
-  const dispatch = useAppDispatch();
-  const [isModal, setIsModal] = useState(false);
-  const [searchText, setSearchText] = useState<string>("");
+export default function AdminGalleryUpload() {
+  const [files, setFiles] = useState<IPreview[]>([]);
+  const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    dispatch(getCategory());
-  }, [dispatch]);
-  // delete
-  const handleCategoryDelete = async (id: string | number) => {
-    await dispatch(deleteCategoryById(id));
-    if (status === Status.SUCCESS) {
-      dispatch(getCategory());
-      toast.success("Category Delete successfully!");
-    } else {
-      toast.error("Failed to delete !");
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const selectedFiles = Array.from(e.target.files).map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setFiles(selectedFiles);
+  };
+
+  // Upload files to backend
+  const handleUpload = async () => {
+    if (files.length === 0) return alert("Please select files first");
+    const formData = new FormData();
+    files.forEach((f) => formData.append("images", f.file));
+
+    try {
+      setUploading(true);
+      const res = await axios.post("/api/admin/gallery/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Images uploaded successfully!");
+      setFiles([]);
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed!");
+    } finally {
+      setUploading(false);
     }
   };
-  // search
-  const filterData = categories.filter((category) =>
-    category.categoryName
-      .toLocaleLowerCase()
-      .includes(searchText.toLocaleLowerCase())
-  );
 
   return (
-    <>
-      <div className="space-y-6 overflow-auto">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold">Blog Management</h1>
-          {/* sreach section here */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Input
-              placeholder="Search Category..."
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-full sm:w-[250px]"
-            />
-            {/* add button  */}
-            <Button onClick={() => setIsModal(true)}>Add Category</Button>
-          </div>
-        </div>
+    <div className="max-w-4xl mx-auto p-4 space-y-4">
+      <h1 className="text-2xl font-bold">Admin Gallery Upload</h1>
 
-        {/* Tbale content herre */}
-        <div className="overflow-x-auto rounded-md border bg-white">
-          <Table className="w-full">
-            {/* Table header */}
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[40px]">ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>CreatedAt</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            {/* table body */}
-            <TableBody>
-              {filterData.length > 0 ? (
-                filterData.map((category: ICategory, index) => {
-                  return (
-                    <TableRow key={index + 1}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell className="whitespace-normal break-words">
-                        {category.categoryName}
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words">
-                        {category.categoryDescription.substring(0, 30) + "..."}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(category.createdAt).toLocaleDateString("np")}
-                      </TableCell>
-                      <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                        <Button variant="secondary" size="sm" title="View">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" title="Edit">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        {/* delete button */}
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          title="Delete"
-                          onClick={() => handleCategoryDelete(category?.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center py-4 text-red-600"
-                  >
-                    No users found
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        {/* Pagination */}
+      {/* File Input */}
+      <input
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={handleFileChange}
+        className="border p-2 rounded"
+      />
 
-        <Pagination />
-      </div>
-    </>
+      {/* Preview */}
+      {files.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {files.map((f, index) => (
+            <div key={index} className="border rounded overflow-hidden">
+              <img
+                src={f.url}
+                alt="preview"
+                className="w-full h-32 object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Upload Button */}
+      <Button onClick={handleUpload} disabled={uploading}>
+        {uploading ? "Uploading..." : "Upload Images"}
+      </Button>
+    </div>
   );
 }

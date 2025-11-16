@@ -18,6 +18,7 @@ import { ICategoryData } from "@/lib/store/admin/category/categorySlice.type";
 
 export default function CategoryEditPage() {
   const router = useRouter();
+
   const params = useParams();
   const dispatch = useAppDispatch();
   const { data: categories, singlecategory } = useAppSelector(
@@ -101,7 +102,7 @@ export default function CategoryEditPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="mb-6">
           <Button

@@ -24,7 +24,7 @@ export default function AboutPage() {
   }, [dispatch]);
   useEffect(() => {
     if (aboutState.about.length > 0) {
-      const data: IAbout = aboutState.about[0]; // assuming single record
+      const data: IAbout = aboutState.about[0];
       setAbout({
         aboutTitle: data.aboutTitle,
         aboutDescription: data.aboutDescription,

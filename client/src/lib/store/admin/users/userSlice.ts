@@ -8,6 +8,7 @@ import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 const initialState: IInitialState = {
   usersData: [],
   status: Status.LOADING,
+  singleDetails: null,
 };
 
 const userSlice = createSlice({
@@ -30,9 +31,16 @@ const userSlice = createSlice({
         state.usersData.splice(index, 1);
       }
     },
+    fectchSingleUser(
+      state: IInitialState,
+      action: PayloadAction<IUserList | null>
+    ) {
+      state.singleDetails = action.payload;
+    },
   },
 });
-export const { setStatus, fetchUser, deleteUserById } = userSlice.actions;
+export const { setStatus, fetchUser, deleteUserById, fectchSingleUser } =
+  userSlice.actions;
 export default userSlice.reducer;
 
 // fetch function method
@@ -51,7 +59,6 @@ export function getUserList() {
     }
   };
 }
-
 // delete function
 export function deleteUser(id: string | number) {
   return async function deleteUserThunk(dispatch: AppDispatch) {
@@ -73,6 +80,27 @@ export function deleteUser(id: string | number) {
         err.message ||
         err.response?.data?.errors ||
         "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+export function singelFetchUser(id: string | number) {
+  return async function singelFetchUserThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.ERROR));
+    try {
+      const response = await APIWITHTOKEN.get("customer/" + id);
+      if (response.status === 200) {
+        dispatch(singelFetchUser(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { success: false, message: "User not found" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
       return { success: false, message };
     }
   };

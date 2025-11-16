@@ -150,9 +150,9 @@ export default function AddOrders({ open, onOpenChange }: OrderProps) {
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DineIn">Dine In</SelectItem>
-                  <SelectItem value="Delivery">Delivery</SelectItem>
-                  <SelectItem value="TakeAway">Take Away</SelectItem>
+                  <SelectItem value={OrderType.DineIn}>Dine In</SelectItem>
+                  <SelectItem value={OrderType.Delivery}>Delivery</SelectItem>
+                  <SelectItem value={OrderType.TakeAway}>Take Away</SelectItem>
                 </SelectContent>
               </Select>
             </div>

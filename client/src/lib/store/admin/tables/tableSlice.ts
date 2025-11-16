@@ -12,6 +12,7 @@ import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 const initialState: IInitialState = {
   data: [],
   status: Status.LOADING,
+  singleDetails: null,
 };
 const tableSlice = createSlice({
   name: "TableSlice",
@@ -47,6 +48,16 @@ const tableSlice = createSlice({
         table.tableStatus = tableStatus;
       }
     },
+    singleTable(state: IInitialState, action: PayloadAction<ITables>) {
+      state.singleDetails = action.payload;
+    },
+    updateTableById(state: IInitialState, action: PayloadAction<ITables>) {
+      const index = state.data.findIndex((t) => t.id === action.payload.id);
+
+      if (index !== -1) {
+        state.data[index] = action.payload;
+      }
+    },
   },
 });
 export const {
@@ -55,6 +66,8 @@ export const {
   deleteTableById,
   fetchTbales,
   tableStatusUpdateBy,
+  singleTable,
+  updateTableById,
 } = tableSlice.actions;
 export default tableSlice.reducer;
 
@@ -138,6 +151,52 @@ export function tableStatausUpdate(
       });
       if (response.status === 200) {
         dispatch(tableStatusUpdateBy({ id, tableStatus }));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+export function singelTables(id: string | number) {
+  return async function singleTablesIdThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.ERROR));
+    try {
+      const response = await APIWITHTOKEN.get("tables/" + id);
+      if (response.status === 200) {
+        dispatch(singleTable(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { success: false, message: "Table not found" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+// edit resverstion
+export function editTableById(id: string | number, data: ITablesData) {
+  return async function editTableByIdThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch("/tables/" + id, data);
+      if (response.status === 200) {
+        response.data.data && dispatch(updateTableById(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {

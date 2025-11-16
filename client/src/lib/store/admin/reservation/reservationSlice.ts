@@ -12,6 +12,7 @@ import API from "@/lib/http";
 const initialState: IInitialState = {
   reservationData: [],
   status: Status.LOADING,
+  singleDetails: null,
 };
 const reservationSlice = createSlice({
   name: "reservationSlice",
@@ -53,6 +54,47 @@ const reservationSlice = createSlice({
         reservation.status = status;
       }
     },
+    fectchSingleReservation(
+      state: IInitialState,
+      action: PayloadAction<IIReservation | null>
+    ) {
+      state.singleDetails = action.payload;
+    },
+    // soft Delete
+    softDeleteResvById(
+      state: IInitialState,
+      action: PayloadAction<string | number>
+    ) {
+      const ResvId = state.reservationData.find(
+        (resv) => resv.id === action.payload
+      );
+      if (ResvId) {
+        ResvId.deleted_at = true;
+      }
+    },
+    // hard delete by order id
+    hardDeleteResvById(
+      state: IInitialState,
+      action: PayloadAction<string | number>
+    ) {
+      const resvId = action.payload;
+      const index = state.reservationData.findIndex(
+        (resv) => resv.id === resvId
+      );
+
+      if (index !== -1) {
+        state.reservationData.splice(index, 1);
+      }
+    },
+    updateResvById(state: IInitialState, action: PayloadAction<IIReservation>) {
+      const index = state.reservationData.findIndex(
+        (resv) => resv.id === action.payload.id
+      );
+
+      if (index !== -1) {
+        state.reservationData[index] = action.payload;
+      }
+    },
   },
 });
 export const {
@@ -61,10 +103,14 @@ export const {
   fetchReservation,
   deleteReservationById,
   updateStatus,
+  fectchSingleReservation,
+  softDeleteResvById,
+  hardDeleteResvById,
+  updateResvById,
 } = reservationSlice.actions;
 export default reservationSlice.reducer;
 
-//
+//create reservation
 export function createReservation(data: IReservationPostData) {
   return async function createReservationThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
@@ -89,7 +135,6 @@ export function createReservation(data: IReservationPostData) {
     }
   };
 }
-
 // fetch reservation list
 export function getReservation() {
   return async function getReservationThunk(dispatch: AppDispatch) {
@@ -107,7 +152,6 @@ export function getReservation() {
     }
   };
 }
-
 // delete method
 export function deleteReservation(id: string | number) {
   return async function deleteReservationThunk(dispatch: AppDispatch) {
@@ -130,7 +174,6 @@ export function deleteReservation(id: string | number) {
     }
   };
 }
-
 export function statusUpdate(id: string | number, status: ReservationStatus) {
   return async function statusUpdateThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
@@ -164,6 +207,106 @@ export function bookingTable(data: IReservationPostData) {
       const response = await API.post("/booking/table", data);
       if (response.status === 200) {
         response.data.data && dispatch(addReservation(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+export function softDeleteResv(id: string | number) {
+  return async function softDeleteResvThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const deletedAt = new Date().toISOString().slice(0, 19).replace("T", " ");
+      const response = await APIWITHTOKEN.patch(
+        `reservations/soft-delete/` + id,
+        {
+          deleted_at: deletedAt,
+        }
+      );
+      if (response.status === 200) {
+        dispatch(softDeleteResvById(id));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+// hardDelete function
+export function hardDeleteResv(id: string | number) {
+  return async function hardDeleteResvThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.delete("reservations/" + id);
+      if (response.status === 200) {
+        dispatch(hardDeleteResvById(id));
+        dispatch(setStatus(Status.SUCCESS));
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+export function singelFetchResv(id: string | number) {
+  return async function singelFetchResvThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.ERROR));
+    try {
+      const response = await APIWITHTOKEN.get("reservations/" + id);
+      if (response.status === 200) {
+        dispatch(singelFetchResv(response.data.data));
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { success: false, message: "Reservation not found" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+// edit resverstion
+export function editResvById(id: string | number, data: IReservationPostData) {
+  return async function editResvByIdThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch("reservations/" + id, data);
+      if (response.status === 200) {
+        response.data.data && dispatch(updateResvById(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
         return { success: true };
       } else {

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Loader2, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,34 +14,28 @@ import {
 import Pagination from "@/components/admin/Pagination/pagination";
 
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import {
-  deleteCategoryById,
-  getCategory,
-} from "@/lib/store/admin/category/categorySlice";
-import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
-import { Status } from "@/lib/types/type";
-import toast from "react-hot-toast";
-import { fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
+
+import { deleteBlogById, fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
 import { IBlogDetails } from "@/lib/store/admin/blog/blogSlice.type";
+import { useRouter } from "next/navigation";
 
 export default function CategoryInfo() {
+  const router = useRouter();
   const { blogData, status } = useAppSelector((store) => store.blog);
   const dispatch = useAppDispatch();
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    setLoading(true);
     dispatch(fectchBlogs());
+    setLoading(false);
   }, []);
   // delete
   const handleBlogDelete = async (id: string | number) => {
-    // await dispatch();
-    if (status === Status.SUCCESS) {
-      dispatch(fectchBlogs());
-      toast.success("Category Delete successfully!");
-    } else {
-      toast.error("Failed to delete !");
-    }
+    await dispatch(deleteBlogById(id));
   };
   // search
   const filterData = blogData.filter(
@@ -56,7 +50,13 @@ export default function CategoryInfo() {
         .toLocaleLowerCase()
         .includes(searchText.toLocaleLowerCase())
   );
-
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
   return (
     <>
       <div className="space-y-6 overflow-auto">
@@ -65,12 +65,16 @@ export default function CategoryInfo() {
           {/* sreach section here */}
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Input
-              placeholder="Search Category..."
+              placeholder="Search Blog..."
               onChange={(e) => setSearchText(e.target.value)}
               className="w-full sm:w-[250px]"
             />
             {/* add button  */}
-            <Button onClick={() => setIsModal(true)}>Add Category</Button>
+
+            <Button onClick={() => router.push(`/admin/dashboard/blog/Add/`)}>
+              {" "}
+              Add Blog
+            </Button>
           </div>
         </div>
 
@@ -104,10 +108,30 @@ export default function CategoryInfo() {
                         {new Date(blog.createdAt).toLocaleDateString("np")}
                       </TableCell>
                       <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                        <Button variant="secondary" size="sm" title="View">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          title="View"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/blog/${blogData[0].id}`
+                            )
+                          }
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" title="Edit">
+
+                        {/* Edit */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Edit"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/blog/edit/${blogData[0].id}`
+                            )
+                          }
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                         {/* delete button */}
@@ -115,7 +139,7 @@ export default function CategoryInfo() {
                           variant="destructive"
                           size="sm"
                           title="Delete"
-                          // onClick={() => handleCategoryDelete(blog?.id)}
+                          onClick={() => handleBlogDelete(blog?.id)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

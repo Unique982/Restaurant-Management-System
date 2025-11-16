@@ -77,7 +77,7 @@ export default function TableInfo() {
     const res: any = await dispatch(tableStatausUpdate(id, nextStatus));
   };
   const deleteHandleTable = async (id: string | number) => {
-    (await id) && dispatch(deleteTablesById(id));
+    id && dispatch(deleteTablesById(id));
   };
 
   // search

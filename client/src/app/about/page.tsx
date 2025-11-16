@@ -4,8 +4,9 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { aboutFetch } from "@/lib/store/admin/about/aboutSlice";
 import { useParams } from "next/navigation";
-import Navbar from "@/components/client/Navbar/navbar";
+
 import Footer from "@/components/client/Footer/footer";
+import Navbar from "@/components/client/Navbar/navbar";
 
 export default function AboutDetails() {
   const dispatch = useAppDispatch();

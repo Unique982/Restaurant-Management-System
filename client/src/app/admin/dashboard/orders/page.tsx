@@ -75,11 +75,6 @@ export default function MenuIfo() {
   // delete handler
   const deleteHandle = async (id: string | number) => {
     const res: any = await dispatch(softDeleteOrder(id));
-    if (res.success) {
-      toast.success("Order deleted successfully!");
-    } else {
-      toast.error(res.message || "Something went wrong!");
-    }
   };
   // order statius chnage
   const handleOrderTypeChange = async (
@@ -133,6 +128,7 @@ export default function MenuIfo() {
         .includes(search)
     );
   });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

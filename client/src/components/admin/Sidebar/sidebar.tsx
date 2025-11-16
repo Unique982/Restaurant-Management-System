@@ -17,10 +17,13 @@ import {
   Image,
   MessageCircle,
   ListOrdered,
+  ShoppingCart,
+  DollarSign,
+  FileText,
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SideBar() {
@@ -34,7 +37,7 @@ export default function SideBar() {
     router.push("/");
   };
 
-  const menuItems = [
+  const adminMenuItems = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/admin/dashboard/category", icon: TagIcon, label: "Category" },
     { href: "/admin/dashboard/menu", icon: MenuIcon, label: "Menu" },
@@ -48,18 +51,47 @@ export default function SideBar() {
     { href: "/admin/dashboard/orders", icon: ListOrdered, label: "Orders" },
   ];
 
-  const pageItems = [
-    { href: "/admin/dashboard/about", icon: Info, label: "About" },
-    { href: "/admin/dashboard/services", icon: Server, label: "Services" },
-    { href: "/admin/dashboard/blog", icon: Tags, label: "Blog" },
-    { href: "/admin/dashboard/contact", icon: Contact, label: "Contact" },
-    { href: "/admin/dashboard/gallery", icon: Image, label: "Gallery" },
+  const AdminpageItems =
+    user?.role === "admin"
+      ? [
+          { href: "/admin/dashboard/about", icon: Info, label: "About" },
+          {
+            href: "/admin/dashboard/services",
+            icon: Server,
+            label: "Services",
+          },
+          { href: "/admin/dashboard/blog", icon: Tags, label: "Blog" },
+          { href: "/admin/dashboard/contact", icon: Contact, label: "Contact" },
+          { href: "/admin/dashboard/gallery", icon: Image, label: "Gallery" },
+          {
+            href: "/admin/dashboard/testimonials",
+            icon: MessageCircle,
+            label: "Testimonials",
+          },
+        ]
+      : [];
+
+  const customerMenu = [
+    { href: "/customer/dashboard/menu", icon: Menu, label: "Menu" },
     {
-      href: "/admin/dashboard/testimonials",
+      href: "/customer/dashboard/my-order",
+      icon: ListOrdered,
+      label: "My Orders",
+    },
+    { href: "/customer/dashboard/cart", icon: ShoppingCart, label: "Cart" },
+    {
+      href: "/customer/dashboard/payment-history",
+      icon: DollarSign,
+      label: "Payments",
+    },
+    { href: "/customer/dashboard/invoice", icon: FileText, label: "Invoice" },
+    {
+      href: "/customer/dashboard/contact",
       icon: MessageCircle,
-      label: "Testimonials",
+      label: "Contact",
     },
   ];
+  const menuItems = user?.role === "admin" ? adminMenuItems : customerMenu;
 
   return (
     <aside
@@ -74,7 +106,11 @@ export default function SideBar() {
             !sidebarOpen && "hidden"
           }`}
         >
-          Unique
+          {user?.role === "admin"
+            ? "✌️ Admin"
+            : user?.role === "customer"
+            ? "✌️ Customer"
+            : "Dashboard"}
         </h1>
         <Button
           variant="ghost"
@@ -101,12 +137,12 @@ export default function SideBar() {
           />
         ))}
 
-        {sidebarOpen && (
+        {sidebarOpen && user?.role === "admin" && (
           <p className="text-gray-400 uppercase text-xs px-2 mt-4 mb-2">
             Pages
           </p>
         )}
-        {pageItems.map((item) => (
+        {AdminpageItems.map((item) => (
           <NavItem
             key={item.href}
             href={item.href}

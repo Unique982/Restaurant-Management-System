@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import LoginModal from "@/components/client/modal/LoginModal";
 import Cart from "@/components/client/cart/Cart";
 import { deleteCart, fetchCart } from "@/lib/store/customer/cart/cartSlice";
+import { getUserList } from "@/lib/store/admin/users/userSlice";
+import { setUser } from "@/lib/store/auth/authSlice";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,15 +16,26 @@ export default function Navbar() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart?.items || []);
   const { user } = useAppSelector((state) => state.auth);
+  const { usersData } = useAppSelector((state) => state.users);
 
   useEffect(() => {
     dispatch(fetchCart());
     const token = localStorage.getItem("token");
+
     if (token) {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      dispatch(
+        setUser({
+          username: decoded.username || "",
+          email: decoded.email || "",
+          role: decoded.role || "",
+          id: decoded.id,
+          token: token,
+        })
+      );
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
@@ -99,7 +112,7 @@ export default function Navbar() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-orange-600 font-semibold text-white hover:bg-orange-500 transition"
               >
-                {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
+                {user?.role ? user.role.charAt(0).toUpperCase() : "U"}
               </button>
 
               {/* Dropdown */}
@@ -107,22 +120,31 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-xl shadow-lg overflow-hidden">
                   <div className="px-4 py-2 border-b">
                     <p className="font-semibold capitalize">
-                      {user.username || user.username}
+                      🙌 Hi{" "}
+                      {user?.role
+                        ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                        : "U"}
                     </p>
-                    <p className="text-sm text-gray-500">{user.email}</p>
                   </div>
                   <ul>
                     <li>
                       <Link
-                        href="/dashboard"
+                        href={
+                          user.role === "admin"
+                            ? "/admin/dashboard"
+                            : "/customer/dashboard"
+                        }
                         className="block px-4 py-2 hover:bg-gray-100"
                       >
                         Dashboard
                       </Link>
-                    </li>
-                    <li>
+
                       <Link
-                        href="/profile"
+                        href={
+                          user.role === "admin"
+                            ? "/admin/dashboard/profile"
+                            : "/customer/dashboard/profile"
+                        }
                         className="block px-4 py-2 hover:bg-gray-100"
                       >
                         Profile

@@ -18,8 +18,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate data fetch or API call
-    const timer = setTimeout(() => setLoading(false), 2000); // 2 sec loading
+    const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
   return (

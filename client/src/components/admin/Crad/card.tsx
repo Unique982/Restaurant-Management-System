@@ -1,4 +1,6 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
   CalendarCheck,
   Clock,
@@ -9,7 +11,35 @@ import {
   User,
   XCircle,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface DashboardData {
+  totalOrder: number;
+  pendingOrder: number;
+  activeOrder: number;
+  cancelledOrder: number;
+  totalTable: number;
+  totalInquiry: number;
+}
+
 export default function CardView() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/admin/dashboard");
+
+        const data = await response.json();
+        if (data.success) {
+          setData(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
   return (
     <>
       <Card className="bg-white py-4 rounded-lg shadow-sm">
@@ -20,7 +50,7 @@ export default function CardView() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-semibold">1,250</p>
+          <p className="text-2xl font-semibold">{data?.totalOrder || "2000"}</p>
         </CardContent>
       </Card>
       <Card className="bg-white py-4 rounded-lg shadow-sm">

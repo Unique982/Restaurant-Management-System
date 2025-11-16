@@ -293,7 +293,7 @@ export function singelFetchOrder(id: string | number) {
 
 // edit order
 export function editOrderById(id: string | number, data: IOrderPostData) {
-  return async function editCategoryById(dispatch: AppDispatch) {
+  return async function editOrderById(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
       const response = await APIWITHTOKEN.patch("/orders/" + id, data);

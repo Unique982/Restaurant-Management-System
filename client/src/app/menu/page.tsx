@@ -99,7 +99,7 @@ export default function MenuPage() {
           <h1 className="text-4xl font-bold text-center mb-10">Our Menu</h1>
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Sidebar */}
-            <aside className="lg:w-72 bg-white rounded-xl shadow p-6 flex-shrink-0 sticky top-6 h-fit">
+            <aside className="lg:w-72 bg-white rounded-xl shadow p-6 flex-shrink-0  top-6 ">
               <h2 className="text-xl font-semibold mb-4">Categories</h2>
               <ul className="space-y-3">
                 {[{ categoryName: "All", id: 0 }, ...categories].map((cat) => (

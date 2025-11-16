@@ -19,4 +19,5 @@ export interface ITables extends ITablesData {
 export interface IInitialState {
   data: ITables[];
   status: Status;
+  singleDetails: ITables | null;
 }

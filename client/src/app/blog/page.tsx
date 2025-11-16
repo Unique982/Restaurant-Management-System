@@ -8,8 +8,9 @@ import { ArrowRight } from "lucide-react";
 import Footer from "@/components/client/Footer/footer";
 import { fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
 import Link from "next/link";
+import Image from "next/image";
 
-export default function GalleryPage() {
+export default function BlogPage() {
   const dispatch = useAppDispatch();
   const { blogData } = useAppSelector((state) => state.blog);
 
@@ -35,14 +36,27 @@ export default function GalleryPage() {
             {blogData.length > 0 ? (
               blogData.map((blog, index) => (
                 <div
-                  className="bg-white rounded-xl overflow-hidden relative group shadow-sm"
                   key={index}
+                  className="bg-white rounded-xl overflow-hidden relative group shadow-sm transition hover:shadow-lg"
                 >
-                  <img
-                    src={blog.blogImage}
-                    alt="No Image"
-                    className="w-full h-50 object-cover"
-                  />
+                  <div className="relative w-full h-48">
+                    {blog.blogImage ? (
+                      <Image
+                        src={
+                          typeof blog.blogImage === "string"
+                            ? blog.blogImage
+                            : URL.createObjectURL(blog.blogImage)
+                        }
+                        alt={blog.blogTitle || "Blog image"}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                        No Image
+                      </div>
+                    )}
+                  </div>
                   <div className="absolute top-4 right-4 bg-orange-700 text-white px-4 py-2 rounded-full text-xs font-semibold">
                     {blog.blogCategory}
                   </div>
