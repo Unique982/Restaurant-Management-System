@@ -162,6 +162,10 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
       setLoading(false);
     }
   };
+  const handleGoogleLogin = () => {
+    // Redirect user to backend Google OAuth route
+    window.location.href = "http://localhost:4000/api/auth/google";
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -405,6 +409,45 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
                   )}
                   {loading ? "Processing..." : "Login"}
                 </Button>
+                {/* LOgin with */}
+                <div className="flex flex-col items-center mt-2 space-y-2">
+                  <div className="flex items-center w-full">
+                    <hr className="flex-1 border-gray-300" />
+                    <span className="px-2 text-gray-400 text-sm">or</span>
+                    <hr className="flex-1 border-gray-300" />
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100"
+                    variant="outline"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 488 512"
+                    >
+                      <path
+                        fill="#4285F4"
+                        d="M488 261.8c0-17.8-1.6-35-4.6-51.7H249v97.9h134.6c-5.8 31-23 57.3-49 75v62.1h79.4c46.6-42.9 73.6-106.1 73.6-183.3z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M249 512c66.8 0 122.8-22.1 163.7-59.9l-79.4-62.1c-22.1 14.8-50.4 23.5-84.3 23.5-64.7 0-119.5-43.6-139.2-102.1H30.4v64.1C71.8 463 153.2 512 249 512z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M109.8 316.4c-4.9-14.8-7.7-30.6-7.7-46.4s2.8-31.6 7.7-46.4V159.5H30.4c-15.2 29.9-23.9 63.4-23.9 99.5s8.7 69.6 23.9 99.5l79.4-64.1z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M249 97.7c35.9 0 68 12.3 93.2 36.4l69.8-69.8C371.9 27.4 315.9 5 249 5 153.2 5 71.8 54 30.4 159.5l79.4 64.1C129.5 141.3 184.3 97.7 249 97.7z"
+                      />
+                    </svg>
+                    Login with Google
+                  </Button>
+                </div>
+
                 <p className="text-center text-sm text-gray-400">
                   Don&apos;t have an account?{" "}
                   <button
@@ -493,6 +536,44 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
                   )}
                   {loading ? "Processing..." : "Sign Up"}
                 </Button>
+
+                <div className="flex flex-col items-center mt-2 space-y-2">
+                  <div className="flex items-center w-full">
+                    <hr className="flex-1 border-gray-300" />
+                    <span className="px-2 text-gray-400 text-sm">or</span>
+                    <hr className="flex-1 border-gray-300" />
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100"
+                    variant="outline"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 488 512"
+                    >
+                      <path
+                        fill="#4285F4"
+                        d="M488 261.8c0-17.8-1.6-35-4.6-51.7H249v97.9h134.6c-5.8 31-23 57.3-49 75v62.1h79.4c46.6-42.9 73.6-106.1 73.6-183.3z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M249 512c66.8 0 122.8-22.1 163.7-59.9l-79.4-62.1c-22.1 14.8-50.4 23.5-84.3 23.5-64.7 0-119.5-43.6-139.2-102.1H30.4v64.1C71.8 463 153.2 512 249 512z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M109.8 316.4c-4.9-14.8-7.7-30.6-7.7-46.4s2.8-31.6 7.7-46.4V159.5H30.4c-15.2 29.9-23.9 63.4-23.9 99.5s8.7 69.6 23.9 99.5l79.4-64.1z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M249 97.7c35.9 0 68 12.3 93.2 36.4l69.8-69.8C371.9 27.4 315.9 5 249 5 153.2 5 71.8 54 30.4 159.5l79.4 64.1C129.5 141.3 184.3 97.7 249 97.7z"
+                      />
+                    </svg>
+                    Sign up with Google
+                  </Button>
+                </div>
                 <p className="text-center text-sm text-gray-400">
                   Already have an account?{" "}
                   <a

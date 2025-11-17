@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Status } from "@/lib/types/type";
 import { AppDispatch } from "../../store";
 import { ICategoryList, IInitialState } from "./categorySlice.types";
-import axios from "axios";
+
 import API from "@/lib/http";
 
 const initialState: IInitialState = {
@@ -33,9 +33,7 @@ export function getCategory() {
   return async function getCategoryThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.get(
-        "https://rms-backend-m65u.onrender.com/api/category"
-      );
+      const response = await API.get("/category");
       if (response.status === 200) {
         response.data.data.length > 0 &&
           dispatch(categoryFetch(response.data.data));

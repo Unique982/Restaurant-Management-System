@@ -181,3 +181,26 @@ export function userLogout() {
 export function profileUdate() {
   return async function profileUdateThunk() {};
 }
+
+export function loginWithGoogle() {
+  return async function loginWithGoogleThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await API.post("/auth/");
+      if (response.status === 200) {
+        return { success: true, message: response.data.message };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
