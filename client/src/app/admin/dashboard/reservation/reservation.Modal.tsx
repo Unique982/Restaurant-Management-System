@@ -29,6 +29,7 @@ import {
 import toast from "react-hot-toast";
 import { getTables } from "@/lib/store/admin/tables/tableSlice";
 import { getUserList } from "@/lib/store/admin/users/userSlice";
+import { string } from "zod";
 
 interface categoryProps {
   open: boolean;

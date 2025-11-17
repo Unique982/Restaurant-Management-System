@@ -30,10 +30,17 @@ export default function BlogSection() {
                 key={index}
               >
                 <img
-                  src={blog.blogImage}
-                  alt="No Image"
+                  src={
+                    blog.blogImage
+                      ? typeof blog.blogImage === "string"
+                        ? blog.blogImage
+                        : URL.createObjectURL(blog.blogImage)
+                      : "/no-image.png"
+                  }
+                  alt={blog.blogTitle}
                   className="w-full h-50 object-cover"
                 />
+
                 <div className="absolute top-4 right-4 bg-orange-700 text-white px-4 py-2 rounded-full text-xs font-semibold">
                   {blog.blogCategory}
                 </div>

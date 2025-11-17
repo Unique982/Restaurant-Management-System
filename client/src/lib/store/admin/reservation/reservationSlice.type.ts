@@ -25,7 +25,7 @@ export interface IReservationPostData {
   specailRequest: string;
   name: string | null;
   phoneNumber: string | null;
-  deleted_at: Boolean;
+  deleted_at?: string | null | boolean;
 }
 
 export interface IIReservation extends IReservationPostData {
