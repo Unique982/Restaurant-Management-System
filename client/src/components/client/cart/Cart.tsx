@@ -28,7 +28,7 @@ interface CartDrawerProps {
 export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { items } = useAppSelector((state) => state.cart);
+  const { items } = useAppSelector((state) => state.cart) || { items: [] };
   const [loading, setLoading] = useState(false);
   // Login modal state
   const [isLogin, setIsLogin] = useState(true);
@@ -55,8 +55,8 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   };
 
   // Total price calculation
-  const totalPrice = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+  const totalPrice = (items || []).reduce(
+    (acc, item) => acc + (item.price || 0) * (item.quantity || 0),
     0
   );
 
@@ -83,14 +83,10 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           </SheetHeader>
 
           <div className="mt-4 space-y-3">
-            {items.length === 0 ? (
-              <p className="text-center text-gray-500 text-lg">
-                Your cart is empty
-              </p>
-            ) : (
-              items.map((item) => (
+            {items && items.length > 0 ? (
+              (items || []).map((item, index) => (
                 <div
-                  key={item.id}
+                  key={item.id || index}
                   className="flex justify-between items-center border-b pb-2"
                 >
                   <Image
@@ -122,16 +118,20 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   </div>
                 </div>
               ))
+            ) : (
+              <p className="text-center text-gray-500 text-lg">
+                Your cart is empty
+              </p>
             )}
 
-            {items.length > 0 && (
+            {items && items.length > 0 && (
               <div className="flex justify-between items-center font-semibold pt-3 mt-4 border-t">
                 <span>Total</span>
                 <span>Rs: {totalPrice}</span>
               </div>
             )}
 
-            {items.length > 0 && (
+            {items && items.length > 0 && (
               <Button
                 onClick={handleCheckout}
                 type="submit"

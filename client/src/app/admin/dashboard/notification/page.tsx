@@ -9,61 +9,26 @@ import {
   Ticket,
   MessageSquare,
   Users,
+  Loader2,
 } from "lucide-react";
-
-interface Notification {
-  id: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  type: string;
-  time: string;
-  status: "read" | "unread";
-}
-
-const notifications: Notification[] = [
-  {
-    id: "1",
-    icon: <Ticket size={18} className="text-blue-500" />,
-    title: "Order Placed",
-    description: "Order the 90’s has been successfully placed",
-    type: "Order",
-    time: "5 minutes ago",
-    status: "unread",
-  },
-  {
-    id: "2",
-    icon: <Users size={18} className="text-purple-500" />,
-    title: "New Student Registered",
-    description: "Student R has successfully registered",
-    type: "Student",
-    time: "1 hour ago",
-    status: "unread",
-  },
-  {
-    id: "3",
-    icon: <MessageSquare size={18} className="text-green-500" />,
-    title: "User Login",
-    description: "User John Doe logged in successfully",
-    type: "Login",
-    time: "2 hours ago",
-    status: "read",
-  },
-  {
-    id: "4",
-    icon: <Users size={18} className="text-purple-500" />,
-    title: "User Logout",
-    description: "User John Doe logged out",
-    type: "Logout",
-    time: "5 hours ago",
-    status: "read",
-  },
-];
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { useEffect } from "react";
+import {
+  fetchNotification,
+  makeAllRead,
+} from "@/lib/store/notification/notification";
+import { Status } from "@/lib/types/type";
 
 export default function NotificationsPage() {
-  const markAllRead = () => {
-    notifications.forEach((n) => (n.status = "read"));
-  };
+  const dispatch = useAppDispatch();
+  const { notificationData, status } = useAppSelector(
+    (state) => state.notification
+  );
+
+  // fetch all notification only admin
+  useEffect(() => {
+    dispatch(fetchNotification());
+  }, [dispatch]);
 
   return (
     <div className="bg-white overflow-x-auto rounded-xl w-full max-w-8xl p-6 sm:p-8">
@@ -101,69 +66,74 @@ export default function NotificationsPage() {
         </div>
         <button
           className="flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={markAllRead}
+          onClick={() => dispatch(makeAllRead())}
         >
           <Bell size={16} className="mr-1" />
           Mark All as Read
         </button>
       </div>
 
-      {/* Responsive Table Wrapper */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Notification
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Time
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {notifications.map((notification) => (
-              <tr
-                key={notification.id}
-                className={notification.status === "unread" ? "bg-blue-50" : ""}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="relative  w-8 h-8 flex items-center justify-center rounded-full mr-3 bg-gray-200">
-                      <Bell size={18} className="text-gray-700" />
-                      {notification.status === "unread" && (
-                        <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-1 ring-white"></span>
-                      )}
-                    </div>
-                    <div>
-                      <div
-                        className={`text-sm font-medium ${
-                          notification.status === "unread"
-                            ? ""
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {notification.title}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {notification.description}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {notification.time}
-                </td>
+        {status === Status.LOADING ? (
+          // loading
+
+          <Loader2 className="w-8 h-8 animate-spin text-gray-600 justify-center" />
+        ) : notificationData.length === 0 ? (
+          <p>No notifications found.</p>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Notification
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Time
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {notificationData.map((n) => (
+                <tr
+                  key={n.id}
+                  className={n.status === "unread" ? "bg-blue-50" : ""}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="relative  w-8 h-8 flex items-center justify-center rounded-full mr-3 bg-gray-200">
+                        <Bell size={18} className="text-gray-700" />
+                        {n.status === "unread" && (
+                          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-1 ring-white"></span>
+                        )}
+                      </div>
+                      <div>
+                        <div
+                          className={`text-sm font-medium ${
+                            n.status === "unread" ? "" : "text-gray-700"
+                          }`}
+                        >
+                          {n.title}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {n.description}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(n.created_at).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

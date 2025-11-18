@@ -13,7 +13,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { userLogin, userLogout } from "@/lib/store/auth/authSlice";
-import NoticePage from "@/app/customer/dashboard/notification/page";
+import { Ballet } from "next/font/google";
+import { useEffect } from "react";
+import {
+  fetchNotification,
+  makeAllRead,
+} from "@/lib/store/notification/notification";
+
 export default function TopHeader() {
   const { user } = useAppSelector((store) => store.auth);
   const router = useRouter();
@@ -30,6 +36,16 @@ export default function TopHeader() {
     }
   };
 
+  // count notification
+  const { notificationData } = useAppSelector((state) => state.notification);
+  const unreadCount = notificationData.filter(
+    (n) => n.status === "unread"
+  ).length;
+
+  useEffect(() => {
+    dispatch(fetchNotification());
+  }, [dispatch]);
+
   return (
     <>
       {/* Top Header */}
@@ -43,8 +59,19 @@ export default function TopHeader() {
         </h2>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleNoticeClick}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleNoticeClick}
+            className="relative"
+          >
             <Bell className="w-5 h-5" />
+
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                {unreadCount}
+              </span>
+            )}
           </Button>
 
           {/* Profile Dropdown */}

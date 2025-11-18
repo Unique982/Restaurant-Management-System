@@ -133,8 +133,6 @@ export function mergeGuestCartAfterLogin() {
       for (const item of guestCart) {
         await dispatch(addCart(item));
       }
-
-      // merge पछि guest cart clear गर
       localStorage.removeItem("guest_cart");
       console.log("Guest cart merged successfully!");
     } catch (error) {

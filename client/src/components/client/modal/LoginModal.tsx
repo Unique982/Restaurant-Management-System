@@ -29,7 +29,10 @@ import {
   registerSchema,
   registerSchemaType,
 } from "@/lib/validations/auth";
-import { mergeGuestCartAfterLogin } from "@/lib/store/customer/cart/cartSlice";
+import {
+  fetchCart,
+  mergeGuestCartAfterLogin,
+} from "@/lib/store/customer/cart/cartSlice";
 import { fa } from "zod/v4/locales";
 
 interface LoginProps {
@@ -77,6 +80,7 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
 
         // Merge guest cart after login
         await dispatch(mergeGuestCartAfterLogin());
+        await dispatch(fetchCart());
 
         onOpenChange(false);
 

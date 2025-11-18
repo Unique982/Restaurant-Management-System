@@ -16,13 +16,12 @@ export default function ProtectedRoute({
   const router = useRouter();
 
   useEffect(() => {
-    if (!user?.role) {
-      router.push("/"); // redirect guest
-    } else if (!allowedRoles.includes(user.role as any)) {
-      // redirect to their dashboard if role mismatch
-      router.push(
-        user.role === "admin" ? "/admin/dashboard" : "/customer/dashboard"
-      );
+    if (user.role === "admin") {
+      router.push("/admin/dashboard");
+    } else if (user.role === "customer") {
+      router.push("/customer/dashboard");
+    } else {
+      router.push("/"); // guest वा unknown role
     }
   }, [user, router]);
 
