@@ -135,9 +135,9 @@ export function createReservation(data: IReservationPostData) {
     }
   };
 }
-// fetch reservation list
+
 export function getReservation() {
-  return async function getReservationThunk(dispatch: AppDispatch) {
+  return async function getALlOrderListThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
       const response = await APIWITHTOKEN.get("reservations");
@@ -145,10 +145,18 @@ export function getReservation() {
         response.data.data.length > 0 &&
           dispatch(fetchReservation(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
-        return true;
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
     }
   };
 }

@@ -242,6 +242,7 @@ export default function OrderEditPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
         <div className="mb-6">
           <Button
             onClick={() => router.push("/admin/dashboard/orders")}
@@ -253,7 +254,7 @@ export default function OrderEditPage() {
 
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Order</h1>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8 overflow-none">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8 ">
           <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               {/* Table Selection */}
@@ -266,7 +267,7 @@ export default function OrderEditPage() {
                   onValueChange={(value) => handleChange("table_id", value)}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Table">
+                    <SelectValue>
                       {tables?.length && updateOrder.table_id
                         ? tables.find(
                             (tb) => tb.id.toString() === updateOrder.table_id

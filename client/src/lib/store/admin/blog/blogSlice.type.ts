@@ -3,7 +3,7 @@ import { Status } from "@/lib/types/type";
 export interface IBlogPost {
   blogTitle: string;
   blogDescription: string;
-  blogImage: File | null;
+  blogImage: string | File | null;
   blogCategory: string;
 }
 export interface IBlogDetails extends IBlogPost {

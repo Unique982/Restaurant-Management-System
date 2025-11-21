@@ -4,14 +4,13 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 
 import { getMenuItem } from "@/lib/store/admin/menuItems/menuItemSlice";
-import { ITableData } from "@/lib/store/admin/orders/orders.types";
-import { ITables, ITablesData } from "@/lib/store/admin/tables/tableSlice.type";
+import { ITables } from "@/lib/store/admin/tables/tableSlice.type";
 import { Label } from "@radix-ui/react-dropdown-menu";
 
 export default function CategoryViewPage() {
@@ -86,14 +85,12 @@ export default function CategoryViewPage() {
               View detailed information about this Table Details
             </p>
           </div>
-
-          {/* Content Card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 overflow-auto">
             <div className="space-y-6">
-              {/* Name */}
+              {/* Table Number */}
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Name
+                  Table Number
                 </Label>
                 <Input
                   value={tableData.tableNumber}
@@ -117,7 +114,7 @@ export default function CategoryViewPage() {
 
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-gray-700 uppercase w-full">
-                  Category
+                  Table Status
                 </Label>
                 <Input
                   value={
@@ -133,9 +130,9 @@ export default function CategoryViewPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  <Label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                     Created At
-                  </label>
+                  </Label>
                   <Input
                     value={
                       tableData?.createdAt
@@ -149,9 +146,9 @@ export default function CategoryViewPage() {
 
                 {tableData?.updatedAt && (
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    <Label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                       Updated At
-                    </label>
+                    </Label>
                     <Input
                       value={new Date(tableData.updatedAt).toLocaleString()}
                       readOnly
@@ -177,14 +174,14 @@ export default function CategoryViewPage() {
                 }
                 className="flex-1"
               >
-                Edit Menu Item
+                Edit Tables
               </Button>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-6">
               <p className="text-sm text-blue-800 text-center sm:text-left">
-                💡 Tap <span className="font-semibold">"Edit Menu Item"</span>{" "}
-                to make changes to this menu item.
+                💡 Tap <span className="font-semibold">"Edit Tables"</span> to
+                make changes to this tables.
               </p>
             </div>
           </div>

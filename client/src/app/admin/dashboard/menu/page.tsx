@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 
 export default function MenuIfo() {
   const router = useRouter();
+  const [searchText, setSearchText] = useState<string>("");
   const [isModal, setIsModal] = useState(false);
   const { menuDatas: menuItems } = useAppSelector((store) => store.menuItems);
   const { data: categories } = useAppSelector((store) => store.category);
@@ -58,7 +59,17 @@ export default function MenuIfo() {
       socket.off("menuUpdated");
     };
   }, []);
+  const sortedData = [...menuItems].sort((a, b) => Number(b.id) - Number(a.id));
 
+  // search
+  const filterData = sortedData.filter(
+    (menu) =>
+      menu.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()) ||
+      menu.price.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()) ||
+      menu.created_at
+        .toLocaleLowerCase()
+        .includes(searchText.toLocaleLowerCase())
+  );
   // delete
   const deleteHandle = async (id: string | number) => {
     await dispatch(deletemenuItem(id));
@@ -105,8 +116,8 @@ export default function MenuIfo() {
             </TableHeader>
             {/* table body */}
             <TableBody>
-              {menuItems.length > 0 ? (
-                menuItems.map((menu, index) => (
+              {filterData.length > 0 ? (
+                filterData.map((menu, index) => (
                   <TableRow key={menu.id || index}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>{menu.name}</TableCell>

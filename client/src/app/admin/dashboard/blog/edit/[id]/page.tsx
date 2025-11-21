@@ -6,93 +6,79 @@ import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-
 import { ArrowLeft, ImageIcon, Loader2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import toast from "react-hot-toast";
-import { Label } from "@radix-ui/react-dropdown-menu";
+import Image from "next/image";
+import { Label } from "recharts";
+import { IBlogPost } from "@/lib/store/admin/blog/blogSlice.type";
+import { editBlogById, singleBlogs } from "@/lib/store/admin/blog/blogSlice";
 
-import {
-  ITablesData,
-  tableStatus,
-} from "@/lib/store/admin/tables/tableSlice.type";
-
-import {
-  editTableById,
-  getTables,
-  singelTables,
-} from "@/lib/store/admin/tables/tableSlice";
-
-export default function CategoryEditPage() {
+export default function BlogEditPage() {
   const router = useRouter();
   const params = useParams();
   const dispatch = useAppDispatch();
-  const { data: tables, singleDetails } = useAppSelector(
-    (store) => store.tables
-  );
+
+  const { blogData, singleBlog } = useAppSelector((store) => store.blog);
+  const [imageError, setImageError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [updateTables, setUpdateTables] = useState<ITablesData>({
-    tableNumber: "",
-    seats: "",
-    tableStatus: tableStatus.Available,
+  const [updateBlog, setUpdateBlog] = useState<IBlogPost>({
+    blogTitle: "",
+    blogDescription: "",
+    blogImage: null,
+    blogCategory: "",
   });
 
   useEffect(() => {
-    dispatch(getTables());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const fetchTable = async () => {
+    const fecthBlog = async () => {
       if (params.id) {
         setLoading(true);
-        const existTable = tables.find(
-          (item) => item.id.toString() === params.id
-        );
+        const existBlog = blogData.find((b) => b.id.toString() === params.id);
 
-        if (existTable) {
-          setUpdateTables({
-            tableNumber: existTable.tableNumber,
-            seats: existTable.seats,
-            tableStatus: existTable.tableStatus,
+        if (existBlog) {
+          setUpdateBlog({
+            blogTitle: existBlog.blogTitle,
+            blogDescription: existBlog.blogDescription,
+            blogImage: existBlog.blogImage,
+            blogCategory: existBlog.blogCategory,
           });
           setLoading(false);
         } else {
-          await dispatch(singelTables(params.id as string | number));
+          await dispatch(singleBlogs(params.id as string | number));
           setLoading(false);
         }
       }
     };
 
-    fetchTable();
-  }, [params.id, dispatch, tables]);
+    fecthBlog();
+  }, [params.id, dispatch, blogData]);
 
   // Update from single category
   useEffect(() => {
-    if (singleDetails) {
-      setUpdateTables({
-        tableNumber: singleDetails.tableNumber,
-        seats: singleDetails.seats,
-        tableStatus: singleDetails.tableStatus,
+    if (singleBlog) {
+      setUpdateBlog({
+        blogTitle: singleBlog.blogTitle,
+        blogDescription: singleBlog.blogDescription,
+        blogImage: singleBlog.blogImage,
+        blogCategory: singleBlog.blogCategory,
       });
     }
-  }, [singleDetails]);
+  }, [singleBlog]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
-    setUpdateTables((prev) => ({
+    setUpdateBlog((prev) => ({
       ...prev,
       [name]: value,
     }));
+    if (name === "blogImage") {
+      setImageError(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,22 +86,22 @@ export default function CategoryEditPage() {
     setSubmitting(true);
 
     const result = await dispatch(
-      editTableById(params.id as string, updateTables)
+      editBlogById(params.id as string, updateBlog)
     );
 
     setSubmitting(false);
 
     if (result.success) {
-      toast.success("Tables updated successfully!");
-      router.push("/admin/dashboard/tables");
+      toast.success("Blog updated successfully!");
+      router.push("/admin/dashboard/blog");
     } else {
-      toast.error(result.message || "Failed to update menu item");
+      toast.error(result.message || "Failed to update blog");
     }
   };
 
   // cancel button
   const handleCancel = () => {
-    router.push("/admin/dashboard/tables");
+    router.push("/admin/dashboard/blog");
   };
 
   if (loading) {
@@ -140,10 +126,10 @@ export default function CategoryEditPage() {
             Back
           </Button>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Edit Tables
+            Edit Blog
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Update the Tables information below
+            Update the blog information below
           </p>
         </div>
 
@@ -153,63 +139,76 @@ export default function CategoryEditPage() {
             {/* Name */}
             <div className="space-y-2">
               <Label className="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                Table Number <span className="text-red-500">*</span>
+                Name <span className="text-red-500">*</span>
               </Label>
               <Input
-                name="tableNumber"
-                value={updateTables.tableNumber}
+                id="blogTitle"
+                name="blogTitle"
+                value={updateBlog.blogTitle}
                 onChange={handleInputChange}
-                placeholder="Enter table number..."
+                placeholder="Enter title"
                 className="w-full h-10 sm:h-11 text-sm sm:text-base"
                 required
                 disabled={submitting}
               />
             </div>
+
+            {/* Description */}
             <div className="space-y-2">
               <Label className="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                Seats <span className="text-red-500">*</span>
+                Description
               </Label>
-              <Input
-                id="seats"
-                name="seats"
-                value={updateTables.seats}
+              <Textarea
+                id="description"
+                name="description"
+                value={updateBlog.blogDescription}
                 onChange={handleInputChange}
-                placeholder="Enter table number..."
-                className="w-full h-10 sm:h-11 text-sm sm:text-base"
-                required
+                placeholder="Enter description"
+                className="w-full resize-none min-h-[100px] text-sm sm:text-base"
                 disabled={submitting}
               />
             </div>
+
+            {/* Price */}
             <div className="space-y-2">
               <Label className="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                Table Status <span className="text-red-500">*</span>
+                category<span className="text-red-500">*</span>
               </Label>
-              <Select
-                value={updateTables.tableStatus}
-                onValueChange={(value: tableStatus) =>
-                  setUpdateTables({
-                    ...updateTables,
-                    tableStatus: value, // set the selected value here
-                  })
-                }
-                disabled={submitting}
-              >
-                <SelectTrigger
-                  id="availability"
-                  className="w-full h-10 sm:h-11"
-                >
-                  <SelectValue placeholder="Select table status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={tableStatus.Available}>
-                    Available
-                  </SelectItem>
-                  <SelectItem value={tableStatus.Unavailable}>
-                    Unavailable
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="blogCategory"
+                name="blogCategory"
+                value={updateBlog.blogCategory || "Foode update"}
+                onChange={handleInputChange}
+                placeholder="Enter blog title"
+                required
+              />
             </div>
+
+            {/* Image Preview */}
+            {/* {updateBlog.blogImage && (
+              <div className="space-y-2">
+                <Label className="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  Image Preview
+                </Label>
+                <div className="relative w-full h-48 sm:h-64 md:h-72 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                  {!imageError ? (
+                    <Image
+                      src={updateBlog.blogImage}
+                      alt="Blog Image"
+                      fill
+                      className="object-cover"
+                      onError={() => setImageError(true)}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                      <ImageIcon className="w-12 h-12 mb-2" />
+                      <p className="text-sm">Failed to load image</p>
+                      <p className="text-xs mt-1">Please check the URL</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )} */}
 
             {/* Action Buttons */}
             <div className="pt-5 sm:pt-6 border-t border-gray-200">
@@ -234,7 +233,7 @@ export default function CategoryEditPage() {
                       Updating...
                     </>
                   ) : (
-                    "Update Tables"
+                    "Update Blog"
                   )}
                 </Button>
               </div>

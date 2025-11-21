@@ -15,6 +15,7 @@ import { addBlog, createBlog } from "@/lib/store/admin/blog/blogSlice";
 export default function AddBlogPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [blogData, setBlogData] = useState<IBlogPost>({
@@ -36,6 +37,13 @@ export default function AddBlogPage() {
   const submitHandle = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result: any = await dispatch(createBlog(blogData));
+    if (result?.success) {
+      // Redirect to blog list page
+      router.push("/admin/dashboard/blog");
+    } else {
+      // Handle error (optional)
+      console.error(result?.message || "Failed to create blog");
+    }
   };
   // if (loading) {
   //   return (

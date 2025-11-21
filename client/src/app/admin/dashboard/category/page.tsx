@@ -73,8 +73,12 @@ export default function CategoryInfo() {
   const handleCategoryDelete = async (id: string | number) => {
     await dispatch(deleteCategoryById(id));
   };
+  const sortedData = [...categories].sort(
+    (a, b) => Number(b.id) - Number(a.id)
+  );
+
   // search
-  const filterData = categories.filter((category) =>
+  const filterData = sortedData.filter((category) =>
     category.categoryName
       .toLocaleLowerCase()
       .includes(searchText.toLocaleLowerCase())

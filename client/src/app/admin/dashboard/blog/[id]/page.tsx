@@ -38,17 +38,17 @@ export default function CategoryViewPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            MenuItems Not Found
+            Blog Not found
           </h2>
           <p className="text-gray-600 mb-4">
-            The menu items you're looking for doesn't exist.
+            The Blog you're looking for doesn't exist.
           </p>
           <Button
-            onClick={() => router.push("/admin/dashboard/menu")}
+            onClick={() => router.push("/admin/dashboard/blog")}
             variant="outline"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Go Back to Categories
+            Go Back to Blog
           </Button>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function CategoryViewPage() {
         {/* Header Section */}
         <div className="mb-6">
           <Button
-            onClick={() => router.push("/admin/dashboard/menu")}
+            onClick={() => router.push("/admin/dashboard/blog")}
             variant="ghost"
             className="mb-4 text-gray-600 bg-green-100"
           >
@@ -77,10 +77,10 @@ export default function CategoryViewPage() {
             Back to Blog Page
           </Button>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            MenuItems Details
+            Blog Details
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            View detailed information about this Menu Details
+            View detailed information about this Blog Details
           </p>
         </div>
 
@@ -109,6 +109,16 @@ export default function CategoryViewPage() {
                 value={selectedBlog?.blogDescription || ""}
                 readOnly
                 className="w-full bg-gray-50 border-gray-300 resize-none min-h-[150px] text-gray-900"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                Blog Category
+              </label>
+              <Input
+                value={selectedBlog?.blogCategory || ""}
+                readOnly
+                className="w-full bg-gray-50 border-gray-300 text-gray-900 font-medium"
               />
             </div>
 
@@ -158,7 +168,7 @@ export default function CategoryViewPage() {
           {/* Action Buttons */}
           <div className="pt-4 border-t border-gray-200 flex gap-3">
             <Button
-              onClick={() => router.push("/admin/dashboard/menu")}
+              onClick={() => router.push("/admin/dashboard/blog")}
               variant="outline"
               className="flex-1"
             >
@@ -166,18 +176,18 @@ export default function CategoryViewPage() {
             </Button>
             <Button
               onClick={() =>
-                router.push(`/admin/dashboard/menu/edit/${selectedBlog?.id}`)
+                router.push(`/admin/dashboard/blog/edit/${selectedBlog?.id}`)
               }
               className="flex-1"
             >
-              Edit Menu Item
+              Edit blog
             </Button>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-6">
             <p className="text-sm text-blue-800 text-center sm:text-left">
-              💡 Tap <span className="font-semibold">"Edit Menu Item"</span> to
-              make changes to this menu item.
+              💡 Tap <span className="font-semibold">"Edit Blog"</span> to make
+              changes to this blog.
             </p>
           </div>
         </div>

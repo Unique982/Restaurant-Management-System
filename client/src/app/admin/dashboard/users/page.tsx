@@ -2,25 +2,24 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import Pagination from "@/components/admin/Pagination/pagination";
-import AddUser from "./user.Model";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { deleteUser, getUserList } from "@/lib/store/admin/users/userSlice";
 import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function UserInfo() {
-  const [isModal, setIsModal] = useState(false);
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { usersData: users, status } = useAppSelector((store) => store.users);
   const [searchText, setSearchText] = useState<string>("");
@@ -39,9 +38,9 @@ export default function UserInfo() {
       toast.error("Delete Failed");
     }
   };
-
+  const sortedData = [...users].sort((a, b) => Number(b.id) - Number(a.id));
   // search
-  const filterData = users.filter(
+  const filterData = sortedData.filter(
     (user) =>
       user.username
         .toLocaleLowerCase()
@@ -63,12 +62,10 @@ export default function UserInfo() {
             />
           </div>
         </div>
-        <AddUser open={isModal} onOpenChange={setIsModal} />
 
         {/* Tbale content herre */}
         <div className="overflow-x-auto rounded-md border bg-white">
           <Table className="w-full">
-            <TableCaption>A list of all registered users.</TableCaption>
             {/* Table header */}
             <TableHeader>
               <TableRow>
@@ -93,12 +90,17 @@ export default function UserInfo() {
                     </TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                      <Button variant="secondary" size="sm" title="View">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        title="View"
+                        onClick={() =>
+                          router.push(`/admin/dashboard/users/${user.id}`)
+                        }
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm" title="Edit">
-                        <Edit className="w-4 h-4" />
-                      </Button>
+
                       <Button
                         onClick={(e) => deleteHandle(user.id)}
                         variant="destructive"

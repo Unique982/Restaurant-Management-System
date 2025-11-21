@@ -20,6 +20,7 @@ import {
   categorySchemaType,
 } from "@/lib/validations/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 interface categoryProps {
   open: boolean;
@@ -29,6 +30,7 @@ interface categoryProps {
 export default function AddCategory({ open, onOpenChange }: categoryProps) {
   const dispatch = useAppDispatch();
 
+  const [loading, setLoading] = useState(false);
   const {
     register: category,
     handleSubmit: handleCategorySubmit,
@@ -41,12 +43,14 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
     },
   });
   const onSubmit = async (data: categorySchemaType) => {
+    setLoading(true);
     const success = await dispatch(addCategory(data));
     if (success) {
       onOpenChange(false); // Close modal
     } else {
       toast.error("Failed to add category!");
     }
+    setLoading(false);
   };
 
   return (
@@ -94,12 +98,36 @@ export default function AddCategory({ open, onOpenChange }: categoryProps) {
               </span>
             )}
           </div>
-
           <Button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            disabled={loading}
+            className={`w-full bg-orange-500 hover:bg-orange-600 ${
+              loading ? "cursor-not-allowed opacity-70" : ""
+            }`}
           >
-            Save
+            {loading && (
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            )}
+            {loading ? "Processing..." : " Save"}
           </Button>
         </form>
       </DialogContent>

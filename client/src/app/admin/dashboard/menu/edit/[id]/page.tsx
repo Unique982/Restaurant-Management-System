@@ -19,14 +19,10 @@ import {
 import toast from "react-hot-toast";
 import {
   editMenuItemsById,
-  fetchMenuItems,
   singelFetchMenuItems,
 } from "@/lib/store/admin/menuItems/menuItemSlice";
 import Image from "next/image";
-import {
-  IMenuItems,
-  IMenuItemsData,
-} from "@/lib/store/admin/menuItems/menuItemSlice.type";
+import { IMenuItemsData } from "@/lib/store/admin/menuItems/menuItemSlice.type";
 import { getCategory } from "@/lib/store/admin/category/categorySlice";
 import { Label } from "recharts";
 

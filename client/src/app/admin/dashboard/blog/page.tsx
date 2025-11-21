@@ -33,12 +33,13 @@ export default function CategoryInfo() {
     dispatch(fectchBlogs());
     setLoading(false);
   }, []);
+  const sortedData = [...blogData].sort((a, b) => b.id - a.id);
   // delete
   const handleBlogDelete = async (id: string | number) => {
     await dispatch(deleteBlogById(id));
   };
   // search
-  const filterData = blogData.filter(
+  const filterData = sortedData.filter(
     (blog) =>
       blog.blogTitle
         .toLocaleLowerCase()

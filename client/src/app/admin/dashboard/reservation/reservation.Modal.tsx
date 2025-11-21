@@ -29,7 +29,6 @@ import {
 import toast from "react-hot-toast";
 import { getTables } from "@/lib/store/admin/tables/tableSlice";
 import { getUserList } from "@/lib/store/admin/users/userSlice";
-import { string } from "zod";
 
 interface categoryProps {
   open: boolean;
@@ -38,6 +37,7 @@ interface categoryProps {
 
 export default function AddReservation({ open, onOpenChange }: categoryProps) {
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
   const { usersData } = useAppSelector((store) => store.users);
   const { data } = useAppSelector((store) => store.tables);
   useEffect(() => {
@@ -68,14 +68,15 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const result: any = await dispatch(createReservation(reservationDatas));
     if (result.success) {
-      toast.success("Reservation Booked success!");
       onOpenChange(false);
       dispatch(getReservation());
     } else {
       toast.error(result?.message || "Something went wrong!");
     }
+    setLoading(false);
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -101,68 +102,57 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>User Name</Label>
-              <Select
-                value={String(reservationDatas.user_id)}
-                onValueChange={(value) =>
-                  setReservationDatas({ ...reservationDatas, user_id: value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select User" />
-                </SelectTrigger>
-                <SelectContent>
-                  {usersData.length > 0 ? (
-                    usersData.map((user) => (
-                      <SelectItem key={user.id} value={String(user.id)}>
-                        {user.username}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem
-                      key="no-user"
-                      value="not found"
-                      disabled
-                      className="text-red-500 font-semibold text-sm"
-                    >
-                      No user found
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                onChange={handleChange}
+                placeholder="Enter guest name"
+                className="w-full"
+              />
             </div>
-
-            {/* Table */}
             <div className="space-y-1">
-              <Label>Table Number</Label>
-              <Select
-                value={String(reservationDatas.table_id)}
-                onValueChange={(value) =>
-                  setReservationDatas({ ...reservationDatas, table_id: value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Table" />
-                </SelectTrigger>
-                <SelectContent>
-                  {data.length > 0 ? (
-                    data.map((table) => (
-                      <SelectItem key={table.id} value={String(table.id)}>
-                        {table.tableNumber}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem
-                      key="no-table"
-                      value="not found"
-                      disabled
-                      className="text-red-500 font-semibold text-sm"
-                    >
-                      No table found
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+              <Label>Phone Number</Label>
+              <Input
+                id="phoneNumber"
+                type="text"
+                name="phoneNumber"
+                onChange={handleChange}
+                placeholder="Enter guest name"
+                className="w-full"
+              />
             </div>
+          </div>
+          <div className="space-y-1">
+            <Label>Table Number</Label>
+            <Select
+              value={String(reservationDatas.table_id)}
+              onValueChange={(value) =>
+                setReservationDatas({ ...reservationDatas, table_id: value })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Table" />
+              </SelectTrigger>
+              <SelectContent>
+                {data.length > 0 ? (
+                  data.map((table) => (
+                    <SelectItem key={table.id} value={String(table.id)}>
+                      {table.tableNumber}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem
+                    key="no-table"
+                    value="not found"
+                    disabled
+                    className="text-red-500 font-semibold text-sm"
+                  >
+                    No table found
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1">
             <Label>Guest</Label>
@@ -179,24 +169,55 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
             <div className="space-y-1">
               <Label>Reservation Date</Label>
               <Input
-                id="name"
                 type="date"
-                name="reservation_date"
                 onChange={handleChange}
-                placeholder="Number of guest"
-                className="w-full"
+                value={reservationDatas.reservation_date || ""}
+                name="reservation_date"
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
             <div className="space-y-1">
-              <Label>Reservation Date</Label>
-              <Input
-                id="name"
-                type="time"
-                name="reservation_time"
-                onChange={handleChange}
-                placeholder="Number of guest"
-                className="w-full"
-              />
+              <Label>Reservation Time</Label>
+              <Select
+                value={reservationDatas.reservation_time || ""}
+                onValueChange={(value) => {
+                  if (!value) return;
+
+                  // Convert 12-hour format (e.g., "2:00 PM") to 24-hour HH:MM:SS
+                  const [time, modifier] = value.split(" ");
+                  let [hours, minutes] = time.split(":").map(Number);
+
+                  if (modifier === "PM" && hours !== 12) hours += 12;
+                  if (modifier === "AM" && hours === 12) hours = 0;
+
+                  const time24 = `${hours.toString().padStart(2, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:00`;
+
+                  // Update state with 24-hour format
+                  setReservationDatas({
+                    ...reservationDatas,
+                    reservation_time: time24,
+                  });
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 11 }, (_, i) => {
+                    const hour24 = i + 10; // 10 AM to 8 PM
+                    const ampm = hour24 < 12 ? "AM" : "PM";
+                    const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+                    const formattedTime = `${hour12}:00 ${ampm}`;
+                    return (
+                      <SelectItem key={hour24} value={formattedTime}>
+                        {formattedTime}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-2">
@@ -239,9 +260,34 @@ export default function AddReservation({ open, onOpenChange }: categoryProps) {
 
           <Button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            disabled={loading}
+            className={`w-full bg-orange-500 hover:bg-orange-600 ${
+              loading ? "cursor-not-allowed opacity-70" : ""
+            }`}
           >
-            Save
+            {loading && (
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            )}
+            {loading ? "Processing..." : " Save"}
           </Button>
         </form>
       </DialogContent>

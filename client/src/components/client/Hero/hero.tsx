@@ -44,9 +44,12 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="mt-6 flex gap-4">
-          <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded-full">
+          <Link
+            href="/menu"
+            className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded-full"
+          >
             Explore Menu
-          </Button>
+          </Link>
           <Link href="#reservation">
             <Button className="bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded-full">
               Book a Table

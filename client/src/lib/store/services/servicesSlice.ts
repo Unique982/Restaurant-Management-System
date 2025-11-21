@@ -34,7 +34,7 @@ const serviceSlice = createSlice({
       const serviceId = action.payload;
       const index = state.data.findIndex((serv) => serv.id === serviceId);
       if (index !== -1) {
-        state.data.slice(index, 1);
+        state.data.splice(index, 1);
       }
     },
   },

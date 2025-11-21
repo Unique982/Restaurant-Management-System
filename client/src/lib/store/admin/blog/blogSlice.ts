@@ -31,7 +31,7 @@ const blogSlice = createSlice({
       state.blogData.push(action.payload);
     },
     updateBlogById(state: IInitialState, action: PayloadAction<IBlogDetails>) {
-      const index = state.blogData.findIndex((o) => o.id === action.payload.id);
+      const index = state.blogData.findIndex((b) => b.id === action.payload.id);
 
       if (index !== -1) {
         state.blogData[index] = action.payload;
@@ -139,7 +139,9 @@ export function editBlogById(id: string | number, data: IBlogDetails) {
   return async function editBlogById(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await APIWITHTOKEN.patch("/orders/" + id, data);
+      const response = await APIWITHTOKEN.patch(`/blog/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       if (response.status === 200) {
         response.data.data && dispatch(updateBlogById(response.data.data));
         dispatch(setStatus(Status.SUCCESS));

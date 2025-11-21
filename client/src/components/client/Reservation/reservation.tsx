@@ -144,22 +144,34 @@ export default function ReservationSection() {
                 name="reservation_date"
                 min={new Date().toISOString().split("T")[0]}
               />
-
               <Select
                 value={reservationDatas.reservation_time || ""}
-                onValueChange={(value) =>
+                onValueChange={(value) => {
+                  if (!value) return;
+
+                  // Convert 12-hour format to 24-hour HH:MM:SS
+                  const [time, modifier] = value.split(" "); // e.g., "2:00 PM"
+                  let [hours, minutes] = time.split(":").map(Number);
+
+                  if (modifier === "PM" && hours !== 12) hours += 12;
+                  if (modifier === "AM" && hours === 12) hours = 0;
+
+                  const time24 = `${hours.toString().padStart(2, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:00`;
+
                   setReservationDatas({
                     ...reservationDatas,
-                    reservation_time: value,
-                  })
-                }
+                    reservation_time: time24, // send 24-hour format to backend
+                  });
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Time" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({ length: 15 }, (_, i) => {
-                    const hour24 = i + 9; // 9 AM to 11 PM
+                  {Array.from({ length: 11 }, (_, i) => {
+                    const hour24 = i + 10; // 10 AM to 8 PM
                     const ampm = hour24 < 12 ? "AM" : "PM";
                     const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
                     const formattedTime = `${hour12}:00 ${ampm}`;

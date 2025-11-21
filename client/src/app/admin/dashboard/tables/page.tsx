@@ -79,9 +79,10 @@ export default function TableInfo() {
   const deleteHandleTable = async (id: string | number) => {
     id && dispatch(deleteTablesById(id));
   };
+  const sortedData = [...tables].sort((a, b) => Number(b.id) - Number(a.id));
 
   // search
-  const filterHandle = tables.filter((table) =>
+  const filterHandle = sortedData.filter((table) =>
     table.tableNumber
       .toLocaleLowerCase()
       .includes(searchText.toLocaleLowerCase())
@@ -101,7 +102,7 @@ export default function TableInfo() {
           {/* sreach section here */}
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Input
-              placeholder="Search Reservation..."
+              placeholder="Search Tables..."
               onChange={(e) => setSearchText(e.target.value)}
               className="w-full sm:w-[250px]"
             />
