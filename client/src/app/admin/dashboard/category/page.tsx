@@ -23,6 +23,7 @@ import { ICategory } from "@/lib/store/admin/category/categorySlice.type";
 
 import toast from "react-hot-toast";
 import { initSocket } from "@/lib/socket";
+import { openConfirmDeleteToast } from "@/components/ConfirmToast/ConfirmToast";
 
 export default function CategoryInfo() {
   const router = useRouter();
@@ -71,7 +72,11 @@ export default function CategoryInfo() {
   }, []);
   // delete
   const handleCategoryDelete = async (id: string | number) => {
-    await dispatch(deleteCategoryById(id));
+    openConfirmDeleteToast({
+      message: "Do you really want to delete this gallery image?",
+      onConfirm: () => dispatch(deleteCategoryById(id)),
+    });
+    // await dispatch(deleteCategoryById(id));
   };
   const sortedData = [...categories].sort(
     (a, b) => Number(b.id) - Number(a.id)

@@ -135,7 +135,7 @@ export function createBlog(data: IBlogPost) {
     }
   };
 }
-export function editBlogById(id: string | number, data: IBlogDetails) {
+export function editBlogById(id: string | number, data: IBlogPost) {
   return async function editBlogById(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {

@@ -22,7 +22,7 @@ import {
 import AddServices from "./service.Model";
 import { serviceItems } from "@/lib/store/services/servicesSlice.type";
 import ViewModal from "./[id]/view.Model";
-
+import { useRouter } from "next/navigation";
 export default function Blogs() {
   const { data, status } = useAppSelector((store) => store.services);
   const [loading, setLoading] = useState(false);
@@ -31,6 +31,8 @@ export default function Blogs() {
   const [selectedItems, setSelectedItems] = useState<serviceItems | null>(null);
   const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
+
+  const router = useRouter();
 
   useEffect(() => {
     dispatch(fetchServices());
@@ -112,7 +114,16 @@ export default function Blogs() {
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" title="Edit">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Edit"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/services/edit/${serv.id}`
+                            )
+                          }
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                         {/* delete button */}

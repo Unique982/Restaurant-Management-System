@@ -30,6 +30,7 @@ export default function GalleryPage() {
   return (
     <>
       <Navbar />
+
       <section className="bg-gray-50 min-h-screen">
         {/* Banner */}
         <div className="bg-gradient-to-r from-green-200 to-orange-200 py-20">

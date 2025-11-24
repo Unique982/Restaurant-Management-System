@@ -6,66 +6,56 @@ import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
 import { ArrowLeft, ImageIcon, Loader2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import toast from "react-hot-toast";
-import Image from "next/image";
 
-import { IBlogPost } from "@/lib/store/admin/blog/blogSlice.type";
-import { editBlogById, singleBlogs } from "@/lib/store/admin/blog/blogSlice";
-import { Label } from "@radix-ui/react-dropdown-menu";
+import { Label } from "recharts";
+import { postServiceItems } from "@/lib/store/services/servicesSlice.type";
+import {
+  editServiceById,
+  fetchServices,
+} from "@/lib/store/services/servicesSlice";
 
-export default function BlogEditPage() {
+export default function CategoryEditPage() {
   const router = useRouter();
   const params = useParams();
   const dispatch = useAppDispatch();
-
-  const { blogData, singleBlog } = useAppSelector((store) => store.blog);
   const [imageError, setImageError] = useState(false);
+  const { data } = useAppSelector((store) => store.services);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [updateBlog, setUpdateBlog] = useState<IBlogPost>({
-    blogTitle: "",
-    blogDescription: "",
-    blogImage: null,
-    blogCategory: "",
+  const [serviceItem, setServiceUpdate] = useState<postServiceItems>({
+    serviceTitle: "",
+    serviceDescription: "",
+    serviceIcon: null,
   });
 
   useEffect(() => {
-    const fecthBlog = async () => {
+    dispatch(fetchServices());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchService = async () => {
       if (params.id) {
         setLoading(true);
-        const existBlog = blogData.find((b) => b.id.toString() === params.id);
-
-        if (existBlog) {
-          setUpdateBlog({
-            blogTitle: existBlog.blogTitle,
-            blogDescription: existBlog.blogDescription,
-            blogImage: existBlog.blogImage,
-            blogCategory: existBlog.blogCategory,
+        const exitsService = data.find(
+          (item) => item.id.toString() === params.id
+        );
+        if (exitsService) {
+          setServiceUpdate({
+            serviceTitle: exitsService.serviceTitle,
+            serviceDescription: exitsService.serviceDescription,
+            serviceIcon: exitsService.serviceIcon,
           });
-          setLoading(false);
-        } else {
-          await dispatch(singleBlogs(params.id as string | number));
           setLoading(false);
         }
       }
     };
 
-    fecthBlog();
-  }, [params.id, dispatch, blogData]);
-
-  // Update from single category
-  useEffect(() => {
-    if (singleBlog) {
-      setUpdateBlog({
-        blogTitle: singleBlog.blogTitle,
-        blogDescription: singleBlog.blogDescription,
-        blogImage: singleBlog.blogImage,
-        blogCategory: singleBlog.blogCategory,
-      });
-    }
-  }, [singleBlog]);
+    fetchService();
+  }, [params.id, dispatch, data]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -73,11 +63,11 @@ export default function BlogEditPage() {
     >
   ) => {
     const { name, value } = e.target;
-    setUpdateBlog((prev) => ({
+    setServiceUpdate((prev) => ({
       ...prev,
       [name]: value,
     }));
-    if (name === "blogImage") {
+    if (name === "serviceIcon") {
       setImageError(false);
     }
   };
@@ -85,25 +75,23 @@ export default function BlogEditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+
     const result = await dispatch(
-      editBlogById(params.id as string, updateBlog)
+      editServiceById(params.id as string, serviceItem)
     );
 
     setSubmitting(false);
-
     if (result.success) {
-      toast.success("Blog updated successfully!");
-      router.push("/admin/dashboard/blog");
+      toast.success("Service updated successfully!");
+      router.push("/admin/dashboard/services");
     } else {
-      toast.error(result.message || "Failed to update blog");
+      toast.error(result.message || "Failed to update service");
     }
   };
-
   // cancel button
   const handleCancel = () => {
-    router.push("/admin/dashboard/blog");
+    router.push("/admin/dashboard/services");
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -126,10 +114,10 @@ export default function BlogEditPage() {
             Back
           </Button>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Edit Blog
+            Edit Service
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Update the blog information below
+            Update the service information below
           </p>
         </div>
 
@@ -142,11 +130,10 @@ export default function BlogEditPage() {
                 Name <span className="text-red-500">*</span>
               </Label>
               <Input
-                id="blogTitle"
-                name="blogTitle"
-                value={updateBlog.blogTitle}
+                name="serviceTitle"
+                value={serviceItem.serviceTitle}
                 onChange={handleInputChange}
-                placeholder="Enter title"
+                placeholder="Enter menu item name"
                 className="w-full h-10 sm:h-11 text-sm sm:text-base"
                 required
                 disabled={submitting}
@@ -159,9 +146,9 @@ export default function BlogEditPage() {
                 Description
               </Label>
               <Textarea
-                id="description"
-                name="description"
-                value={updateBlog.blogDescription}
+                id="serviceDescription"
+                name="serviceDescription"
+                value={serviceItem.serviceDescription}
                 onChange={handleInputChange}
                 placeholder="Enter description"
                 className="w-full resize-none min-h-[100px] text-sm sm:text-base"
@@ -169,33 +156,33 @@ export default function BlogEditPage() {
               />
             </div>
 
-            {/* Price */}
+            {/* Image URL */}
             <div className="space-y-2">
               <Label className="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                category<span className="text-red-500">*</span>
+                Image URL
               </Label>
               <Input
-                id="blogCategory"
-                name="blogCategory"
-                value={updateBlog.blogCategory}
+                type="file"
+                name="serviceIcon"
                 onChange={handleInputChange}
-                placeholder="Enter blog title"
-                required
+                placeholder="Upload image"
+                className="w-full h-10 sm:h-11 text-sm sm:text-base"
+                disabled={submitting}
               />
             </div>
 
             {/* Image Preview */}
-            {updateBlog.blogImage && (
+            {serviceItem.serviceIcon && (
               <div className="space-y-2">
                 <Label className="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">
                   Image Preview
                 </Label>
-                <div className="relative w-full h-48 sm:h-64 md:h-72 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                <div className="relative">
                   {!imageError ? (
                     <img
-                      src={updateBlog.blogImage}
-                      alt="Blog Image"
-                      className="object-cover"
+                      src={serviceItem.serviceIcon}
+                      alt={serviceItem.serviceTitle || "no image"}
+                      className="w-20 h-20 object-contain rounded-md border border-gray-300 mt-1"
                       onError={() => setImageError(true)}
                     />
                   ) : (
@@ -232,7 +219,7 @@ export default function BlogEditPage() {
                       Updating...
                     </>
                   ) : (
-                    "Update Blog"
+                    "Update Service"
                   )}
                 </Button>
               </div>
