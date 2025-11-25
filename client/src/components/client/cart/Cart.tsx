@@ -89,7 +89,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   key={item.id || index}
                   className="flex justify-between items-center border-b pb-2"
                 >
-                  <Image
+                  <img
                     src={item.image}
                     alt={item.name}
                     width={48}
