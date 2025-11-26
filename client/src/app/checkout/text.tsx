@@ -6,14 +6,14 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Truck, Coffee, Utensils, ChevronRight } from "lucide-react";
+import { Truck, Utensils, ChevronRight } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import toast from "react-hot-toast";
 import { fetchCart } from "@/lib/store/customer/cart/cartSlice";
 import {
   clearCheckout,
   ICheckoutForm,
-  orderItems,
+  orderItems, // Order placement thunk
 } from "@/lib/store/customer/checkout/checkoutSlice";
 import {
   OrderType,
@@ -31,10 +31,17 @@ import {
 export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  // Redux state
   const { items: cartItems } = useAppSelector((state) => state.cart);
   const { data: tablesData } = useAppSelector((state) => state.tables);
   const { user } = useAppSelector((state) => state.auth);
-  const { khaltiUrl, status } = useAppSelector((state) => state.checkout);
+  const { khaltiUrl } = useAppSelector((state) => state.checkout);
+
+  // Local State
+  // 💡 FIX 1: Initializing selectedTableId to "" (string) to prevent uncontrolled/controlled warning on Select.
+  // We will convert it back to Number/undefined when constructing the payload.
+  const [selectedTableId, setSelectedTableId] = useState<string>("");
 
   const [datas, setData] = useState<ICheckoutForm & { table_id?: number }>({
     name: "",
@@ -42,7 +49,7 @@ export default function CheckoutPage() {
     email: "",
     delivery_address: "",
     city: "",
-    zip_code: "",
+    zipCode: "",
     payment_method: PaymentMethod.Cash,
   });
 
@@ -50,6 +57,8 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PaymentMethod.Cash
   );
+
+  // Fetch cart and tables on mount
   useEffect(() => {
     dispatch(fetchCart());
     dispatch(getTables());
@@ -57,9 +66,10 @@ export default function CheckoutPage() {
 
   // subtotal, delivery, total
   const subtotal = cartItems.reduce((a, c) => a + c.price * c.quantity, 0);
-  const deliveryFee = orderType === OrderType.Delivery ? 100 : 0;
+  const deliveryFee = orderType === OrderType.Delivery ? 50 : 0;
   const total = subtotal + deliveryFee;
 
+  // Form change
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -83,29 +93,58 @@ export default function CheckoutPage() {
       toast.error("Your cart is empty!");
       return;
     }
+
+    // 💡 Prepare cart items structure expected by API (items)
     const itemsData = cartItems.map((item) => ({
       menu_item_id: item.id,
       quantity: item.quantity,
     }));
 
+    // 💡 FIX 2: Restructure and rename payload to match backend schema exactly
+    const { zipCode, ...restOfDatas } = datas;
+
+    const tableIdNumber = selectedTableId ? Number(selectedTableId) : undefined;
+
     const finalPayload = {
-      ...datas,
+      ...restOfDatas,
+      // Renamed fields to match backend schema (snake_case)
+      zip_code: zipCode, // Renamed zipCode -> zip_code
+      total_amount: total, // Renamed totalAmount -> total_amount
+
+      // Added mandatory fields expected by the backend SQL query
+      discount: 0, // Added discount field
+      special_request: "", // Added special_request field
+
+      // Standard fields
       order_type: orderType,
       payment_method: paymentMethod,
-      totalAmount: total,
       items: itemsData,
+
+      // Conditional Dine-In field
+      ...(orderType === OrderType.DineIn &&
+        tableIdNumber && { table_id: tableIdNumber }),
     };
 
-    const res: any = await dispatch(orderItems(finalPayload));
-  };
-  useEffect(() => {
-    console.log(khaltiUrl);
-    if (khaltiUrl) {
-      window.location.href = khaltiUrl;
-      return;
+    // Cast as any here to pass the payload until IData is fully updated
+    const res: any = await dispatch(orderItems(finalPayload as any));
+    if (res?.success) {
+      toast.success("Order placed successfully!");
+      // Handle Khalti redirect if URL is present in Redux state
+      if (khaltiUrl) {
+        window.location.href = khaltiUrl;
+      }
+      dispatch(clearCheckout());
+    } else {
+      toast.error(res.message || "Failed to place order");
     }
-  }, [khaltiUrl, status]);
-  console.log(khaltiUrl);
+  };
+
+  const handlePlaceOrder = () => {
+    const formElement = document.getElementById("checkout-form");
+    if (formElement) {
+      (formElement as HTMLFormElement).requestSubmit();
+    }
+  };
 
   return (
     <section className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -126,7 +165,7 @@ export default function CheckoutPage() {
           onSubmit={handleSubmit}
           className="grid md:grid-cols-2 gap-8"
         >
-          {/* LEFT SIDE */}
+          {/* LEFT SIDE: Customer & Order Type */}
           <div className="space-y-6">
             <Card className="rounded-2xl shadow-md border border-gray-100">
               <CardHeader>
@@ -135,6 +174,7 @@ export default function CheckoutPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* ... (Name, Email, Phone Inputs remain correct) ... */}
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-700">Full Name</p>
                   <Input
@@ -183,20 +223,21 @@ export default function CheckoutPage() {
                       icon: <Truck className="w-5 h-5" />,
                       label: "Delivery",
                     },
-                    // {
-                    //   key: OrderType.DineIn,
-                    //   icon: <Utensils className="w-5 h-5" />,
-                    //   label: "Dine-In",
-                    // },
+                    {
+                      key: OrderType.DineIn,
+                      icon: <Utensils className="w-5 h-5" />,
+                      label: "Dine-In",
+                    },
                   ].map(({ key, icon, label }) => (
                     <button
                       key={key}
                       type="button"
-                      // onClick={() => {
-                      //   setOrderType(key);
-                      //   if (key !== OrderType.DineIn)
+                      onClick={() => {
+                        setOrderType(key);
 
-                      // }}
+                        // Reset table ID when switching away from DineIn
+                        if (key !== OrderType.DineIn) setSelectedTableId(""); // 💡 FIX: Set to "" string
+                      }}
                       className={`flex flex-col items-center justify-center gap-1 border rounded-xl py-3 transition-all ${
                         orderType === key
                           ? "bg-orange-600 text-white border-orange-600 shadow-md"
@@ -240,12 +281,48 @@ export default function CheckoutPage() {
                           ZIP Code
                         </p>
                         <Input
-                          name="zip_code"
+                          name="zipCode"
                           placeholder="44600"
-                          value={datas.zip_code}
+                          value={datas.zipCode}
                           onChange={handleChange}
                         />
                       </div>
+                    </div>
+                  </div>
+                )}
+                {orderType === OrderType.DineIn && (
+                  <div className="space-y-3 mt-3">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-gray-700">
+                        Table Number
+                      </p>
+                      {/* 💡 FIX 3: Corrected Select component usage */}
+                      {/* <Select
+                        onValueChange={(value) => setSelectedTableId(value)}
+                        value={selectedTableId} // Guaranteed to be a string ("" or "1" etc.)
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Table" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tablesData?.length > 0 ? (
+                            tablesData.map(
+                              (table: { id: number; tableNumber: number }) => (
+                                <SelectItem
+                                  key={table.id}
+                                  value={String(table.id)} // Value must be a string
+                                >
+                                  Table {table.tableNumber}
+                                </SelectItem>
+                              )
+                            )
+                          ) : (
+                            <SelectItem value="not-found" disabled>
+                              No table found
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select> */}
                     </div>
                   </div>
                 )}
@@ -253,7 +330,7 @@ export default function CheckoutPage() {
             </Card>
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT SIDE: Summary & Payment */}
           <div className="space-y-6">
             <Card className="rounded-2xl shadow-md border border-gray-100">
               <CardHeader>
@@ -262,7 +339,7 @@ export default function CheckoutPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {/* ... Order Summary Content is Correct ... */}
+                {/* ... (Order Summary Content remains correct) ... */}
                 {cartItems.length === 0 && (
                   <p className="text-gray-500 text-center">
                     Your cart is empty
@@ -316,13 +393,13 @@ export default function CheckoutPage() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
-                      name="payment_method"
+                      name="payment"
                       checked={paymentMethod === PaymentMethod.Khalti}
                       onChange={() => setPaymentMethod(PaymentMethod.Khalti)}
                     />
                     <span>Pay with Khalti</span>
                   </label>
-                  {/* <label className="flex items-center gap-2 cursor-pointer">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
                       name="payment"
@@ -330,7 +407,7 @@ export default function CheckoutPage() {
                       onChange={() => setPaymentMethod(PaymentMethod.Cash)}
                     />
                     <span>Cash on Delivery</span>
-                  </label> */}
+                  </label>
                 </div>
 
                 {paymentMethod === PaymentMethod.Khalti && (
@@ -347,9 +424,9 @@ export default function CheckoutPage() {
                   </button>
                 )}
                 <Button
-                  type="submit" // 💡 Submit the form for all cases
+                  type="submit"
                   className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white rounded-xl"
-                  onClick={() => handleSubmit}
+                  onClick={handlePlaceOrder}
                 >
                   Place Order (Rs. {total})
                 </Button>
