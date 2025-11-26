@@ -46,7 +46,6 @@ export interface IOrderPostData {
   discount?: number;
   final_amount?: number;
   status: OrderStatus;
-  // payment_method: PaymentMethod;
   payment_status: PaymentStatus;
   special_request?: string;
   delivery_address?: string;

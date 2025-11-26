@@ -29,11 +29,7 @@ import {
   registerSchema,
   registerSchemaType,
 } from "@/lib/validations/auth";
-import {
-  fetchCart,
-  mergeGuestCartAfterLogin,
-} from "@/lib/store/customer/cart/cartSlice";
-import { fa } from "zod/v4/locales";
+import { fetchCart } from "@/lib/store/customer/cart/cartSlice";
 
 interface LoginProps {
   open: boolean;
@@ -79,15 +75,14 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
         toast.success("Login Successfully");
 
         // Merge guest cart after login
-        await dispatch(mergeGuestCartAfterLogin());
+
         await dispatch(fetchCart());
 
         onOpenChange(false);
 
         const role = result.user.role;
         if (role === "admin") router.push("/admin/dashboard");
-        else if (role === "customer") router.push("/customer/dashboard");
-        else router.push("/");
+        else if (role === "customer") router.push("/");
       } else {
         toast.error(result?.message || "Login failed");
       }

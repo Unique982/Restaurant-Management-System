@@ -15,6 +15,7 @@ import contactUs from "./contactUs/contactSlice";
 import abourSlice from "./admin/about/aboutSlice";
 import settingSlice from "./admin/setting/settingSlice";
 import notificationSlice from "./notification/notification";
+import chechoutSlice from "./customer/checkout/checkoutSlice";
 
 const store = configureStore({
   reducer: {
@@ -34,6 +35,7 @@ const store = configureStore({
     about: abourSlice,
     setting: settingSlice,
     notification: notificationSlice,
+    checkout: chechoutSlice,
   },
 });
 

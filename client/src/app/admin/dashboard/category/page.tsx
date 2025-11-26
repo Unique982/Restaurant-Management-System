@@ -55,7 +55,6 @@ export default function CategoryInfo() {
     // delete
     socket.on("categoryDeleted", (id: number) => {
       dispatch(getCategory());
-      toast.success(`Category deleted successfully!`);
     });
     //single data
     socket.on("singleCategoryFetched", (data) => {
