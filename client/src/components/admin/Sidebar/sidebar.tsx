@@ -49,6 +49,7 @@ export default function SideBar() {
     { href: "/admin/dashboard/tables", icon: TabletsIcon, label: "Tables" },
     { href: "/admin/dashboard/users", icon: User, label: "Users" },
     { href: "/admin/dashboard/orders", icon: ListOrdered, label: "Orders" },
+    { href: "/admin/dashboard/invoice", icon: DollarSign, label: "Payments" },
   ];
 
   const AdminpageItems =

@@ -41,7 +41,6 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((store) => store.auth);
-
   const [isLogin, setIsLogin] = useState(true);
   const [forgotStep, setForgotStep] = useState<
     "none" | "email" | "otp" | "reset"
@@ -50,6 +49,7 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
   const [otpCode, setOtpCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const {
     register: loginRegister,
     handleSubmit: handleLoginSubmit,
@@ -162,7 +162,6 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
     }
   };
   const handleGoogleLogin = () => {
-    // Redirect user to backend Google OAuth route
     window.location.href = "http://localhost:4000/api/auth/google";
   };
 
@@ -417,33 +416,67 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
                   </div>
                   <Button
                     type="button"
-                    onClick={handleGoogleLogin}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100"
+                    onClick={() => {
+                      setGoogleLoading(true);
+                      handleGoogleLogin();
+                    }}
+                    disabled={loading}
+                    className={`flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100 ${
+                      googleLoading ? "cursor-not-allowed opacity-70" : ""
+                    }`}
                     variant="outline"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 488 512"
-                    >
-                      <path
-                        fill="#4285F4"
-                        d="M488 261.8c0-17.8-1.6-35-4.6-51.7H249v97.9h134.6c-5.8 31-23 57.3-49 75v62.1h79.4c46.6-42.9 73.6-106.1 73.6-183.3z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M249 512c66.8 0 122.8-22.1 163.7-59.9l-79.4-62.1c-22.1 14.8-50.4 23.5-84.3 23.5-64.7 0-119.5-43.6-139.2-102.1H30.4v64.1C71.8 463 153.2 512 249 512z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M109.8 316.4c-4.9-14.8-7.7-30.6-7.7-46.4s2.8-31.6 7.7-46.4V159.5H30.4c-15.2 29.9-23.9 63.4-23.9 99.5s8.7 69.6 23.9 99.5l79.4-64.1z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M249 97.7c35.9 0 68 12.3 93.2 36.4l69.8-69.8C371.9 27.4 315.9 5 249 5 153.2 5 71.8 54 30.4 159.5l79.4 64.1C129.5 141.3 184.3 97.7 249 97.7z"
-                      />
-                    </svg>
-                    Login with Google
+                    {googleLoading && (
+                      <svg
+                        className="animate-spin h-5 w-5 text-gray-600"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                    )}
+                    {!googleLoading ? (
+                      <>
+                        <svg
+                          className="w-5 h-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 488 512"
+                        >
+                          <path
+                            fill="#4285F4"
+                            d="M488 261.8c0-17.8-1.6-35-4.6-51.7H249v97.9h134.6c-5.8 31-23 57.3-49 75v62.1h79.4c46.6-42.9 73.6-106.1 73.6-183.3z"
+                          />
+                          <path
+                            fill="#34A853"
+                            d="M249 512c66.8 0 122.8-22.1 163.7-59.9l-79.4-62.1c-22.1 14.8-50.4 23.5-84.3 23.5-64.7 0-119.5-43.6-139.2-102.1H30.4v64.1C71.8 463 153.2 512 249 512z"
+                          />
+                          <path
+                            fill="#FBBC05"
+                            d="M109.8 316.4c-4.9-14.8-7.7-30.6-7.7-46.4s2.8-31.6 7.7-46.4V159.5H30.4c-15.2 29.9-23.9 63.4-23.9 99.5s8.7 69.6 23.9 99.5l79.4-64.1z"
+                          />
+                          <path
+                            fill="#EA4335"
+                            d="M249 97.7c35.9 0 68 12.3 93.2 36.4l69.8-69.8C371.9 27.4 315.9 5 249 5 153.2 5 71.8 54 30.4 159.5l79.4 64.1C129.5 141.3 184.3 97.7 249 97.7z"
+                          />
+                        </svg>
+                        Login with Google
+                      </>
+                    ) : (
+                      "Processing..."
+                    )}
                   </Button>
                 </div>
 
@@ -544,32 +577,67 @@ export default function LoginModal({ open, onOpenChange }: LoginProps) {
                   </div>
                   <Button
                     type="button"
-                    onClick={handleGoogleLogin}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100"
+                    onClick={() => {
+                      setLoading(true);
+                      handleGoogleLogin();
+                    }}
+                    disabled={loading}
+                    className={`flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100 ${
+                      loading ? "cursor-not-allowed opacity-70" : ""
+                    }`}
                     variant="outline"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 488 512"
-                    >
-                      <path
-                        fill="#4285F4"
-                        d="M488 261.8c0-17.8-1.6-35-4.6-51.7H249v97.9h134.6c-5.8 31-23 57.3-49 75v62.1h79.4c46.6-42.9 73.6-106.1 73.6-183.3z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M249 512c66.8 0 122.8-22.1 163.7-59.9l-79.4-62.1c-22.1 14.8-50.4 23.5-84.3 23.5-64.7 0-119.5-43.6-139.2-102.1H30.4v64.1C71.8 463 153.2 512 249 512z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M109.8 316.4c-4.9-14.8-7.7-30.6-7.7-46.4s2.8-31.6 7.7-46.4V159.5H30.4c-15.2 29.9-23.9 63.4-23.9 99.5s8.7 69.6 23.9 99.5l79.4-64.1z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M249 97.7c35.9 0 68 12.3 93.2 36.4l69.8-69.8C371.9 27.4 315.9 5 249 5 153.2 5 71.8 54 30.4 159.5l79.4 64.1C129.5 141.3 184.3 97.7 249 97.7z"
-                      />
-                    </svg>
+                    {loading && (
+                      <svg
+                        className="animate-spin h-5 w-5 text-gray-600"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                    )}
+                    {!loading ? (
+                      <>
+                        <svg
+                          className="w-5 h-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 488 512"
+                        >
+                          <path
+                            fill="#4285F4"
+                            d="M488 261.8c0-17.8-1.6-35-4.6-51.7H249v97.9h134.6c-5.8 31-23 57.3-49 75v62.1h79.4c46.6-42.9 73.6-106.1 73.6-183.3z"
+                          />
+                          <path
+                            fill="#34A853"
+                            d="M249 512c66.8 0 122.8-22.1 163.7-59.9l-79.4-62.1c-22.1 14.8-50.4 23.5-84.3 23.5-64.7 0-119.5-43.6-139.2-102.1H30.4v64.1C71.8 463 153.2 512 249 512z"
+                          />
+                          <path
+                            fill="#FBBC05"
+                            d="M109.8 316.4c-4.9-14.8-7.7-30.6-7.7-46.4s2.8-31.6 7.7-46.4V159.5H30.4c-15.2 29.9-23.9 63.4-23.9 99.5s8.7 69.6 23.9 99.5l79.4-64.1z"
+                          />
+                          <path
+                            fill="#EA4335"
+                            d="M249 97.7c35.9 0 68 12.3 93.2 36.4l69.8-69.8C371.9 27.4 315.9 5 249 5 153.2 5 71.8 54 30.4 159.5l79.4 64.1C129.5 141.3 184.3 97.7 249 97.7z"
+                          />
+                        </svg>
+                        Sign up with Google
+                      </>
+                    ) : (
+                      "Processing..."
+                    )}
                     Sign up with Google
                   </Button>
                 </div>

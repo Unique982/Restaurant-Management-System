@@ -152,3 +152,31 @@ export function fetchMyOrdersDetails() {
     }
   };
 }
+
+// payment verify
+export function verifyPayment(pidx: string, totalAmount: number) {
+  return async function verifyPaymentThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.post("customer/myOrder/verify", {
+        pidx,
+      });
+      if (response.status === 200) {
+        dispatch(clearCheckout());
+        dispatch(setStatus(Status.SUCCESS));
+        return { success: true };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}

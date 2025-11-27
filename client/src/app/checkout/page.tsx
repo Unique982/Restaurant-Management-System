@@ -14,6 +14,7 @@ import {
   clearCheckout,
   ICheckoutForm,
   orderItems,
+  verifyPayment,
 } from "@/lib/store/customer/checkout/checkoutSlice";
 import {
   OrderType,
@@ -98,14 +99,10 @@ export default function CheckoutPage() {
 
     const res: any = await dispatch(orderItems(finalPayload));
   };
-  useEffect(() => {
-    console.log(khaltiUrl);
-    if (khaltiUrl) {
-      window.location.href = khaltiUrl;
-      return;
-    }
-  }, [khaltiUrl, status]);
-  console.log(khaltiUrl);
+  const handleKhaltiPay = () => {
+    if (!khaltiUrl) return;
+    window.location.href = khaltiUrl;
+  };
 
   return (
     <section className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
