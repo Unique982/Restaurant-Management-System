@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import LoginModal from "@/components/client/modal/LoginModal";
 import Cart from "@/components/client/cart/Cart";
 import { deleteCart, fetchCart } from "@/lib/store/customer/cart/cartSlice";
-import { getUserList } from "@/lib/store/admin/users/userSlice";
+
 import { setUser } from "@/lib/store/auth/authSlice";
 
 export default function Navbar() {

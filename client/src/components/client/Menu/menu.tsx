@@ -12,10 +12,15 @@ import { Status } from "@/lib/types/type";
 import toast from "react-hot-toast";
 import { cartItems } from "@/lib/store/customer/cart/cartSlice.type";
 import Image from "next/image";
+
+import LoginModal from "../modal/LoginModal";
+
 type CategoryType = "All" | string;
 
 export default function MenuSection() {
+  const [isLogin, setIsLogin] = useState(true);
   const dispatch = useAppDispatch();
+
   const user = useAppSelector((state) => state.auth.user);
   const menuItems = useAppSelector((state) => state.menuItems.menuDatas);
   // const categories = useAppSelector((state) => state.category.data);
@@ -37,6 +42,15 @@ export default function MenuSection() {
 
   // Add item to cart
   const handleAddToCart = (item: any) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setIsLogin(false);
+      setIsLogin(false);
+
+      toast.error("Please login first to add items to cart");
+      return;
+    }
     const cartItem: cartItems = {
       id: item.id,
       name: item.name,
@@ -46,32 +60,6 @@ export default function MenuSection() {
       cart_id: item.cart_id,
       menu_item_id: item.id,
     };
-
-    if (!user) {
-      const guestCart: cartItems[] = JSON.parse(
-        localStorage.getItem("guest_cart") || "[]"
-      );
-
-      // check if item already exists
-      const existsIndex = guestCart.findIndex(
-        (i) => i.menu_item_id === item.id
-      );
-
-      if (existsIndex >= 0) {
-        guestCart[existsIndex].quantity += 1;
-      } else {
-        guestCart.push(cartItem);
-      }
-
-      // save updated cart
-      localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-
-      // update redux state
-      dispatch(setItems(guestCart));
-      dispatch(setStatus(Status.SUCCESS));
-      toast.success("Item added to cart");
-      return;
-    }
 
     dispatch(addCart(cartItem));
     toast.success("Item added to your cart");
@@ -160,6 +148,10 @@ export default function MenuSection() {
           View More <ArrowRight className="w-5 h-5" />
         </a>
       </div>
+      <LoginModal
+        open={!isLogin}
+        onOpenChange={(state) => setIsLogin(!state)}
+      />
     </section>
   );
 }

@@ -8,11 +8,3 @@ const initialState: IInitialState = {
   status: Status.LOADING,
   singleOrder: null,
 };
-
-// const myOrder = createSlice({
-//   name: "myOrder",
-//   initialState,
-//   reducers: {
-//     getMyOrder(state:IInitialState,action:PayloadAction<IOrderPostData>)
-//   },
-// });
