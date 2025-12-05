@@ -185,7 +185,7 @@ export function hardDeleteOrder(id: string | number) {
     }
   };
 }
-// fetch function
+// fetch function admin/customer
 export function getALlOrderList() {
   return async function getALlOrderListThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));

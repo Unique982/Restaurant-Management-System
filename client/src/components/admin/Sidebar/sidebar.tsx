@@ -81,7 +81,7 @@ export default function SideBar() {
     },
     { href: "/customer/dashboard/cart", icon: ShoppingCart, label: "Cart" },
     {
-      href: "/customer/dashboard/payment-history",
+      href: "/customer/dashboard/payment",
       icon: DollarSign,
       label: "Payments",
     },

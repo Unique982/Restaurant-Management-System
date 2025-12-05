@@ -16,6 +16,7 @@ export default function ProtectedRoute({
   const router = useRouter();
 
   useEffect(() => {
+    if (!user.token) return;
     if (user.role === "admin") {
       router.push("/admin/dashboard");
     } else if (user.role === "customer") {

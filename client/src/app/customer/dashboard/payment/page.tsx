@@ -1,207 +1,174 @@
-// src/app/notifications/page.tsx
 "use client";
-
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Eye, Loader2 } from "lucide-react";
 import {
-  ChevronLeft,
-  Bell,
-  Settings,
-  Search,
-  Filter,
-  BarChart,
-  Ticket,
-  MessageSquare,
-  Users,
-} from "lucide-react";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Pagination from "@/components/admin/Pagination/pagination";
 
-interface Notification {
-  id: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  type: string;
-  time: string;
-  status: "read" | "unread";
-}
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { useRouter } from "next/navigation";
+import {
+  IPayment,
+  IPaymentStatus,
+  PaymentMethod,
+} from "@/lib/store/admin/payment/paymentSlice.type";
+import { fetchAllPayment } from "@/lib/store/admin/payment/paymentSlice";
 
-const notifications: Notification[] = [
-  {
-    id: "1",
-    icon: <Ticket size={18} className="text-blue-500" />,
-    title: "New Ticket Assigned",
-    description: "You have been assigned to ticket #1234 - Website Redesign",
-    type: "Ticket",
-    time: "5 minutes ago",
-    status: "unread",
-  },
-  {
-    id: "2",
-    icon: <MessageSquare size={18} className="text-green-500" />,
-    title: "New Message",
-    description:
-      "Sarah Johnson sent you a message in the Website Redesign project",
-    type: "Message",
-    time: "1 hour ago",
-    status: "unread",
-  },
-  {
-    id: "3",
-    icon: <Users size={18} className="text-purple-500" />,
-    title: "Team Update",
-    description: "New team member John Smith has joined the project",
-    type: "Team",
-    time: "2 hours ago",
-    status: "read",
-  },
-  {
-    id: "4",
-    icon: <Ticket size={18} className="text-blue-500" />,
-    title: "Ticket Status Update",
-    description: "Ticket #1235 - Bug Fix has been marked as completed",
-    type: "Ticket",
-    time: "3 hours ago",
-    status: "read",
-  },
-  {
-    id: "5",
-    icon: <MessageSquare size={18} className="text-green-500" />,
-    title: "New Message",
-    description: "Michael Brown mentioned you in a comment on ticket #1236",
-    type: "Message",
-    time: "5 hours ago",
-    status: "read",
-  },
-  {
-    id: "6",
-    icon: <Users size={18} className="text-purple-500" />,
-    title: "Team Update",
-    description: "Project deadline has been updated to June 15, 2024",
-    type: "Team",
-    time: "1 day ago",
-    status: "read",
-  },
-  {
-    id: "7",
-    icon: <Ticket size={18} className="text-blue-500" />,
-    title: "New Ticket Created",
-    description: "A new ticket has been created: #1237 - API Integration",
-    type: "Ticket",
-    time: "1 day ago",
-    status: "read",
-  },
-  {
-    id: "8",
-    icon: <MessageSquare size={18} className="text-green-500" />,
-    title: "New Message",
-    description:
-      "Emily Davis shared a document in the Website Redesign project",
-    type: "Message",
-    time: "2 days ago",
-    status: "read",
-  },
-];
+export default function PaymentHistory() {
+  const router = useRouter();
+  const { paymentData } = useAppSelector((store) => store.payment);
+  const dispatch = useAppDispatch();
+  const [searchText, setSearchText] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
-export default function NotificationsPage() {
-  const markAllRead = () => {
-    notifications.forEach((n) => (n.status = "read"));
-  };
+  useEffect(() => {
+    setLoading(true);
+    dispatch(fetchAllPayment());
+    setLoading(false);
+  }, []);
+  // const sortedData = [...paymentData].sort((a, b) => b.id - a.id);
+
+  const filterData = paymentData.filter((pay) => {
+    const search = searchText.toLowerCase();
+    return (
+      (pay.invoice_number?.toString().toLowerCase().includes(search) ??
+        false) ||
+      (pay.total_amount?.toString().toLowerCase().includes(search) ?? false) ||
+      (pay.username?.toLowerCase().includes(search) ?? false) ||
+      (pay.email?.toLowerCase().includes(search) ?? false) ||
+      (pay.payment_method?.toLowerCase().includes(search) ?? false)
+    );
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
   return (
-    <div className="bg-white  rounded-xl  w-full max-w-8xl p-6 sm:p-8">
-      <div className="flex items-center justify-between  pb-4 mb-6">
-        <Link
-          href="/dashboard"
-          className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          <ChevronLeft size={20} className="mr-1" />
-          <span className="text-sm font-medium">Back to Dashboard</span>
-        </Link>
-      </div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Notifications</h1>
-        <p className="text-gray-600 text-sm">
-          Stay updated with your latest activities and messages
-        </p>
-      </div>
+    <>
+      <div className="space-y-6 overflow-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold">Payment Management</h1>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="relative flex-grow">
-          <Search
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="text"
-            placeholder="Search notifications..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          />
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Input
+              placeholder="Search Payment..."
+              onChange={(e) => setSearchText(e.target.value)}
+              className="w-full sm:w-[250px]"
+            />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            className="flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-            onClick={markAllRead}
-          >
-            <Bell size={16} className="mr-1" />
-            Mark All as Read
-          </button>
+
+        <div className="overflow-x-auto rounded-md border bg-white">
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40px]">#</TableHead>
+                <TableHead>Invoice Number</TableHead>
+                <TableHead>User Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Payment Method</TableHead>
+                <TableHead>Total Amount</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {filterData.length > 0 ? (
+                filterData.map((pay: IPayment, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>{pay.invoice_number}</TableCell>
+                    <TableCell>
+                      {pay.username
+                        ? pay.username.charAt(0).toUpperCase() +
+                          pay.username.slice(1)
+                        : "N/A"}
+                    </TableCell>
+
+                    <TableCell>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium capitalize
+                          ${
+                            pay.paymentStatus === IPaymentStatus.Completed
+                              ? "bg-green-100 text-green-700 font-semibold"
+                              : pay.paymentStatus === IPaymentStatus.Pending
+                              ? "bg-blue-100 text-blue-700"
+                              : pay.paymentStatus === IPaymentStatus.Failed
+                              ? "bg-red-100 text-red-700"
+                              : "bg-gray-100 text-gray-700"
+                          }
+                        `}
+                      >
+                        {pay.paymentStatus}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="capitalize">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs cursor-pointer capitalize font-bold  ${
+                          pay.payment_method === PaymentMethod.Khalti
+                            ? "bg-purple-100 text-purple-700"
+                            : pay.payment_method === PaymentMethod.Card
+                            ? "bg-orange-100 text-orange-700"
+                            : pay.payment_method === PaymentMethod.Cash
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {pay.payment_method.charAt(0).toUpperCase() +
+                          pay.payment_method.slice(1)}
+                      </span>
+                    </TableCell>
+
+                    <TableCell>Rs. {pay.total_amount}</TableCell>
+
+                    <TableCell>
+                      {new Date(pay.createdAt).toLocaleDateString("en-GB")}
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        title="View"
+                        onClick={() =>
+                          router.push(`/admin/dashboard/invoice/${pay.id}`)
+                        }
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="text-center py-4 text-red-600"
+                  >
+                    No Payment Records Found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
+
+        <Pagination />
       </div>
-
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Notification
-            </th>
-
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Time
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {notifications.map((notification) => (
-            <tr
-              key={notification.id}
-              className={notification.status === "unread" ? "bg-blue-50" : ""}
-            >
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <div className="relative flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full mr-3 bg-gray-200">
-                    <Bell size={18} className="text-gray-700" />
-                    {notification.status === "unread" && (
-                      <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-1 ring-white"></span>
-                    )}
-                  </div>
-                  <div>
-                    <div
-                      className={`text-sm font-medium ${
-                        notification.status === "unread"
-                          ? "text-gray-900"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {notification.title}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {notification.description}
-                    </div>
-                  </div>
-                </div>
-              </td>
-
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {notification.time}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    </>
   );
 }

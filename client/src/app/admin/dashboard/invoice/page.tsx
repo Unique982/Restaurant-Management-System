@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Eye, Loader2, Trash2 } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,43 +14,40 @@ import {
 import Pagination from "@/components/admin/Pagination/pagination";
 
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-
-import { deleteBlogById, fectchBlogs } from "@/lib/store/admin/blog/blogSlice";
-import { IBlogDetails } from "@/lib/store/admin/blog/blogSlice.type";
 import { useRouter } from "next/navigation";
+import {
+  IPayment,
+  IPaymentStatus,
+  PaymentMethod,
+} from "@/lib/store/admin/payment/paymentSlice.type";
+import { fetchAllPayment } from "@/lib/store/admin/payment/paymentSlice";
 
 export default function PaymentHistory() {
   const router = useRouter();
-  const { blogData, status } = useAppSelector((store) => store.blog);
+  const { paymentData } = useAppSelector((store) => store.payment);
   const dispatch = useAppDispatch();
-  const [isModal, setIsModal] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    dispatch(fectchBlogs());
+    dispatch(fetchAllPayment());
     setLoading(false);
   }, []);
-  const sortedData = [...blogData].sort((a, b) => b.id - a.id);
-  // delete
-  const handleBlogDelete = async (id: string | number) => {
-    await dispatch(deleteBlogById(id));
-  };
-  // search
-  const filterData = sortedData.filter(
-    (blog) =>
-      blog.blogTitle
-        .toLocaleLowerCase()
-        .includes(searchText.toLocaleLowerCase()) ||
-      blog.blogDescription
-        .toLocaleLowerCase()
-        .includes(searchText.toLocaleLowerCase()) ||
-      blog.blogCategory
-        .toLocaleLowerCase()
-        .includes(searchText.toLocaleLowerCase())
-  );
+  // const sortedData = [...paymentData].sort((a, b) => b.id - a.id);
+
+  const filterData = paymentData.filter((pay) => {
+    const search = searchText.toLowerCase();
+    return (
+      (pay.invoice_number?.toString().toLowerCase().includes(search) ??
+        false) ||
+      (pay.total_amount?.toString().toLowerCase().includes(search) ?? false) ||
+      (pay.username?.toLowerCase().includes(search) ?? false) ||
+      (pay.email?.toLowerCase().includes(search) ?? false) ||
+      (pay.payment_method?.toLowerCase().includes(search) ?? false)
+    );
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -62,101 +59,113 @@ export default function PaymentHistory() {
     <>
       <div className="space-y-6 overflow-auto">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold">Blog Management</h1>
-          {/* sreach section here */}
+          <h1 className="text-2xl font-bold">Payment Management</h1>
+
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Input
-              placeholder="Search Blog..."
+              placeholder="Search Payment..."
               onChange={(e) => setSearchText(e.target.value)}
               className="w-full sm:w-[250px]"
             />
-            {/* add button  */}
           </div>
         </div>
 
-        {/* Tbale content herre */}
         <div className="overflow-x-auto rounded-md border bg-white">
           <Table className="w-full">
-            {/* Table header */}
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[40px]">ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>CreatedAt</TableHead>
+                <TableHead className="w-[40px]">#</TableHead>
+                <TableHead>Invoice Number</TableHead>
+                <TableHead>User Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Payment Method</TableHead>
+                <TableHead>Total Amount</TableHead>
+                <TableHead>Created At</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
-            {/* table body */}
+
             <TableBody>
               {filterData.length > 0 ? (
-                filterData.map((blog: IBlogDetails, index) => {
-                  return (
-                    <TableRow key={index + 1}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell className="whitespace-normal break-words">
-                        {blog.blogTitle}
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words">
-                        {blog.blogDescription.substring(0, 30) + "..."}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(blog.createdAt).toLocaleDateString("np")}
-                      </TableCell>
-                      <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          title="View"
-                          onClick={() =>
-                            router.push(
-                              `/admin/dashboard/blog/${blogData[0].id}`
-                            )
-                          }
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
+                filterData.map((pay: IPayment, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>{pay.invoice_number}</TableCell>
+                    <TableCell>
+                      {pay.username
+                        ? pay.username.charAt(0).toUpperCase() +
+                          pay.username.slice(1)
+                        : "N/A"}
+                    </TableCell>
 
-                        {/* Edit */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          title="Edit"
-                          onClick={() =>
-                            router.push(
-                              `/admin/dashboard/blog/edit/${blogData[0].id}`
-                            )
+                    <TableCell>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium capitalize
+                          ${
+                            pay.paymentStatus === IPaymentStatus.Completed
+                              ? "bg-green-100 text-green-700 font-semibold"
+                              : pay.paymentStatus === IPaymentStatus.Pending
+                              ? "bg-blue-100 text-blue-700"
+                              : pay.paymentStatus === IPaymentStatus.Failed
+                              ? "bg-red-100 text-red-700"
+                              : "bg-gray-100 text-gray-700"
                           }
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        {/* delete button */}
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          title="Delete"
-                          onClick={() => handleBlogDelete(blog?.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
+                        `}
+                      >
+                        {pay.paymentStatus}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="capitalize">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs cursor-pointer capitalize font-bold  ${
+                          pay.payment_method === PaymentMethod.Khalti
+                            ? "bg-purple-100 text-purple-700"
+                            : pay.payment_method === PaymentMethod.Card
+                            ? "bg-orange-100 text-orange-700"
+                            : pay.payment_method === PaymentMethod.Cash
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {pay.payment_method.charAt(0).toUpperCase() +
+                          pay.payment_method.slice(1)}
+                      </span>
+                    </TableCell>
+
+                    <TableCell>Rs. {pay.total_amount}</TableCell>
+
+                    <TableCell>
+                      {new Date(pay.createdAt).toLocaleDateString("en-GB")}
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        title="View"
+                        onClick={() =>
+                          router.push(`/admin/dashboard/invoice/${pay.id}`)
+                        }
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={8}
                     className="text-center py-4 text-red-600"
                   >
-                    No users found
+                    No Payment Records Found
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
-        {/* Pagination */}
 
         <Pagination />
       </div>

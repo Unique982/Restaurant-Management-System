@@ -3,7 +3,6 @@ import { ICategory, ICategoryData, IInitialState } from "./categorySlice.type";
 import { Status } from "@/lib/types/type";
 import { AppDispatch } from "../../store";
 import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
-import { act } from "react";
 
 const initialState: IInitialState = {
   data: [],
