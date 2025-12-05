@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const APIWITHTOKEN = axios.create({
-  // baseURL: `https://rms-backend-m65u.onrender.com/api/`,
-  baseURL: "http://localhost:4000/api/",
+   baseURL: `https://rms-backend-m65u.onrender.com/api/`,
+  //baseURL: "http://localhost:4000/api/",
 
   headers: {
     Authorization:
@@ -12,3 +12,4 @@ const APIWITHTOKEN = axios.create({
   },
 });
 export default APIWITHTOKEN;
+
