@@ -8,6 +8,12 @@ export interface IUserData {
   email?: string;
 }
 
+// profile data
+export interface IProfile {
+  email: string;
+  username: string;
+}
+
 export interface IInitialState {
   user: IUserData;
   status: Status;

@@ -9,8 +9,12 @@ import {
   settingFetch,
 } from "@/lib/store/admin/setting/settingSlice";
 import toast from "react-hot-toast";
+import { useRouter, useParams } from "next/navigation";
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const params = useParams();
   const dispatch = useAppDispatch();
   const { setting } = useAppSelector((state) => state.setting);
   const [activeTab, setActiveTab] = useState("system");
@@ -35,16 +39,12 @@ export default function SettingsPage() {
     smtpEncryption: "",
   });
 
-  const [changedFields, setChangedFields] = useState<Partial<ISettingPostData>>(
-    {}
-  );
-
   useEffect(() => {
     dispatch(settingFetch());
   }, [dispatch]);
 
   useEffect(() => {
-    if (setting.length > 0) {
+    if (setting && setting.length > 0) {
       const data: ISettingPostData = setting[0];
       setSettings(data);
     }
@@ -53,21 +53,13 @@ export default function SettingsPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSettings((prev) => ({ ...prev, [name]: value }));
-    setChangedFields((prev) => ({ ...prev, [name]: value }));
   };
 
   const submitHandle = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (Object.keys(changedFields).length === 0) {
-      toast("No changes made!");
-      return;
-    }
-    const result: any = await dispatch(
-      addSettings(changedFields as ISettingPostData)
-    );
+    const result: any = await dispatch(addSettings(settings));
     if (result.success) {
       toast.success("Settings updated successfully");
-      setChangedFields({});
     } else {
       toast.error(result?.message || "Something went wrong!");
     }
@@ -129,9 +121,9 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
     <form className="space-y-6" onSubmit={submitHandle}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Restaurant Name
-          </label>
+          </Label>
           <Input
             type="text"
             name="restaurantName"
@@ -140,11 +132,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="Enter restaurant name"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Address / Location
-          </label>
+          </Label>
           <Input
             name="address"
             value={settings.address || ""}
@@ -152,11 +143,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="Enter restaurant address"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Contact Number
-          </label>
+          </Label>
           <Input
             name="contactNumber"
             value={settings.contactNumber || ""}
@@ -164,12 +154,11 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="+977-XXXXXXXXX"
           />
         </div>
-
         <div className="flex gap-4">
           <div className="flex-1">
-            <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <Label className="text-sm font-medium text-gray-700 mb-1 block">
               Opening Time
-            </label>
+            </Label>
             <Input
               type="time"
               name="openingTime"
@@ -178,9 +167,9 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             />
           </div>
           <div className="flex-1">
-            <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <Label className="text-sm font-medium text-gray-700 mb-1 block">
               Closing Time
-            </label>
+            </Label>
             <Input
               type="time"
               name="closingTime"
@@ -189,11 +178,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             />
           </div>
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Timezone
-          </label>
+          </Label>
           <Input
             type="text"
             name="timezone"
@@ -202,12 +190,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="e.g. Asia/Kathmandu"
           />
         </div>
-
-        {/* Social Links */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Facebook URL
-          </label>
+          </Label>
           <Input
             type="url"
             name="facebookUrl"
@@ -216,11 +202,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="https://facebook.com/yourpage"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Instagram URL
-          </label>
+          </Label>
           <Input
             type="url"
             name="instagramUrl"
@@ -229,11 +214,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="https://instagram.com/yourpage"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             TikTok URL
-          </label>
+          </Label>
           <Input
             type="url"
             name="tiktokUrl"
@@ -242,11 +226,10 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="https://tiktok.com/@yourpage"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             YouTube URL
-          </label>
+          </Label>
           <Input
             type="url"
             name="youtubeUrl"
@@ -256,7 +239,6 @@ function SystemSettings({ settings, handleChange, submitHandle }: any) {
           />
         </div>
       </div>
-
       <div className="flex justify-end">
         <Button className="bg-orange-500 hover:bg-orange-600">
           Save System Settings
@@ -272,9 +254,9 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
     <form className="space-y-6" onSubmit={submitHandle}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Email Sender Name
-          </label>
+          </Label>
           <Input
             name="emailSenderName"
             value={settings.emailSenderName || ""}
@@ -282,11 +264,10 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="Admin / Restaurant Name"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             SMTP Host
-          </label>
+          </Label>
           <Input
             name="smtpHost"
             value={settings.smtpHost || ""}
@@ -294,11 +275,10 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="smtp.example.com"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             SMTP Port
-          </label>
+          </Label>
           <Input
             name="smtpPort"
             value={settings.smtpPort || ""}
@@ -306,11 +286,10 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="587"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             SMTP Username
-          </label>
+          </Label>
           <Input
             name="smtpUsername"
             value={settings.smtpUsername || ""}
@@ -318,11 +297,10 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="user@example.com"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             SMTP Password
-          </label>
+          </Label>
           <Input
             type="password"
             name="smtpPassword"
@@ -331,11 +309,10 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
             placeholder="Password"
           />
         </div>
-
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <Label className="text-sm font-medium text-gray-700 mb-1 block">
             Encryption
-          </label>
+          </Label>
           <Input
             name="smtpEncryption"
             value={settings.smtpEncryption || ""}
@@ -344,7 +321,6 @@ function EmailSettings({ settings, handleChange, submitHandle }: any) {
           />
         </div>
       </div>
-
       <div className="flex justify-end">
         <Button className="bg-orange-500 hover:bg-orange-600">
           Save Email Settings
@@ -359,29 +335,11 @@ function AdvancedSettings() {
   return (
     <form className="space-y-6">
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1 block">
+        <Label className="text-sm font-medium text-gray-700 mb-1 block">
           System Backup / Restore
-        </label>
+        </Label>
         <Button className="bg-gray-200 text-gray-800 hover:bg-gray-300 w-full md:w-auto">
           Backup Now
-        </Button>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-1 block">
-          Clear Cache / Reset Data
-        </label>
-        <Button className="bg-red-500 text-white hover:bg-red-600 w-full md:w-auto">
-          Clear Cache
-        </Button>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-1 block">
-          Audit Logs / Activity Logs
-        </label>
-        <Button className="bg-gray-200 text-gray-800 hover:bg-gray-300 w-full md:w-auto">
-          View Logs
         </Button>
       </div>
     </form>

@@ -5,6 +5,7 @@ import { AppDispatch } from "../store";
 import API from "@/lib/http";
 import { ILoginData, IRegisterInput } from "@/lib/types/auth/authTypes";
 import { use } from "react";
+import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
 const initialState: IInitialState = {
   user: {
@@ -24,6 +25,8 @@ const authSlice = createSlice({
     setStatus(state: IInitialState, action: PayloadAction<Status>) {
       state.status = action.payload;
     },
+    // password reset
+
     logout(state: IInitialState) {
       state.user = { username: "", token: "", role: "" };
       // remove token
@@ -170,16 +173,44 @@ export function changePassord(email: string, password: string) {
     }
   };
 }
+// profile sidebat
+export function passwordUpdate(
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
+) {
+  return async function passwordUpdate(dispatch: AppDispatch) {
+    dispatch(setStatus(Status.LOADING));
+    try {
+      const response = await APIWITHTOKEN.patch("/reset/password", {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+      if (response.status === 200) {
+        return { success: true, message: response.data.message };
+      } else {
+        dispatch(setStatus(Status.ERROR));
+        return { message: response.data?.message || "Failed" };
+      }
+    } catch (err: any) {
+      dispatch(setStatus(Status.ERROR));
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        err.response?.data?.errors ||
+        "Something went wrong";
+      return { success: false, message };
+    }
+  };
+}
+
 // logout
 export function userLogout() {
   return async function userLogoutThunk(dispatch: AppDispatch) {
     dispatch(logout());
     return { success: true };
   };
-}
-// profile
-export function profileUdate() {
-  return async function profileUdateThunk() {};
 }
 
 export function loginWithGoogle() {
