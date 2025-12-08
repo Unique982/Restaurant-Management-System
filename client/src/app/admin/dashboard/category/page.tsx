@@ -46,7 +46,6 @@ export default function CategoryInfo() {
     // update
     socket.on("categoryUpdated", (ICategory) => {
       dispatch(getCategory());
-      toast.success(`Category updated successful!`);
     });
     // fetch all
     socket.on("categoryGet", (data) => {

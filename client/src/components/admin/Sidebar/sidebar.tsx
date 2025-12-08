@@ -73,11 +73,17 @@ export default function SideBar() {
       : [];
 
   const customerMenu = [
+    { href: "/customer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/customer/dashboard/menu", icon: Menu, label: "Menu" },
     {
       href: "/customer/dashboard/my-order",
       icon: ListOrdered,
       label: "My Orders",
+    },
+    {
+      href: "/customer/dashboard/reservation",
+      icon: NotebookPenIcon,
+      label: "Reservations",
     },
     { href: "/customer/dashboard/cart", icon: ShoppingCart, label: "Cart" },
     {
@@ -98,7 +104,7 @@ export default function SideBar() {
     <aside
       className={`${
         sidebarOpen ? "w-56" : "w-16"
-      } h-screen bg-white shadow-lg border-r transition-all duration-300 flex flex-col`}
+      } h-screen bg-white shadow-lg border-r transition-all duration-300 flex flex-col overflow`}
     >
       {/* Logo + Toggle */}
       <div className="flex items-center justify-between p-4 border-b">

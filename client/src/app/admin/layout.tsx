@@ -7,7 +7,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
-      <div className="flex h-screen">
+      <div className="flex h-screen overflow-hidden bg-gray-50">
         <SideBar />
         <div className="flex flex-col flex-1 overflow-hidden">
           <TopHeader />

@@ -18,9 +18,7 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
       {/* over view */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <CardView />
-      </div>
+      <CardView />
     </>
   );
 }

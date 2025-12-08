@@ -81,8 +81,8 @@ export default function CategoryEditPage() {
       editCategoryById(params.id as string, updateCategory)
     );
     if (result.success) {
-      toast.success("Category updated successfully!");
       router.push("/admin/dashboard/category");
+      toast.success(`Category updated successful!`);
     } else {
       toast.error(result.message || "Failed to update category");
     }
