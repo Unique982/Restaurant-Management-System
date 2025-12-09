@@ -145,7 +145,7 @@ export default function PaymentHistory() {
                         size="sm"
                         title="View"
                         onClick={() =>
-                          router.push(`/admin/dashboard/invoice/${pay.id}`)
+                          router.push(`/customer/dashboard/payment/${pay.id}`)
                         }
                       >
                         <Eye className="w-4 h-4" />

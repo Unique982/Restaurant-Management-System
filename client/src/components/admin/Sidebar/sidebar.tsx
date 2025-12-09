@@ -74,7 +74,7 @@ export default function SideBar() {
 
   const customerMenu = [
     { href: "/customer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/customer/dashboard/menu", icon: Menu, label: "Menu" },
+    { href: "/customer/dashboard/viewMenu", icon: Menu, label: "Menu" },
     {
       href: "/customer/dashboard/my-order",
       icon: ListOrdered,

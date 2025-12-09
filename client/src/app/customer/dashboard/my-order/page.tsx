@@ -69,7 +69,7 @@ export default function MenuIfo() {
   return (
     <div className="space-y-6 overflow-auto">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Orders Management</h1>
+        <h1 className="text-2xl font-bold">My-Orders </h1>
         {/* search section */}
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Input

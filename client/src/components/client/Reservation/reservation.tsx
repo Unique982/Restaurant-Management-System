@@ -24,6 +24,7 @@ import toast from "react-hot-toast";
 export default function ReservationSection() {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.tables);
+  const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [reservationDatas, setReservationDatas] =
     useState<IReservationPostData>({
@@ -37,7 +38,14 @@ export default function ReservationSection() {
       name: null,
       phoneNumber: null,
     });
-
+  useEffect(() => {
+    if (user?.id) {
+      setReservationDatas((prev) => ({
+        ...prev,
+        user_id: user.id,
+      }));
+    }
+  }, [user]);
   useEffect(() => {
     dispatch(getTables());
   }, [dispatch]);
@@ -60,7 +68,7 @@ export default function ReservationSection() {
     if (result.success) {
       toast.success("Reservation Booked success!");
       setReservationDatas({
-        user_id: null,
+        user_id: user?.id || null,
         table_id: "",
         guests: 0,
         reservation_date: "",

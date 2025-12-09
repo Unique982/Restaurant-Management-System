@@ -33,90 +33,112 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// Demo stats data
-const stats = [
-  {
-    title: "Total Orders",
-    value: "12",
-    icon: Package,
-    color: "bg-blue-500",
-    link: "/customer/dashboard/my-order",
-  },
-  {
-    title: "Cart Items",
-    value: "3",
-    icon: ShoppingCart,
-    color: "bg-green-500",
-    link: "/customer/dashboard/cart",
-  },
-  {
-    title: "Total Spent",
-    value: "$2,450",
-    icon: DollarSign,
-    color: "bg-purple-500",
-    link: "/customer/dashboard/payment",
-  },
-  {
-    title: "Total Table Booking",
-    value: "8",
-    icon: TrendingUp,
-    color: "bg-orange-500",
-    link: "/customer/dashboard/menu",
-  },
-];
-const activityLogs = [
-  { type: "order", message: "New order ORD-005 placed.", time: "2 min ago" },
-  { type: "login", message: "User John Doe logged in.", time: "5 min ago" },
-  {
-    type: "cart",
-    message: "New item added to cart by Jane.",
-    time: "10 min ago",
-  },
-  {
-    type: "table",
-    message: "Table booking #12 confirmed.",
-    time: "30 min ago",
-  },
-  { type: "order", message: "Order ORD-004 delivered.", time: "1 hour ago" },
-];
+import { useEffect, useState } from "react";
+import APIWITHTOKEN from "@/lib/http/APIWITHTOKEN";
 
-// Demo recent orders
-const recentOrders = [
-  {
-    id: "ORD-001",
-    date: "Jan 15, 2025",
-    amount: "$245.00",
-    status: "Delivered",
-  },
-  {
-    id: "ORD-002",
-    date: "Jan 12, 2025",
-    amount: "$89.50",
-    status: "In Transit",
-  },
-  {
-    id: "ORD-003",
-    date: "Jan 10, 2025",
-    amount: "$156.75",
-    status: "Processing",
-  },
-  {
-    id: "ORD-004",
-    date: "Jan 8, 2025",
-    amount: "$320.00",
-    status: "Delivered",
-  },
-];
+export function timeAgo(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = (now.getTime() - date.getTime()) / 1000; // seconds
 
-// Pie chart orders by status
-const ordersByCategory = [
-  { name: "Completed", value: 50 },
-  { name: "Pending", value: 10 },
-  { name: "Cancelled", value: 3 },
-];
+  if (diff < 60) return `${Math.floor(diff)} sec ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hrs ago`;
+  if (diff < 172800) return `Yesterday`;
+
+  return `${Math.floor(diff / 86400)} days ago`;
+}
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short", // Jan, Feb, ...
+    day: "numeric",
+  };
+  return date.toLocaleDateString(undefined, options); // Locale अनुसार format
+}
+
+interface ICustomerDashboardData {
+  totalOrders: number;
+  pendingOrders: number;
+  completedOrders: number;
+  cancelledOrders: number;
+  totalPoints: number;
+  totalPayment: number;
+  tableBooking: number;
+  totalCartItems: number;
+  recentOrders: IRecentOrder[];
+  totalBookingTable: number;
+  notifications: { title: string; createdAt: string }[];
+}
+
+interface IRecentOrder {
+  orderId: number;
+  createdAt: string;
+  finalAmount: string;
+  orderType: string;
+}
 const COLORS = ["#00C49F", "#FFBB28", "#FF0000"];
 
 export default function DashboardOverview() {
+  const [activityLogs, setActivityLogs] = useState<
+    { title: string; createdAt: string }[]
+  >([]);
+  const [data, setData] = useState<ICustomerDashboardData | null>(null);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await APIWITHTOKEN.get("/customer/dashboard");
+
+        const data = await response.data;
+        if (data.success) {
+          setData(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const stats = [
+    {
+      title: "Total Orders",
+      value: data?.totalOrders,
+      icon: Package,
+      color: "bg-blue-500",
+      link: "/customer/dashboard/my-order",
+    },
+    {
+      title: "Cart Items",
+      value: data?.totalCartItems,
+      icon: ShoppingCart,
+      color: "bg-green-500",
+      link: "/customer/dashboard/cart",
+    },
+    {
+      title: "Total Spent",
+      value: data?.totalPayment,
+      icon: DollarSign,
+      color: "bg-purple-500",
+      link: "/customer/dashboard/payment",
+    },
+    {
+      title: "Total Table Booking",
+      value: data?.tableBooking,
+      icon: TrendingUp,
+      color: "bg-orange-500",
+      link: "/customer/dashboard/menu",
+    },
+  ];
+  // Pie chart orders by status
+  const ordersOverViewpie = [
+    { name: "Completed", value: data?.completedOrders },
+    { name: "Pending", value: Number(data?.pendingOrders) },
+    { name: "Cancelled", value: Number(data?.cancelledOrders) },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Stats Cards */}
@@ -143,7 +165,7 @@ export default function DashboardOverview() {
         })}
       </div>
 
-      {/* Row with 3 columns: Quick Links | Pie Chart | Active Logs */}
+      {/* quick link pie chart activit log */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* 1. Quick Links */}
         <Card className="space-y-3">
@@ -151,7 +173,7 @@ export default function DashboardOverview() {
             <CardTitle>Quick Links</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Link href="/customer/dashboard/menu">
+            <Link href="/customer/dashboard/viewMenu">
               <Button className="w-full justify-between bg-blue-600 text-white">
                 Browse Menu <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -184,7 +206,7 @@ export default function DashboardOverview() {
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={ordersByCategory}
+                  data={ordersOverViewpie}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
@@ -193,7 +215,7 @@ export default function DashboardOverview() {
                   innerRadius={40}
                   label
                 >
-                  {ordersByCategory.map((entry, index) => (
+                  {ordersOverViewpie.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -213,15 +235,18 @@ export default function DashboardOverview() {
             <CardTitle className="mt-2">Active Logs</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            {activityLogs.slice(0, 5).map((log, index) => (
+            {data?.notifications.slice(0, 5).map((log, index) => (
               <div
                 key={index}
                 className="flex items-start gap-2 p-2 bg-slate-100 rounded hover:bg-slate-200 transition"
               >
                 <Bell className="w-4 h-4 text-blue-600 flex-shrink-0 mt-1" />
                 <div className="flex-1">
-                  <p className="text-sm text-slate-800">{log.message}</p>
-                  <p className="text-[10px] text-slate-500">{log.time}</p>
+                  <p className="text-sm text-slate-800">{log.title}</p>
+                  <p className="text-[10px] text-slate-500">
+                    {" "}
+                    {timeAgo(log.createdAt)}
+                  </p>
                 </div>
               </div>
             ))}
@@ -246,29 +271,33 @@ export default function DashboardOverview() {
           </TableHeader>
 
           <TableBody>
-            {recentOrders.map((order) => (
+            {data?.recentOrders.map((order, index) => (
               <TableRow
-                key={order.id}
+                key={index}
                 className="hover:bg-slate-50 transition-colors"
               >
                 <TableCell className="font-medium text-slate-900">
-                  {order.id}
+                  {index + 1}
                 </TableCell>
-                <TableCell className="text-slate-600">{order.date}</TableCell>
+                <TableCell className="text-slate-600">
+                  {formatDate(order.createdAt)}
+                </TableCell>
                 <TableCell className="font-semibold text-slate-900">
-                  {order.amount}
+                  <span className="text-sm">Rs </span>
+                  {Number(order.finalAmount).toLocaleString()}
                 </TableCell>
                 <TableCell>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      order.status === "Delivered"
+                      order.orderType === "delivery"
                         ? "bg-green-100 text-green-800"
-                        : order.status === "In Transit"
+                        : order.orderType === "takeaway"
                         ? "bg-blue-100 text-blue-800"
                         : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
-                    {order.status}
+                    {order.orderType.charAt(0).toUpperCase() +
+                      order.orderType.slice(1)}
                   </span>
                 </TableCell>
               </TableRow>

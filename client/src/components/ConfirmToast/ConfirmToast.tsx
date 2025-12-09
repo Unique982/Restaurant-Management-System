@@ -5,7 +5,7 @@ import { toast, Toast } from "react-hot-toast";
 
 interface ConfirmDeleteToastProps<T> {
   message?: string;
-  onConfirm: () => Promise<T>; // The delete function passed from parent
+  onConfirm: () => Promise<T>;
 }
 
 export const openConfirmDeleteToast = <T,>({

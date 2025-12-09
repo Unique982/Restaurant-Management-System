@@ -208,11 +208,13 @@ export function statusUpdate(id: string | number, status: ReservationStatus) {
     }
   };
 }
+
+// customer and guest user side
 export function bookingTable(data: IReservationPostData) {
   return async function bookinhgTableThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await API.post("/booking/table", data);
+      const response = await APIWITHTOKEN.post("/booking/table", data);
       if (response.status === 200) {
         response.data.data && dispatch(addReservation(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
@@ -290,7 +292,7 @@ export function singelFetchResv(id: string | number) {
   return async function singelFetchResvThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.ERROR));
     try {
-      const response = await APIWITHTOKEN.get("reservations/" + id);
+      const response = await APIWITHTOKEN.get("/reservations/" + id);
       if (response.status === 200) {
         dispatch(singelFetchResv(response.data.data));
         dispatch(setStatus(Status.SUCCESS));
